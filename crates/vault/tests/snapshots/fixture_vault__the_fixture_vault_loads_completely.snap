@@ -20,6 +20,12 @@ Career {
             website: Some(
                 "https://acme.example",
             ),
+            labels: Translations {
+                ja: Some(
+                    "株式会社アクメ",
+                ),
+                de: None,
+            },
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -52,6 +58,10 @@ Career {
             website: Some(
                 "https://contoso.example",
             ),
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -76,6 +86,10 @@ Career {
             ],
             location: None,
             website: None,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -104,6 +118,10 @@ Career {
             website: Some(
                 "https://example.com",
             ),
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
             translated_from: Translations {
                 ja: Some(
                     "3f9a1c0b7e2d",
@@ -152,6 +170,10 @@ Career {
                 "Minato, Tokyo",
             ),
             website: None,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -174,6 +196,10 @@ Career {
             ],
             location: None,
             website: None,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -198,6 +224,10 @@ Career {
                 "Leipzig",
             ),
             website: None,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -226,6 +256,10 @@ Career {
             website: Some(
                 "https://mueller-logistik.example",
             ),
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -258,6 +292,10 @@ Career {
             ],
             location: None,
             website: None,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1216,6 +1254,7 @@ Career {
                 ),
             },
             level: None,
+            last_used: None,
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1232,6 +1271,7 @@ Career {
                 de: None,
             },
             level: None,
+            last_used: None,
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1248,6 +1288,9 @@ Career {
                 de: None,
             },
             level: None,
+            last_used: Some(
+                2025-08,
+            ),
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1268,6 +1311,7 @@ Career {
                 de: None,
             },
             level: None,
+            last_used: None,
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1298,6 +1342,7 @@ Career {
                     ),
                 },
             ),
+            last_used: None,
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1316,6 +1361,7 @@ Career {
                 de: None,
             },
             level: None,
+            last_used: None,
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1334,6 +1380,7 @@ Career {
                 de: None,
             },
             level: None,
+            last_used: None,
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1364,6 +1411,7 @@ Career {
                     ),
                 },
             ),
+            last_used: None,
             translated_from: Translations {
                 ja: Some(
                     "6a5b4c3d2e1f",
@@ -1392,6 +1440,7 @@ Career {
                 de: None,
             },
             level: None,
+            last_used: None,
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1410,6 +1459,7 @@ Career {
                 de: None,
             },
             level: None,
+            last_used: None,
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1426,6 +1476,7 @@ Career {
                 de: None,
             },
             level: None,
+            last_used: None,
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1442,6 +1493,7 @@ Career {
                 de: None,
             },
             level: None,
+            last_used: None,
             translated_from: Translations {
                 ja: None,
                 de: None,
@@ -1462,6 +1514,7 @@ Career {
                 de: None,
             },
             level: None,
+            last_used: None,
             translated_from: Translations {
                 ja: Some(
                     "0e7f3a9b2c1d",

@@ -1,5 +1,6 @@
 //! The only crate that prints (ADR 0001).
 
+mod clock;
 mod command;
 mod json;
 mod new_note;

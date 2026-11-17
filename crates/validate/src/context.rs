@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 use std::path::Path;
 
-use kariera_domain::{Career, Contract, Engagement, Link, Note, NoteName, Organization};
+use kariera_domain::{Career, Contract, Engagement, Link, Month, Note, NoteName, Organization};
 use kariera_vault::{LoadError, NoteFile, Stray, Vault};
 
 /// A loaded vault with what the checks look things up by: the file of every note and the files that are notes in
@@ -11,6 +11,7 @@ pub(crate) struct Context<'a> {
     vault: &'a Vault,
     strays: Vec<Stray>,
     complete: bool,
+    current_month: Month,
     files: BTreeMap<&'a NoteName, &'a NoteFile>,
 }
 
@@ -33,11 +34,16 @@ impl<T> Copy for Found<'_, T> {}
 
 impl<'a> Context<'a> {
     /// `complete` is true when every note of the vault was read into `vault`.
-    pub(crate) fn new(vault: &'a Vault, complete: bool) -> Result<Self, LoadError> {
+    pub(crate) fn new(
+        vault: &'a Vault,
+        complete: bool,
+        current_month: Month,
+    ) -> Result<Self, LoadError> {
         Ok(Self {
             vault,
             strays: vault.strays()?,
             complete,
+            current_month,
             files: vault
                 .notes()
                 .iter()
@@ -49,6 +55,10 @@ impl<'a> Context<'a> {
     /// Whether a note missing from the vault can be told from a note that was never written.
     pub(crate) const fn is_complete(&self) -> bool {
         self.complete
+    }
+
+    pub(crate) const fn current_month(&self) -> Month {
+        self.current_month
     }
 
     pub(crate) fn root(&self) -> &Path {

@@ -14,6 +14,7 @@ mod periods;
 mod placement;
 mod profile;
 mod rates;
+mod skill_dates;
 mod sources;
 
 use crate::context::Context;
@@ -21,12 +22,13 @@ use crate::finding::Finding;
 
 type Check = fn(&Context<'_>) -> Vec<Finding>;
 
-const CHECKS: [Check; 15] = [
+const CHECKS: [Check; 16] = [
     placement::check,
     file_names::check,
     duplicate_names::check,
     frontmatter::check,
     periods::check,
+    skill_dates::check,
     link_roles::check,
     contract_rules::check,
     rates::check,

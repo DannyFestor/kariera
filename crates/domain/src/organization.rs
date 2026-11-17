@@ -10,6 +10,8 @@ pub struct Organization {
     pub kind: Vec<OrganizationKind>,
     pub location: Option<Text>,
     pub website: Option<Url>,
+    /// Empty where `name` is used as it is.
+    pub labels: Translations<Text>,
     pub translated_from: Translations<Fingerprint>,
     pub sources: Vec<Source>,
     pub reviewed: bool,

@@ -1,5 +1,5 @@
 use crate::fixed_list::labelled_list;
-use crate::{Fingerprint, Source, Text, Translated, Translations};
+use crate::{Fingerprint, Month, Source, Text, Translated, Translations};
 
 /// Schema §2.6. `level` is set only for a `human-language`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -10,6 +10,9 @@ pub struct Skill {
     /// Empty where `name` is used as it is.
     pub labels: Translations<Text>,
     pub level: Option<Translated<Text>>,
+    /// The owner's most recent use outside any Project. It never adds to computed years of experience; it only
+    /// decides whether the Skill counts as recently used.
+    pub last_used: Option<Month>,
     pub translated_from: Translations<Fingerprint>,
     pub sources: Vec<Source>,
     pub reviewed: bool,

@@ -14,7 +14,8 @@ kariera reads only the Markdown files in the note folders and `Profile.md`, so t
 - Monthly Logs with `project_hours` split over two Projects, once adding up to `hours` and once not, with an `Hours mismatch:` Source note; and a Monthly Log without `hours`, because the Work Report states none (schema §1.11).
 - Japanese and German text in fields and body sections, translated, untranslated and partly translated; `translated_from` fingerprints; `reviewed: true` and `false`.
 - Names from schema §1.1: `C Sharp` with the alias `C#`, and `Müller Logistik` with an umlaut.
-- A Skill alias equal to one of its `labels` (`Example Charts`, schema §2.6).
+- A Skill alias equal to one of its `labels` (`Example Charts`, schema §2.6), and an Organization alias equal to its `labels.ja` (`Acme`, schema §2.1).
+- A Skill with `last_used`, the owner's use outside any Project (`Docker`, schema §2.6).
 
 ## Written on purpose
 

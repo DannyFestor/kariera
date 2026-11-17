@@ -9,6 +9,8 @@ kind:
   - agency
 location: Shibuya, Tokyo
 website: https://acme.example
+labels:
+  ja: 株式会社アクメ
 sources:
   - kind: contract
     path: .scratch/_inputs/contracts/acme/basic-agreement.pdf

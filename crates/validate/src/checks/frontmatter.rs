@@ -336,6 +336,57 @@ mod tests {
     }
 
     #[test]
+    fn an_organization_map_of_labels_in_flow_style_is_reported() {
+        let lines = findings_of(
+            "style_flow_organization_labels",
+            ACME,
+            "labels:\n  ja: 株式会社アクメ\n",
+            "labels: {ja: 株式会社アクメ}\n",
+        );
+
+        assert_eq!(
+            lines,
+            [
+                "Organizations/Acme.md:12: error [yaml-style] field `labels` must be written in block style, not as `[…]` or `{…}`"
+            ]
+        );
+    }
+
+    #[test]
+    fn the_labels_of_an_organization_follow_its_website() {
+        let lines = findings_of(
+            "style_organization_labels_order",
+            ACME,
+            "website: https://acme.example\nlabels:\n  ja: 株式会社アクメ\n",
+            "labels:\n  ja: 株式会社アクメ\nwebsite: https://acme.example\n",
+        );
+
+        assert_eq!(
+            lines,
+            [
+                "Organizations/Acme.md:13: error [field-order] field `website` must come before `labels`: fields follow the order of the schema's table"
+            ]
+        );
+    }
+
+    #[test]
+    fn last_used_is_written_without_quotes() {
+        let lines = findings_of(
+            "style_last_used_quotes",
+            "Skills/Docker.md",
+            "last_used: 2025-08",
+            "last_used: \"2025-08\"",
+        );
+
+        assert_eq!(
+            lines,
+            [
+                "Skills/Docker.md:5: error [yaml-style] field `last_used` must be written plain, without quotes"
+            ]
+        );
+    }
+
+    #[test]
     fn a_link_is_written_in_double_quotes() {
         let lines = findings_of(
             "style_link_quotes",

@@ -96,6 +96,7 @@ impl Translatable for Organization {
 
     fn english_content(&self) -> Vec<EnglishText> {
         Content::default()
+            .text("name", &self.name)
             .paragraphs("## Description", &self.description)
             .finish()
     }
@@ -232,6 +233,7 @@ mod tests {
             kind: Vec::new(),
             location: None,
             website: None,
+            labels: Translations::none(),
             translated_from: Translations::none(),
             sources: Vec::new(),
             reviewed: false,
@@ -286,6 +288,7 @@ mod tests {
             category: SkillCategory::HumanLanguage,
             labels: Translations::none(),
             level,
+            last_used: None,
             translated_from: Translations::none(),
             sources: Vec::new(),
             reviewed: false,
@@ -328,10 +331,13 @@ mod tests {
     }
 
     #[test]
-    fn an_organization_is_its_english_description() {
+    fn an_organization_is_its_name_and_english_description() {
         assert_eq!(
             content(&organization()),
-            pairs(&[("## Description", "Makes things.\n\nSells them.")])
+            pairs(&[
+                ("name", "Acme"),
+                ("## Description", "Makes things.\n\nSells them.")
+            ])
         );
     }
 
@@ -428,7 +434,7 @@ mod tests {
 
         let found = career.translatable(NoteType::Organization, &name);
 
-        assert_eq!(found.map(|note| note.english_content().len()), Some(1));
+        assert_eq!(found.map(|note| note.english_content().len()), Some(2));
         assert!(career.translatable(NoteType::Skill, &name).is_none());
         assert!(career.translatable(NoteType::Contract, &name).is_none());
         assert!(career.translatable(NoteType::MonthlyLog, &name).is_none());

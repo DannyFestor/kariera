@@ -10,6 +10,7 @@ level:
   en:
   ja:
   de:
+last_used:
 translated_from:
   ja:
   de:
