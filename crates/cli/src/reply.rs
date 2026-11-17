@@ -3,13 +3,18 @@
 use std::process::ExitCode;
 
 use crate::command::Command;
+use crate::new_note;
 
 const USAGE: &str = "Usage: kariera [--help | --version]
+       kariera new log --engagement <name> --month <YYYY-MM>
+       kariera new project --engagement <name> --title <title>
+       kariera new engagement (--client <name> | --employer <name>) --type <type> --start <YYYY-MM>
        kariera translations --stale
        kariera translations --mark <note> --lang <ja|de>
 
 Builds career documents from an Obsidian vault.
 
+new                    Creates a note from the vault's Templates, with what the arguments say filled in
 translations --stale   Lists the translations whose English text changed since they were marked
 translations --mark    Records that a note's translation matches its current English text";
 
@@ -34,6 +39,7 @@ impl Reply {
         match command {
             Command::Help => Self::success(USAGE.to_owned()),
             Command::Version => Self::success(version()),
+            Command::New(note) => new_note::reply(note),
             Command::Translations(translations) => translations.run(),
             Command::Unknown(argument) => {
                 Self::usage_error(&format!("unknown argument {argument:?}"))

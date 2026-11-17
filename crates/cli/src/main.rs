@@ -1,6 +1,7 @@
 //! The only crate that prints (ADR 0001).
 
 mod command;
+mod new_note;
 mod reply;
 mod translations;
 
