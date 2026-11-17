@@ -50,6 +50,43 @@ allow = [
   { crate = "kariera-render-xlsx", reason = "workspace crate" },
   { crate = "kariera-validate", reason = "workspace crate" },
   { crate = "kariera-vault", reason = "workspace crate" },
+  # Reading the vault.
+  { crate = "saphyr-parser", reason = "YAML parser for note frontmatter; its events keep the line and quoting of every value, which the schema's rules and error messages need" },
+  { crate = "arraydeque", reason = "saphyr-parser: the scanner's token buffer" },
+  { crate = "unicode-normalization", reason = "NFC for note names and link targets (vault schema §1.1): macOS and Syncthing also write NFD" },
+  { crate = "tinyvec", reason = "unicode-normalization: small buffers for combining characters" },
+  { crate = "toml", reason = "reads ~/.config/kariera/config.toml" },
+  { crate = "toml_parser", reason = "toml: the parser" },
+  { crate = "toml_datetime", reason = "toml: TOML date values" },
+  { crate = "serde_spanned", reason = "toml: positions for error messages" },
+  { crate = "winnow", reason = "toml: parser combinators of toml_parser" },
+  { crate = "serde", reason = "derives the deserialization of config.toml into a struct" },
+  { crate = "serde_core", reason = "serde: the traits, split out of serde" },
+  { crate = "serde_derive", reason = "serde: the derive macros" },
+  # Error types.
+  { crate = "thiserror", reason = "derives Display and Error for the error enums, so each message sits on its variant" },
+  { crate = "thiserror-impl", reason = "thiserror: the derive macro" },
+  # Derive macros of serde and thiserror.
+  { crate = "proc-macro2", reason = "serde_derive and thiserror-impl: token streams" },
+  { crate = "quote", reason = "serde_derive and thiserror-impl: code generation" },
+  { crate = "syn", reason = "serde_derive and thiserror-impl: parsing Rust code" },
+  { crate = "unicode-ident", reason = "proc-macro2 and syn: identifier characters" },
+  # Snapshot tests, dev-dependencies only.
+  { crate = "insta", reason = "snapshot tests of whole values, such as the loaded fixture vault (docs/rust-primer.md)" },
+  { crate = "similar", reason = "insta: the diff of a changed snapshot" },
+  { crate = "once_cell", reason = "insta and tempfile: lazily initialised statics" },
+  { crate = "tempfile", reason = "insta: writes snapshot files atomically" },
+  { crate = "fastrand", reason = "tempfile: random temporary file names" },
+  { crate = "getrandom", reason = "tempfile: seeds the random names from the OS" },
+  { crate = "cfg-if", reason = "getrandom: per-platform code" },
+  { crate = "r-efi", reason = "getrandom on UEFI targets; cargo-deny checks every target" },
+  { crate = "rustix", reason = "tempfile: file system calls on Unix" },
+  { crate = "linux-raw-sys", reason = "rustix: Linux system call definitions" },
+  { crate = "bitflags", reason = "rustix: flag types" },
+  { crate = "errno", reason = "rustix: reads errno" },
+  { crate = "libc", reason = "errno, getrandom and rustix: C library bindings" },
+  { crate = "windows-sys", reason = "errno, rustix and tempfile on Windows; cargo-deny checks every target" },
+  { crate = "windows-link", reason = "windows-sys: links the Windows API" },
 ]
 
 [sources]

@@ -17,6 +17,22 @@ Not usable yet. The project is being set up.
 | `kariera build` | Builds every document in every language and format; `--doc` and `--lang` narrow it down |
 | `kariera translations --stale` | Lists notes whose English text changed after their translations |
 
+## Configuration
+
+kariera reads `~/.config/kariera/config.toml`:
+
+```toml
+vault = "~/Notes/Career"
+```
+
+| Key | Required | Meaning |
+|---|---|---|
+| `vault` | yes | The vault root: the folder that holds `Profile.md` and the note folders. An absolute path, or one starting with `~/` for the home directory. |
+
+Any other key is an error, so a misspelt setting is not silently ignored. Personal data for the 履歴書 does not go here: it lives in `~/.config/kariera/personal.yaml`.
+
+kariera reads the notes in `Organizations/`, `Engagements/`, `Contracts/`, `Projects/`, `Monthly Logs/`, `Skills/` and `Qualifications/` (with their subfolders) and `Profile.md` in the vault root. It reads nothing else in the vault and never writes to it.
+
 ## Design
 
 - Written in Rust, as a workspace of small crates whose dependency rules are enforced by Cargo.

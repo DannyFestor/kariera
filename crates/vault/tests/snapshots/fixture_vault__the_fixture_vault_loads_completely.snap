@@ -1,0 +1,1690 @@
+---
+source: crates/vault/tests/fixture_vault.rs
+expression: vault.career()
+---
+Career {
+    organizations: {
+        "Acme": Organization {
+            name: "Acme",
+            aliases: [
+                "株式会社アクメ",
+                "ACME",
+            ],
+            kind: [
+                Client,
+                Agency,
+            ],
+            location: Some(
+                "Shibuya, Tokyo",
+            ),
+            website: Some(
+                "https://acme.example",
+            ),
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: Contract,
+                    path: Some(
+                        ".scratch/_inputs/contracts/acme/basic-agreement.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+            reviewed: false,
+            description: Translated {
+                en: Paragraphs(
+                    "Web agency that builds online shops and business systems.",
+                ),
+                ja: None,
+                de: None,
+            },
+        },
+        "Contoso": Organization {
+            name: "Contoso",
+            aliases: [],
+            kind: [
+                EndClient,
+            ],
+            location: None,
+            website: Some(
+                "https://contoso.example",
+            ),
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+            description: Translated {
+                en: Paragraphs(
+                    "Toy retailer with an online shop.",
+                ),
+                ja: None,
+                de: None,
+            },
+        },
+        "Example University": Organization {
+            name: "Example University",
+            aliases: [
+                "Universität Beispielstadt",
+            ],
+            kind: [
+                School,
+            ],
+            location: None,
+            website: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+            description: Translated {
+                en: Paragraphs(
+                    "",
+                ),
+                ja: None,
+                de: None,
+            },
+        },
+        "Example Works": Organization {
+            name: "Example Works",
+            aliases: [
+                "エグザンプルワークス",
+            ],
+            kind: [
+                MyBusiness,
+            ],
+            location: Some(
+                "Kita, Sapporo",
+            ),
+            website: Some(
+                "https://example.com",
+            ),
+            translated_from: Translations {
+                ja: Some(
+                    "3f9a1c0b7e2d",
+                ),
+                de: Some(
+                    "8b2e4d6f1a3c",
+                ),
+            },
+            sources: [
+                Source {
+                    kind: Certificate,
+                    path: Some(
+                        ".scratch/_inputs/business/registration.pdf",
+                    ),
+                    note: Some(
+                        "Notification of opening a sole proprietorship",
+                    ),
+                },
+            ],
+            reviewed: true,
+            description: Translated {
+                en: Paragraphs(
+                    "Sole proprietorship for web development under contract.",
+                ),
+                ja: Some(
+                    Paragraphs(
+                        "受託によるウェブ開発の個人事業。",
+                    ),
+                ),
+                de: Some(
+                    Paragraphs(
+                        "Einzelunternehmen für Webentwicklung im Auftrag.",
+                    ),
+                ),
+            },
+        },
+        "Fabrikam": Organization {
+            name: "Fabrikam",
+            aliases: [
+                "株式会社ファブリカム",
+            ],
+            kind: [
+                Agency,
+            ],
+            location: Some(
+                "Minato, Tokyo",
+            ),
+            website: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+            description: Translated {
+                en: Paragraphs(
+                    "IT staffing agency that places freelance developers with clients.",
+                ),
+                ja: None,
+                de: None,
+            },
+        },
+        "Globex": Organization {
+            name: "Globex",
+            aliases: [],
+            kind: [
+                Client,
+            ],
+            location: None,
+            website: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+            description: Translated {
+                en: Paragraphs(
+                    "",
+                ),
+                ja: None,
+                de: None,
+            },
+        },
+        "Initech": Organization {
+            name: "Initech",
+            aliases: [],
+            kind: [
+                Employer,
+            ],
+            location: Some(
+                "Leipzig",
+            ),
+            website: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+            description: Translated {
+                en: Paragraphs(
+                    "Software company for banking systems.",
+                ),
+                ja: None,
+                de: None,
+            },
+        },
+        "Müller Logistik": Organization {
+            name: "Müller Logistik",
+            aliases: [
+                "Müller Logistik GmbH",
+            ],
+            kind: [
+                Employer,
+            ],
+            location: Some(
+                "Hamburg",
+            ),
+            website: Some(
+                "https://mueller-logistik.example",
+            ),
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: true,
+            description: Translated {
+                en: Paragraphs(
+                    "Freight forwarder with its own software department.",
+                ),
+                ja: Some(
+                    Paragraphs(
+                        "自社にソフトウェア部門を持つ運送会社。",
+                    ),
+                ),
+                de: Some(
+                    Paragraphs(
+                        "Spedition mit eigener Softwareabteilung.",
+                    ),
+                ),
+            },
+        },
+        "Northwind": Organization {
+            name: "Northwind",
+            aliases: [
+                "ノースウィンド運輸",
+            ],
+            kind: [
+                EndClient,
+            ],
+            location: None,
+            website: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+            description: Translated {
+                en: Paragraphs(
+                    "Logistics company.",
+                ),
+                ja: None,
+                de: None,
+            },
+        },
+    },
+    engagements: {
+        "2018-07 Initech": Engagement {
+            client: None,
+            employer: Some(
+                [[Initech]],
+            ),
+            engagement_type: Internship,
+            role: None,
+            start: 2018-07,
+            end: Some(
+                2018-09,
+            ),
+            contracts: [],
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: Certificate,
+                    path: Some(
+                        ".scratch/_inputs/internship/initech-certificate.pdf",
+                    ),
+                    note: Some(
+                        "Internship certificate, July to September 2018",
+                    ),
+                },
+            ],
+            reviewed: false,
+            summary: Translated {
+                en: Paragraphs(
+                    "Tested the online banking front end and wrote test cases.",
+                ),
+                ja: None,
+                de: Some(
+                    Paragraphs(
+                        "Testete das Frontend des Onlinebankings und schrieb Testfälle.",
+                    ),
+                ),
+            },
+        },
+        "2019-04 Müller Logistik": Engagement {
+            client: None,
+            employer: Some(
+                [[Müller Logistik]],
+            ),
+            engagement_type: Employment,
+            role: Some(
+                Translated {
+                    en: "Software developer",
+                    ja: Some(
+                        "ソフトウェア開発者",
+                    ),
+                    de: Some(
+                        "Softwareentwickler",
+                    ),
+                },
+            ),
+            start: 2019-04,
+            end: Some(
+                2021-03,
+            ),
+            contracts: [
+                [[2019-04 Müller Logistik Contract]],
+            ],
+            translated_from: Translations {
+                ja: Some(
+                    "5c1d9e7a2b40",
+                ),
+                de: Some(
+                    "5c1d9e7a2b40",
+                ),
+            },
+            sources: [
+                Source {
+                    kind: Contract,
+                    path: Some(
+                        ".scratch/_inputs/contracts/mueller/employment-contract.pdf",
+                    ),
+                    note: None,
+                },
+                Source {
+                    kind: Cv,
+                    path: Some(
+                        ".scratch/_inputs/applications/cv-2021.pdf",
+                    ),
+                    note: Some(
+                        "Lists the position as junior developer",
+                    ),
+                },
+            ],
+            reviewed: true,
+            summary: Translated {
+                en: Paragraphs(
+                    "Developed the shipment tracking system of the in-house software department.",
+                ),
+                ja: Some(
+                    Paragraphs(
+                        "社内ソフトウェア部門で配送追跡システムを開発した。",
+                    ),
+                ),
+                de: Some(
+                    Paragraphs(
+                        "Entwickelte das Sendungsverfolgungssystem der hauseigenen Softwareabteilung.",
+                    ),
+                ),
+            },
+        },
+        "2021-04 Acme": Engagement {
+            client: Some(
+                [[Acme]],
+            ),
+            employer: None,
+            engagement_type: Freelance,
+            role: Some(
+                Translated {
+                    en: "Backend developer",
+                    ja: Some(
+                        "バックエンド開発者",
+                    ),
+                    de: None,
+                },
+            ),
+            start: 2021-04,
+            end: Some(
+                2023-09,
+            ),
+            contracts: [
+                [[2021-04 Acme Contract]],
+            ],
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: Contract,
+                    path: Some(
+                        ".scratch/_inputs/contracts/acme/basic-agreement.pdf",
+                    ),
+                    note: None,
+                },
+                Source {
+                    kind: SkillSheet,
+                    path: Some(
+                        ".scratch/_inputs/applications/skill-sheet-2023.xlsx",
+                    ),
+                    note: Some(
+                        "Row for Acme, 2021-04 to 2023-09",
+                    ),
+                },
+            ],
+            reviewed: false,
+            summary: Translated {
+                en: Paragraphs(
+                    "Built backends for online shops and an accounting platform in the development team of Acme.",
+                ),
+                ja: None,
+                de: None,
+            },
+        },
+        "2023-10 Globex": Engagement {
+            client: Some(
+                [[Globex]],
+            ),
+            employer: None,
+            engagement_type: Freelance,
+            role: Some(
+                Translated {
+                    en: "Full-stack developer",
+                    ja: Some(
+                        "フルスタック開発者",
+                    ),
+                    de: Some(
+                        "Full-Stack-Entwickler",
+                    ),
+                },
+            ),
+            start: 2023-10,
+            end: None,
+            contracts: [
+                [[2023-10 Globex via Fabrikam Contract]],
+                [[2025-04 Globex Contract]],
+            ],
+            translated_from: Translations {
+                ja: Some(
+                    "9d4f2a6c8e1b",
+                ),
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: PurchaseOrder,
+                    path: Some(
+                        ".scratch/_inputs/orders/globex/2023-10.pdf",
+                    ),
+                    note: None,
+                },
+                Source {
+                    kind: Recalled,
+                    path: None,
+                    note: Some(
+                        "Owner: Fabrikam placed the work until 2025-03; since 2025-04 the contract is direct with Globex",
+                    ),
+                },
+            ],
+            reviewed: false,
+            summary: Translated {
+                en: Paragraphs(
+                    "Develops the product search and the admin area of the Globex web shop.",
+                ),
+                ja: Some(
+                    Paragraphs(
+                        "Globexのウェブショップの商品検索と管理画面を開発している。",
+                    ),
+                ),
+                de: None,
+            },
+        },
+    },
+    contracts: {
+        "2019-04 Müller Logistik Contract": Contract {
+            counterparty: [[Müller Logistik]],
+            contract_type: Employment,
+            start: 2019-04-01,
+            end: Some(
+                2021-03-31,
+            ),
+            rate: None,
+            rate_unit: None,
+            rate_history: [],
+            sources: [
+                Source {
+                    kind: Contract,
+                    path: Some(
+                        ".scratch/_inputs/contracts/mueller/employment-contract.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+        },
+        "2021-04 Acme Contract": Contract {
+            counterparty: [[Acme]],
+            contract_type: QuasiMandate,
+            start: 2021-04-01,
+            end: Some(
+                2023-09-30,
+            ),
+            rate: Some(
+                5000,
+            ),
+            rate_unit: Some(
+                Hour,
+            ),
+            rate_history: [
+                RateStep {
+                    from: 2021-04,
+                    rate: 4500,
+                },
+                RateStep {
+                    from: 2022-04,
+                    rate: 5000,
+                },
+            ],
+            sources: [
+                Source {
+                    kind: Contract,
+                    path: Some(
+                        ".scratch/_inputs/contracts/acme/basic-agreement.pdf",
+                    ),
+                    note: Some(
+                        "Basic agreement, renewed every six months",
+                    ),
+                },
+                Source {
+                    kind: Contract,
+                    path: Some(
+                        ".scratch/_inputs/contracts/acme/individual-2022-04.pdf",
+                    ),
+                    note: Some(
+                        "Individual contract from 2022-04 at 5,000 JPY an hour",
+                    ),
+                },
+            ],
+        },
+        "2023-10 Globex via Fabrikam Contract": Contract {
+            counterparty: [[Fabrikam]],
+            contract_type: QuasiMandate,
+            start: 2023-10-01,
+            end: Some(
+                2025-03-31,
+            ),
+            rate: Some(
+                600000,
+            ),
+            rate_unit: Some(
+                Month,
+            ),
+            rate_history: [],
+            sources: [
+                Source {
+                    kind: Contract,
+                    path: Some(
+                        ".scratch/_inputs/contracts/fabrikam/agreement.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+        },
+        "2025-04 Globex Contract": Contract {
+            counterparty: [[Globex]],
+            contract_type: QuasiMandate,
+            start: 2025-04-01,
+            end: None,
+            rate: Some(
+                640000,
+            ),
+            rate_unit: Some(
+                Month,
+            ),
+            rate_history: [],
+            sources: [
+                Source {
+                    kind: Contract,
+                    path: Some(
+                        ".scratch/_inputs/contracts/globex/agreement.pdf",
+                    ),
+                    note: None,
+                },
+                Source {
+                    kind: Invoice,
+                    path: Some(
+                        ".scratch/_inputs/invoices/2025/globex-2025-04.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+        },
+    },
+    projects: {
+        "Acme - Ledger": Project {
+            engagement: [[2021-04 Acme]],
+            end_client: Some(
+                [[Northwind]],
+            ),
+            title: Translated {
+                en: "Northwind freight ledger",
+                ja: Some(
+                    "ノースウィンド運輸 運賃台帳",
+                ),
+                de: None,
+            },
+            public_title: Some(
+                Translated {
+                    en: "Accounting platform for a logistics company",
+                    ja: Some(
+                        "物流会社向け会計プラットフォーム",
+                    ),
+                    de: None,
+                },
+            ),
+            confidential: true,
+            aliases: [
+                "LEDGER",
+            ],
+            start: 2022-10,
+            end: Some(
+                2023-09,
+            ),
+            role: Translated {
+                en: "Backend developer",
+                ja: None,
+                de: None,
+            },
+            focus: None,
+            team_size: None,
+            industry: Translated {
+                en: "Logistics",
+                ja: Some(
+                    "物流",
+                ),
+                de: Some(
+                    "Logistik",
+                ),
+            },
+            phases: [],
+            skills: [
+                [[TypeScript]],
+                [[PostgreSQL]],
+            ],
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: Invoice,
+                    path: Some(
+                        ".scratch/_inputs/invoices/2023/acme-2023-09.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+            reviewed: false,
+            description: Translated {
+                en: Paragraphs(
+                    "Built the invoicing backend of an accounting platform for a logistics company.",
+                ),
+                ja: None,
+                de: None,
+            },
+            achievements: Translated {
+                en: [],
+                ja: None,
+                de: None,
+            },
+        },
+        "Acme - Shop": Project {
+            engagement: [[2021-04 Acme]],
+            end_client: Some(
+                [[Contoso]],
+            ),
+            title: Translated {
+                en: "Contoso toy shop backend",
+                ja: Some(
+                    "Contoso玩具ECサイトのバックエンド",
+                ),
+                de: Some(
+                    "Backend des Contoso-Spielwarenshops",
+                ),
+            },
+            public_title: None,
+            confidential: false,
+            aliases: [
+                "SHOP",
+                "TOYS-EC",
+            ],
+            start: 2021-04,
+            end: Some(
+                2022-09,
+            ),
+            role: Translated {
+                en: "Backend developer",
+                ja: Some(
+                    "バックエンド開発者",
+                ),
+                de: Some(
+                    "Backend-Entwickler",
+                ),
+            },
+            focus: Some(
+                Translated {
+                    en: "Backend",
+                    ja: Some(
+                        "バックエンド",
+                    ),
+                    de: Some(
+                        "Backend",
+                    ),
+                },
+            ),
+            team_size: Some(
+                5,
+            ),
+            industry: Translated {
+                en: "E-commerce",
+                ja: Some(
+                    "EC",
+                ),
+                de: Some(
+                    "E-Commerce",
+                ),
+            },
+            phases: [
+                BasicDesign,
+                DetailedDesign,
+                Implementation,
+                Testing,
+            ],
+            skills: [
+                [[Go]],
+                [[PostgreSQL]],
+                [[Docker]],
+            ],
+            translated_from: Translations {
+                ja: Some(
+                    "1a2b3c4d5e6f",
+                ),
+                de: Some(
+                    "1a2b3c4d5e6f",
+                ),
+            },
+            sources: [
+                Source {
+                    kind: WorkReport,
+                    path: Some(
+                        ".scratch/_inputs/reports/acme/2021-04.pdf",
+                    ),
+                    note: Some(
+                        "Lists the project code SHOP",
+                    ),
+                },
+                Source {
+                    kind: SkillSheet,
+                    path: Some(
+                        ".scratch/_inputs/applications/skill-sheet-2023.xlsx",
+                    ),
+                    note: Some(
+                        "Team of 5; marks basic design to testing",
+                    ),
+                },
+                Source {
+                    kind: TrackerDigest,
+                    path: Some(
+                        ".scratch/_inputs/history/acme/digest.md",
+                    ),
+                    note: None,
+                },
+                Source {
+                    kind: Recalled,
+                    path: None,
+                    note: Some(
+                        "owner: the shop went live in 2021-11",
+                    ),
+                },
+            ],
+            reviewed: true,
+            description: Translated {
+                en: Paragraphs(
+                    "Built the backend of an online toy shop in Go on PostgreSQL, from the product catalogue to order processing.\n\nThe services run in Docker containers.",
+                ),
+                ja: Some(
+                    Paragraphs(
+                        "GoとPostgreSQLで玩具ECサイトのバックエンドを商品カタログから受注処理まで構築した。\n\nサービスはDockerコンテナで稼働する。",
+                    ),
+                ),
+                de: Some(
+                    Paragraphs(
+                        "Baute das Backend eines Spielwaren-Onlineshops in Go auf PostgreSQL, vom Produktkatalog bis zur Bestellabwicklung.\n\nDie Dienste laufen in Docker-Containern.",
+                    ),
+                ),
+            },
+            achievements: Translated {
+                en: [
+                    "Designed the order and payment flow",
+                    "Cut the catalogue page load time by half",
+                ],
+                ja: Some(
+                    [
+                        "受注・決済フローを設計した",
+                        "カタログページの表示時間を半分に短縮した",
+                    ],
+                ),
+                de: Some(
+                    [
+                        "Entwarf den Bestell- und Zahlungsablauf",
+                        "Halbierte die Ladezeit der Katalogseiten",
+                    ],
+                ),
+            },
+        },
+        "Globex - Admin": Project {
+            engagement: [[2023-10 Globex]],
+            end_client: None,
+            title: Translated {
+                en: "Web shop admin area",
+                ja: None,
+                de: None,
+            },
+            public_title: None,
+            confidential: false,
+            aliases: [],
+            start: 2025-01,
+            end: None,
+            role: Translated {
+                en: "Full-stack developer",
+                ja: None,
+                de: None,
+            },
+            focus: None,
+            team_size: None,
+            industry: Translated {
+                en: "Retail",
+                ja: None,
+                de: None,
+            },
+            phases: [],
+            skills: [
+                [[TypeScript]],
+                [[React]],
+                [[Example Charts]],
+            ],
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: Timesheet,
+                    path: Some(
+                        ".scratch/_inputs/timesheets/globex-2025.xlsx",
+                    ),
+                    note: None,
+                },
+            ],
+            reviewed: false,
+            description: Translated {
+                en: Paragraphs(
+                    "Builds the admin area for product and staff management.",
+                ),
+                ja: None,
+                de: None,
+            },
+            achievements: Translated {
+                en: [],
+                ja: None,
+                de: None,
+            },
+        },
+        "Globex - Search": Project {
+            engagement: [[2023-10 Globex]],
+            end_client: None,
+            title: Translated {
+                en: "Web shop product search",
+                ja: Some(
+                    "ウェブショップの商品検索",
+                ),
+                de: Some(
+                    "Produktsuche des Webshops",
+                ),
+            },
+            public_title: None,
+            confidential: false,
+            aliases: [],
+            start: 2023-10,
+            end: None,
+            role: Translated {
+                en: "Full-stack developer",
+                ja: Some(
+                    "フルスタック開発者",
+                ),
+                de: None,
+            },
+            focus: Some(
+                Translated {
+                    en: "Search",
+                    ja: None,
+                    de: None,
+                },
+            ),
+            team_size: Some(
+                8,
+            ),
+            industry: Translated {
+                en: "Retail",
+                ja: Some(
+                    "小売",
+                ),
+                de: Some(
+                    "Einzelhandel",
+                ),
+            },
+            phases: [
+                Requirements,
+                BasicDesign,
+                Implementation,
+                Operations,
+            ],
+            skills: [
+                [[TypeScript]],
+                [[React]],
+                [[Node.js]],
+                [[Google Cloud]],
+                [[Claude Code]],
+            ],
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: PurchaseOrder,
+                    path: Some(
+                        ".scratch/_inputs/orders/globex/2023-10.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+            reviewed: false,
+            description: Translated {
+                en: Paragraphs(
+                    "Develops the product search of the web shop, from the ranking service on Google Cloud to the React front end.",
+                ),
+                ja: None,
+                de: None,
+            },
+            achievements: Translated {
+                en: [
+                    "Introduces typo-tolerant search",
+                ],
+                ja: None,
+                de: None,
+            },
+        },
+        "Müller Logistik - Tracking": Project {
+            engagement: [[2019-04 Müller Logistik]],
+            end_client: None,
+            title: Translated {
+                en: "Shipment tracking system",
+                ja: Some(
+                    "配送追跡システム",
+                ),
+                de: Some(
+                    "Sendungsverfolgungssystem",
+                ),
+            },
+            public_title: None,
+            confidential: false,
+            aliases: [
+                "TRACK",
+            ],
+            start: 2019-04,
+            end: Some(
+                2021-03,
+            ),
+            role: Translated {
+                en: "Software developer",
+                ja: Some(
+                    "ソフトウェア開発者",
+                ),
+                de: Some(
+                    "Softwareentwickler",
+                ),
+            },
+            focus: None,
+            team_size: Some(
+                4,
+            ),
+            industry: Translated {
+                en: "Logistics",
+                ja: Some(
+                    "物流",
+                ),
+                de: Some(
+                    "Logistik",
+                ),
+            },
+            phases: [
+                Implementation,
+                Testing,
+                Operations,
+            ],
+            skills: [
+                [[C Sharp]],
+                [[Scrum]],
+            ],
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: Cv,
+                    path: Some(
+                        ".scratch/_inputs/applications/cv-2021.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+            reviewed: true,
+            description: Translated {
+                en: Paragraphs(
+                    "Developed the tracking system for parcels and pallets in C#.",
+                ),
+                ja: Some(
+                    Paragraphs(
+                        "C#で小包とパレットの追跡システムを開発した。",
+                    ),
+                ),
+                de: Some(
+                    Paragraphs(
+                        "Entwickelte das Verfolgungssystem für Pakete und Paletten in C#.",
+                    ),
+                ),
+            },
+            achievements: Translated {
+                en: [
+                    "Replaced the nightly batch import with live status updates",
+                ],
+                ja: Some(
+                    [
+                        "夜間バッチ取込をリアルタイムの状況更新に置き換えた",
+                    ],
+                ),
+                de: Some(
+                    [
+                        "Ersetzte den nächtlichen Batch-Import durch Statusmeldungen in Echtzeit",
+                    ],
+                ),
+            },
+        },
+    },
+    monthly_logs: {
+        "2022-05 Acme Log": MonthlyLog {
+            engagement: [[2021-04 Acme]],
+            month: 2022-05,
+            hours: 150,
+            project_hours: {},
+            sources: [
+                Source {
+                    kind: Invoice,
+                    path: Some(
+                        ".scratch/_inputs/invoices/2022/acme-2022-05.pdf",
+                    ),
+                    note: Some(
+                        "150 h",
+                    ),
+                },
+            ],
+            focus: "Order processing for the toy shop.",
+            outcomes: [
+                "Finished the order confirmation e-mails",
+                "Fixed rounding errors in the tax calculation",
+                "Started the returns workflow",
+            ],
+        },
+        "2025-06 Globex Log": MonthlyLog {
+            engagement: [[2023-10 Globex]],
+            month: 2025-06,
+            hours: 160,
+            project_hours: {
+                [[Globex - Admin]]: 40,
+                [[Globex - Search]]: 120,
+            },
+            sources: [
+                Source {
+                    kind: Invoice,
+                    path: Some(
+                        ".scratch/_inputs/invoices/2025/globex-2025-06.pdf",
+                    ),
+                    note: Some(
+                        "160 h",
+                    ),
+                },
+                Source {
+                    kind: Timesheet,
+                    path: Some(
+                        ".scratch/_inputs/timesheets/globex-2025.xlsx",
+                    ),
+                    note: Some(
+                        "Sheet 2025-06, split by project",
+                    ),
+                },
+            ],
+            focus: "Search ranking and the staff pages of the admin area.",
+            outcomes: [
+                "Released the new ranking for category pages",
+                "Built staff invitation by e-mail",
+                "Started the audit log of the admin area",
+            ],
+        },
+        "2025-07 Globex Log": MonthlyLog {
+            engagement: [[2023-10 Globex]],
+            month: 2025-07,
+            hours: 152.5,
+            project_hours: {
+                [[Globex - Admin]]: 50.25,
+                [[Globex - Search]]: 100,
+            },
+            sources: [
+                Source {
+                    kind: Invoice,
+                    path: Some(
+                        ".scratch/_inputs/invoices/2025/globex-2025-07.pdf",
+                    ),
+                    note: Some(
+                        "152.5 h",
+                    ),
+                },
+                Source {
+                    kind: Timesheet,
+                    path: Some(
+                        ".scratch/_inputs/timesheets/globex-2025.xlsx",
+                    ),
+                    note: Some(
+                        "Hours mismatch: the timesheet leaves out 2.25 h of planning that the invoice bills",
+                    ),
+                },
+            ],
+            focus: "Typo-tolerant search and the admin audit log.",
+            outcomes: [
+                "Released typo-tolerant search for product names",
+                "Finished the audit log of the admin area",
+                "Moved the search index to a new cluster",
+                "Started the bulk price editor",
+            ],
+        },
+    },
+    skills: {
+        "C Sharp": Skill {
+            name: "C Sharp",
+            aliases: [
+                "C#",
+            ],
+            category: Language,
+            labels: Translations {
+                ja: Some(
+                    "C#",
+                ),
+                de: Some(
+                    "C#",
+                ),
+            },
+            level: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "Claude Code": Skill {
+            name: "Claude Code",
+            aliases: [],
+            category: AiTool,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
+            level: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "Docker": Skill {
+            name: "Docker",
+            aliases: [],
+            category: Tool,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
+            level: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "Example Charts": Skill {
+            name: "Example Charts",
+            aliases: [
+                "エグザンプルチャート",
+            ],
+            category: Library,
+            labels: Translations {
+                ja: Some(
+                    "エグザンプルチャート",
+                ),
+                de: None,
+            },
+            level: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "German": Skill {
+            name: "German",
+            aliases: [],
+            category: HumanLanguage,
+            labels: Translations {
+                ja: Some(
+                    "ドイツ語",
+                ),
+                de: Some(
+                    "Deutsch",
+                ),
+            },
+            level: Some(
+                Translated {
+                    en: "Native",
+                    ja: Some(
+                        "ネイティブ",
+                    ),
+                    de: Some(
+                        "Muttersprache",
+                    ),
+                },
+            ),
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "Go": Skill {
+            name: "Go",
+            aliases: [
+                "Golang",
+            ],
+            category: Language,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
+            level: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "Google Cloud": Skill {
+            name: "Google Cloud",
+            aliases: [
+                "GCP",
+            ],
+            category: Cloud,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
+            level: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "Japanese": Skill {
+            name: "Japanese",
+            aliases: [],
+            category: HumanLanguage,
+            labels: Translations {
+                ja: Some(
+                    "日本語",
+                ),
+                de: Some(
+                    "Japanisch",
+                ),
+            },
+            level: Some(
+                Translated {
+                    en: "Business level",
+                    ja: Some(
+                        "ビジネスレベル",
+                    ),
+                    de: Some(
+                        "Verhandlungssicher",
+                    ),
+                },
+            ),
+            translated_from: Translations {
+                ja: Some(
+                    "6a5b4c3d2e1f",
+                ),
+                de: Some(
+                    "6a5b4c3d2e1f",
+                ),
+            },
+            sources: [
+                Source {
+                    kind: Certificate,
+                    path: Some(
+                        ".scratch/_inputs/certificates/japanese-test-b2.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+            reviewed: true,
+        },
+        "Node.js": Skill {
+            name: "Node.js",
+            aliases: [],
+            category: Platform,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
+            level: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "PostgreSQL": Skill {
+            name: "PostgreSQL",
+            aliases: [
+                "Postgres",
+            ],
+            category: Database,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
+            level: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "React": Skill {
+            name: "React",
+            aliases: [],
+            category: Framework,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
+            level: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "Scrum": Skill {
+            name: "Scrum",
+            aliases: [],
+            category: Method,
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
+            level: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [],
+            reviewed: false,
+        },
+        "TypeScript": Skill {
+            name: "TypeScript",
+            aliases: [
+                "TS",
+            ],
+            category: Language,
+            labels: Translations {
+                ja: Some(
+                    "タイプスクリプト",
+                ),
+                de: None,
+            },
+            level: None,
+            translated_from: Translations {
+                ja: Some(
+                    "0e7f3a9b2c1d",
+                ),
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: SkillSheet,
+                    path: Some(
+                        ".scratch/_inputs/applications/skill-sheet-2023.xlsx",
+                    ),
+                    note: Some(
+                        "Spelled TS in the Skill Sheet",
+                    ),
+                },
+            ],
+            reviewed: true,
+        },
+    },
+    qualifications: {
+        "BSc Computer Science": Qualification {
+            name: "BSc Computer Science",
+            labels: Translations {
+                ja: Some(
+                    "情報科学 学士",
+                ),
+                de: Some(
+                    "Bachelor Informatik",
+                ),
+            },
+            category: Degree,
+            issuer: Some(
+                "Example University",
+            ),
+            start: Some(
+                2014-10,
+            ),
+            date: 2018-03,
+            level: Some(
+                "Bachelor of Science",
+            ),
+            score: None,
+            translated_from: Translations {
+                ja: Some(
+                    "2f4e6a8c0b1d",
+                ),
+                de: Some(
+                    "2f4e6a8c0b1d",
+                ),
+            },
+            sources: [
+                Source {
+                    kind: Certificate,
+                    path: Some(
+                        ".scratch/_inputs/certificates/bachelor-diploma.pdf",
+                    ),
+                    note: Some(
+                        "Diploma and transcript",
+                    ),
+                },
+            ],
+            reviewed: true,
+        },
+        "Class B Driving Licence": Qualification {
+            name: "Class B Driving Licence",
+            labels: Translations {
+                ja: None,
+                de: Some(
+                    "Führerschein Klasse B",
+                ),
+            },
+            category: Licence,
+            issuer: Some(
+                "Example Licensing Office",
+            ),
+            start: None,
+            date: 2013-06,
+            level: None,
+            score: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: Recalled,
+                    path: None,
+                    note: Some(
+                        "Licence held since June 2013",
+                    ),
+                },
+            ],
+            reviewed: false,
+        },
+        "Example Cloud Associate": Qualification {
+            name: "Example Cloud Associate",
+            labels: Translations {
+                ja: None,
+                de: None,
+            },
+            category: Certificate,
+            issuer: None,
+            start: None,
+            date: 2024-02,
+            level: None,
+            score: None,
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: Certificate,
+                    path: Some(
+                        ".scratch/_inputs/certificates/cloud-associate.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+            reviewed: false,
+        },
+        "Example Japanese Test B2": Qualification {
+            name: "Example Japanese Test B2",
+            labels: Translations {
+                ja: Some(
+                    "日本語試験B2",
+                ),
+                de: None,
+            },
+            category: TestResult,
+            issuer: Some(
+                "Example Language Institute",
+            ),
+            start: None,
+            date: 2022-12,
+            level: Some(
+                "B2",
+            ),
+            score: Some(
+                "185/200",
+            ),
+            translated_from: Translations {
+                ja: None,
+                de: None,
+            },
+            sources: [
+                Source {
+                    kind: Certificate,
+                    path: Some(
+                        ".scratch/_inputs/certificates/japanese-test-b2.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+            reviewed: false,
+        },
+    },
+    profiles: {
+        "Profile": Profile {
+            name: "Robin Beispiel",
+            headline: Translated {
+                en: "Full-stack developer in Japan",
+                ja: Some(
+                    "日本在住のフルスタック開発者",
+                ),
+                de: Some(
+                    "Full-Stack-Entwickler in Japan",
+                ),
+            },
+            business: [[Example Works]],
+            available_from: Some(
+                2026-04-01,
+            ),
+            days_per_week_min: Some(
+                3,
+            ),
+            days_per_week_max: Some(
+                5,
+            ),
+            portfolio_url: Some(
+                "https://example.com",
+            ),
+            github_url: Some(
+                "https://github.com/example",
+            ),
+            translated_from: Translations {
+                ja: Some(
+                    "7c8d9e0f1a2b",
+                ),
+                de: Some(
+                    "7c8d9e0f1a2b",
+                ),
+            },
+            sources: [
+                Source {
+                    kind: Cv,
+                    path: Some(
+                        ".scratch/_inputs/applications/cv-2021.pdf",
+                    ),
+                    note: None,
+                },
+            ],
+            reviewed: true,
+            summary: Translated {
+                en: Paragraphs(
+                    "Full-stack developer with seven years of experience in logistics and e-commerce, from backend services in Go to React front ends.",
+                ),
+                ja: Some(
+                    Paragraphs(
+                        "物流とECの分野で7年の経験を持つフルスタック開発者。GoのバックエンドからReactのフロントエンドまで担当する。",
+                    ),
+                ),
+                de: Some(
+                    Paragraphs(
+                        "Full-Stack-Entwickler mit sieben Jahren Erfahrung in Logistik und E-Commerce, von Backend-Diensten in Go bis zu React-Frontends.",
+                    ),
+                ),
+            },
+            strengths: Translated {
+                en: [
+                    "Backend design with PostgreSQL",
+                    "Working in Japanese, German and English",
+                ],
+                ja: Some(
+                    [
+                        "PostgreSQLを用いたバックエンド設計",
+                        "日本語・ドイツ語・英語での業務",
+                    ],
+                ),
+                de: Some(
+                    [
+                        "Backend-Entwurf mit PostgreSQL",
+                        "Arbeit auf Japanisch, Deutsch und Englisch",
+                    ],
+                ),
+            },
+            self_pr: Translated {
+                en: Paragraphs(
+                    "Takes features from the first request to the release.",
+                ),
+                ja: Some(
+                    Paragraphs(
+                        "機能の要望からリリースまで一貫して担当する。",
+                    ),
+                ),
+                de: Some(
+                    Paragraphs(
+                        "Begleitet Funktionen von der ersten Anfrage bis zur Veröffentlichung.",
+                    ),
+                ),
+            },
+        },
+    },
+}

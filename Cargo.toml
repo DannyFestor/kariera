@@ -11,6 +11,17 @@ publish = false
 repository = "https://github.com/DannyFestor/kariera"
 license = "MIT"
 
+# Every third-party crate is named once here, so all workspace crates share one version. Each needs an entry with its
+# reason in the [bans] allow list of deny.toml (AGENTS.md).
+[workspace.dependencies]
+kariera-domain = { path = "crates/domain" }
+insta = { version = "1.49.0", default-features = false }
+saphyr-parser = "0.3.4"
+serde = { version = "1.0.229", features = ["derive"] }
+thiserror = "2.0.21"
+toml = { version = "1.2.1", default-features = false, features = ["parse", "serde", "std"] }
+unicode-normalization = "0.1.26"
+
 # Every crate inherits this table with `[lints] workspace = true`. Cargo allows no per-crate additions, so an exception
 # is a `#[expect(lint, reason = "…")]` on the one item that needs it (AGENTS.md).
 [workspace.lints.rust]
