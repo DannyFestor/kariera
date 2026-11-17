@@ -14,6 +14,7 @@ pub(super) fn read(
     let kind = fields.required("kind");
     let location = fields.optional("location");
     let website = fields.optional("website");
+    let labels = fields.translations("labels");
     let translated_from = fields.translations("translated_from");
     let sources = fields.list("sources");
     let reviewed = fields.required("reviewed");
@@ -24,6 +25,7 @@ pub(super) fn read(
         kind: kind?,
         location: location?,
         website: website?,
+        labels: labels?,
         translated_from: translated_from?,
         sources: sources?,
         reviewed: reviewed?,

@@ -10,14 +10,14 @@ The English text the translations are made from, as the schema's tables name it.
 
 | Note type | Parts, in order |
 |---|---|
-| organization | `## Description` |
+| organization | `name`, `## Description` |
 | engagement | `role` (`en`), `## Summary` |
 | project | `title`, `public_title`, `role`, `focus`, `industry` (each `en`), `## Description`, `## Achievements` |
 | skill | `name`, `level` (`en`) |
 | qualification | `name` |
 | profile | `headline` (`en`), `## Summary`, `## Strengths`, `## Self-PR` |
 
-`name` counts where the type has `labels` (skill, qualification), because `labels` is the translation of `name`. An organization's and a profile's `name` is a proper noun and is not translated. Contracts and monthly logs have no `translated_from`. The Japanese and German values, `aliases`, `issuer` and every other field are not part of it: editing them never makes a translation stale. Bullets enter as `- ` plus the bullet, one per line; paragraphs as written.
+`name` counts where the type has `labels` (organization, skill, qualification), because `labels` is the translation of `name`. An organization's `labels` is its legal name in that language, so a renamed organization needs its labels reviewed. A profile's `name` is a proper noun and is not translated. Contracts and monthly logs have no `translated_from`. The Japanese and German values, `aliases`, `issuer` and every other field are not part of it: editing them never makes a translation stale. Bullets enter as `- ` plus the bullet, one per line; paragraphs as written.
 
 ## The algorithm
 

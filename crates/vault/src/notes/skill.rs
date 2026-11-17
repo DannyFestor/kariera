@@ -14,6 +14,7 @@ pub(super) fn read(
     let category = fields.required::<SkillCategory>("category");
     let labels = fields.translations("labels");
     let level = fields.conditional("level", category.map(level_presence));
+    let last_used = fields.optional("last_used");
     let translated_from = fields.translations("translated_from");
     let sources = fields.list("sources");
     let reviewed = fields.required("reviewed");
@@ -23,6 +24,7 @@ pub(super) fn read(
         category: category?,
         labels: labels?,
         level: level?,
+        last_used: last_used?,
         translated_from: translated_from?,
         sources: sources?,
         reviewed: reviewed?,

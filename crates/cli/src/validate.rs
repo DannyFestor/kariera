@@ -5,6 +5,7 @@ use std::process::ExitCode;
 use kariera_validate::{Finding, Report};
 use kariera_vault::Location;
 
+use crate::clock::current_month;
 use crate::json::Json;
 use crate::reply::Reply;
 use crate::vault_access::vault_root;
@@ -37,7 +38,8 @@ pub(crate) fn reply(format: Format) -> Reply {
 }
 
 fn run(format: Format) -> Result<Reply, String> {
-    let report = kariera_validate::validate(&vault_root()?).map_err(|error| error.to_string())?;
+    let report = kariera_validate::validate(&vault_root()?, current_month()?)
+        .map_err(|error| error.to_string())?;
     let text = match format {
         Format::Human => human(&report),
         Format::Json => json(&report).render(),

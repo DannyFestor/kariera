@@ -10,6 +10,9 @@ mod replace_in_support;
 #[path = "../../vault/tests/support/vault_copy.rs"]
 mod vault_copy;
 
+/// Fixed, so a test does not depend on the day it runs.
+pub(crate) const CURRENT_MONTH: &str = "2026-11";
+
 #[derive(Debug)]
 pub(crate) struct TestVault {
     root: PathBuf,
@@ -53,7 +56,7 @@ impl TestVault {
     }
 
     pub(crate) fn report(&self) -> Report {
-        validate(&self.root).unwrap()
+        validate(&self.root, CURRENT_MONTH.parse().unwrap()).unwrap()
     }
 
     /// Every finding, written as the command line shows it.

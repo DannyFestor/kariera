@@ -19,6 +19,7 @@ const JAPANESE: TranslationLanguage = TranslationLanguage::Japanese;
 const GERMAN: TranslationLanguage = TranslationLanguage::German;
 
 const SHOP: &str = "Projects/Acme - Shop.md";
+const ACME: &str = "Organizations/Acme.md";
 
 fn load(vault: &Path) -> Result<Vault, String> {
     Vault::load(vault).map_err(|error| error.to_string())
@@ -188,6 +189,26 @@ fn editing_only_a_translation_changes_nothing() {
 
     assert!(!is_stale(&vault, "Acme - Shop", JAPANESE).unwrap());
     assert!(!is_stale(&vault, "Acme - Shop", GERMAN).unwrap());
+}
+
+#[test]
+fn renaming_an_organization_makes_its_translations_stale() {
+    let vault = copy_of_fixture_vault("organization_rename").unwrap();
+    mark(&vault, "Acme", JAPANESE).unwrap();
+
+    replace_in(&vault, ACME, "name: Acme", "name: Acme Corp").unwrap();
+
+    assert!(is_stale(&vault, "Acme", JAPANESE).unwrap());
+}
+
+#[test]
+fn editing_only_the_labels_of_an_organization_changes_nothing() {
+    let vault = copy_of_fixture_vault("organization_labels_edit").unwrap();
+    mark(&vault, "Acme", JAPANESE).unwrap();
+
+    replace_in(&vault, ACME, "ja: 株式会社アクメ", "ja: アクメ株式会社").unwrap();
+
+    assert!(!is_stale(&vault, "Acme", JAPANESE).unwrap());
 }
 
 #[test]

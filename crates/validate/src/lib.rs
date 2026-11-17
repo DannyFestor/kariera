@@ -19,17 +19,18 @@ mod test_vault;
 
 use std::path::Path;
 
+use kariera_domain::Month;
 use kariera_vault::{Inspection, LoadError, Vault};
 
 pub use finding::{Finding, Rule, Severity};
 pub use report::Report;
 
 /// Checks the vault at `root`. Fails only when a file or folder cannot be read at all; a vault full of problems is
-/// a `Report`.
-pub fn validate(root: &Path) -> Result<Report, LoadError> {
+/// a `Report`. `current_month` is what "not in the future" is measured against.
+pub fn validate(root: &Path, current_month: Month) -> Result<Report, LoadError> {
     let Inspection { vault, errors } = Vault::inspect(root)?;
     let complete = errors.is_empty();
-    let context = context::Context::new(&vault, complete)?;
+    let context = context::Context::new(&vault, complete, current_month)?;
     let mut findings: Vec<Finding> = errors.into_iter().map(Finding::from).collect();
     findings.extend(checks::run(&context));
     Ok(Report::new(findings, vault.notes().len(), complete))
@@ -58,7 +59,10 @@ mod tests {
 
     #[test]
     fn a_vault_that_cannot_be_read_at_all_is_an_error_not_a_report() {
-        let result = validate(Path::new("/nonexistent-kariera-vault"));
+        let result = validate(
+            Path::new("/nonexistent-kariera-vault"),
+            "2026-11".parse().unwrap(),
+        );
 
         assert!(
             matches!(result, Err(LoadError::Unreadable { .. })),
@@ -103,6 +107,40 @@ mod tests {
             vault.lines(),
             [
                 "Projects/Acme - Shop.md:23: error [schema] field `team_size` must be a whole number from 1 to 4294967295"
+            ]
+        );
+    }
+
+    #[test]
+    fn a_malformed_last_used_is_a_schema_error() {
+        let vault = TestVault::new("reader_last_used_malformed");
+        vault.replace(
+            "Skills/Docker.md",
+            "last_used: 2025-08",
+            "last_used: 2025-13",
+        );
+
+        assert_eq!(
+            vault.lines(),
+            [
+                "Skills/Docker.md:5: error [schema] field `last_used` must be a month written YYYY-MM, such as 2024-05"
+            ]
+        );
+    }
+
+    #[test]
+    fn an_organization_label_in_a_language_other_than_ja_and_de_is_a_schema_error() {
+        let vault = TestVault::new("reader_organization_labels_key");
+        vault.replace(
+            "Organizations/Acme.md",
+            "labels:\n  ja: 株式会社アクメ\n",
+            "labels:\n  ja: 株式会社アクメ\n  en: Acme Inc.\n",
+        );
+
+        assert_eq!(
+            vault.lines(),
+            [
+                "Organizations/Acme.md:14: error [schema] field `labels.en` is not a field the schema allows here"
             ]
         );
     }

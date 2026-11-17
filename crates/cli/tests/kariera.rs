@@ -212,6 +212,29 @@ fn validate_lists_errors_per_note_and_exits_one() {
 }
 
 #[test]
+fn validate_measures_last_used_against_the_clock() {
+    let (home, vault) = home_with_vault("cli_validate_last_used").unwrap();
+    replace_in(
+        &vault,
+        "Skills/Docker.md",
+        "last_used: 2025-08",
+        "last_used: 9999-12",
+    )
+    .unwrap();
+
+    let output = kariera_at(&home, &["validate"]).unwrap();
+
+    assert!(
+        stdout(&output).starts_with(
+            "Skills/Docker.md:5: error [period] field `last_used` 9999-12 is after the current month ("
+        ),
+        "{}",
+        stdout(&output)
+    );
+    assert_eq!(output.status.code(), Some(1));
+}
+
+#[test]
 fn validate_does_not_pluralize_one_error() {
     let (home, vault) = home_with_vault("cli_validate_one_error").unwrap();
     replace_in(&vault, "Skills/Go.md", "name: Go", "name: Golang").unwrap();
