@@ -89,14 +89,19 @@ $(eval $(call pinned-binary,shellcheck,koalaman/shellcheck,$(SHELLCHECK_TAG),\
 	shellcheck-$(SHELLCHECK_TAG).$(HOST_OS).$(HOST_ARCH_GNU).tar.gz,shellcheck-$(SHELLCHECK_TAG)/shellcheck,\
 	shellcheck-.*\.(darwin|linux)\.(aarch64|x86_64)\.tar\.gz))
 
+CARGO_INSTA_VERSION := $(call pinned-version,cargo-insta)
+CARGO_INSTA_ASSET := cargo-insta-$(RUST_TARGET)
+$(eval $(call pinned-binary,cargo-insta,mitsuhiko/insta,$(CARGO_INSTA_VERSION),$(CARGO_INSTA_ASSET).tar.xz,\
+	$(CARGO_INSTA_ASSET)/cargo-insta,cargo-insta-(aarch64|x86_64)-(apple-darwin|unknown-linux-gnu)\.tar\.xz))
+
 # Upstream publishes no Apple Silicon build, so cargo builds it from crates.io. --locked uses the dependency versions
 # of the release, and cargo checks every crate against the registry's checksum.
 bin/cargo-mutants: tools/cargo-mutants.version
 	$(CARGO) install --quiet --locked --version $(call pinned-version,cargo-mutants) --root tmp/cargo-install cargo-mutants
 	install -m 0755 tmp/cargo-install/bin/cargo-mutants $@
 
-PINNED_TOOLS := $(addprefix bin/,cargo-deny cargo-machete cargo-nextest cargo-mutants typstyle gitleaks lefthook cog jq \
-	shellcheck)
+PINNED_TOOLS := $(addprefix bin/,cargo-deny cargo-machete cargo-nextest cargo-mutants cargo-insta typstyle gitleaks lefthook \
+	cog jq shellcheck)
 
 AGENTHOOK_EVENTS := $(addprefix agenthook-,pre-tool-use post-tool-use stop)
 
@@ -193,6 +198,15 @@ test-nextest: bin/cargo-nextest
 .PHONY: test-doc
 test-doc:
 	$(CARGO) test --doc --workspace --locked
+
+# insta writes a changed or new snapshot next to the old one as .snap.new, and the test fails until it is accepted.
+.PHONY: snapshots
+snapshots: bin/cargo-insta ## Review the snapshots the last test run changed, one by one (interactive)
+	bin/cargo-insta review --workspace
+
+.PHONY: snapshots-accept
+snapshots-accept: bin/cargo-insta ## Accept every snapshot the last test run changed; read each .snap.new first
+	bin/cargo-insta accept --workspace
 
 .PHONY: mutants
 mutants: bin/cargo-mutants ## Mutate the code and run the tests against each mutant, writing tmp/mutants.out/

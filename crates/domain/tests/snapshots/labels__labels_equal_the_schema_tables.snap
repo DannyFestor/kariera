@@ -1,0 +1,76 @@
+---
+source: crates/domain/tests/labels.rs
+expression: "tables.join(\"\\n\")"
+---
+**Phase**
+
+| Slug | en | ja | de |
+|---|---|---|---|
+| `requirements` | Requirements | 要件定義 | Anforderungsdefinition |
+| `basic-design` | Basic design | 基本設計 | Grobentwurf |
+| `detailed-design` | Detailed design | 詳細設計 | Detailentwurf |
+| `implementation` | Implementation | 製造 | Implementierung |
+| `testing` | Testing | テスト | Test |
+| `operations` | Operations | 運用・保守 | Betrieb und Wartung |
+
+**Engagement type**
+
+| Slug | en | ja | de |
+|---|---|---|---|
+| `employment` | Employment | 直接雇用 | Festanstellung |
+| `dispatch` | Dispatch | 派遣 | Arbeitnehmerüberlassung |
+| `internship` | Internship | インターンシップ | Praktikum |
+| `freelance` | Freelance | フリーランス | Freiberuflich |
+| `own-business` | Own business | 個人事業 | Eigenes Unternehmen |
+
+**Contract type**
+
+| Slug | en | ja | de |
+|---|---|---|---|
+| `quasi-mandate` | Quasi-mandate contract (業務委託) | 業務委託契約 | Dienstleistungsvertrag (業務委託) |
+| `employment` | Employment contract | 雇用契約 | Arbeitsvertrag |
+| `dispatch` | Dispatch employment contract | 派遣雇用契約 | Arbeitnehmerüberlassungsvertrag |
+| `internship` | Internship agreement | インターン契約 | Praktikumsvertrag |
+
+**Rate unit**
+
+| Slug | en | ja | de |
+|---|---|---|---|
+| `hour` | Hourly rate | 時給 | Stundensatz |
+| `day` | Daily rate | 日給 | Tagessatz |
+| `month` | Monthly rate | 月額 | Monatssatz |
+
+**Organization kind**
+
+| Slug | en | ja | de |
+|---|---|---|---|
+| `my-business` | My Business | 屋号 | Eigener Betrieb |
+| `client` | Client | クライアント | Kunde |
+| `agency` | Agency | 仲介会社 | Vermittlungsagentur |
+| `end-client` | End Client | エンドクライアント | Endkunde |
+| `employer` | Employer | 雇用主 | Arbeitgeber |
+| `school` | School | 教育機関 | Bildungseinrichtung |
+
+**Skill category**
+
+| Slug | en | ja | de |
+|---|---|---|---|
+| `language` | Programming language | プログラミング言語 | Programmiersprache |
+| `framework` | Framework | フレームワーク | Framework |
+| `library` | Library | ライブラリ | Bibliothek |
+| `database` | Database | データベース | Datenbank |
+| `cloud` | Cloud | クラウド | Cloud |
+| `platform` | Platform | プラットフォーム | Plattform |
+| `tool` | Tool | ツール | Werkzeug |
+| `ai-tool` | AI tool | AIツール | KI-Werkzeug |
+| `method` | Method | 手法 | Methode |
+| `human-language` | Human language | 語学 | Sprache |
+
+**Qualification category**
+
+| Slug | en | ja | de |
+|---|---|---|---|
+| `degree` | Degree or school diploma (listed as education) | 学歴 | Abschluss |
+| `certificate` | Certificate | 資格 | Zertifikat |
+| `licence` | Licence | 免許 | Lizenz |
+| `test-result` | Test result | 試験結果 | Testergebnis |

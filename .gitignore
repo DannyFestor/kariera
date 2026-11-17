@@ -8,3 +8,6 @@ personal.yaml
 .env
 .env.*
 *.local.*
+# insta: snapshots waiting for review.
+*.snap.new
+*.pending-snap

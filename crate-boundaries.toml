@@ -28,4 +28,7 @@ deny = [
   { crate = "kariera-render-typst", wrappers = ["kariera-cli"], reason = "only cli picks a renderer (ADR 0001)" },
   { crate = "kariera-render-docx", wrappers = ["kariera-cli"], reason = "only cli picks a renderer (ADR 0001)" },
   { crate = "kariera-render-xlsx", wrappers = ["kariera-cli"], reason = "only cli picks a renderer (ADR 0001)" },
+  { crate = "saphyr-parser", wrappers = ["kariera-vault"], reason = "only vault reads notes (ADR 0001)" },
+  { crate = "unicode-normalization", wrappers = ["kariera-vault"], reason = "only vault reads note names and links (ADR 0001)" },
+  { crate = "toml", wrappers = ["kariera-vault"], reason = "only vault reads the config naming the vault (ADR 0001)" },
 ]
