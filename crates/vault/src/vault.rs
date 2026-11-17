@@ -5,10 +5,12 @@ use std::path::{Path, PathBuf};
 use kariera_domain::{Career, NoteName, NoteType};
 
 use crate::body::Body;
-use crate::discovery::note_paths;
+use crate::discovery::{note_paths, other_markdown_paths};
 use crate::names::Names;
 use crate::notes::{self, NoteSource};
 use crate::raw_note::RawNote;
+use crate::value::scalar_text;
+use crate::yaml::Node;
 use crate::{LoadError, Location, NoteError, Problem};
 
 /// The whole vault, read and with every link resolved.
@@ -17,6 +19,13 @@ pub struct Vault {
     root: PathBuf,
     career: Career,
     notes: Vec<NoteFile>,
+}
+
+/// What `Vault::inspect` found: the notes that read, and the problems of those that did not.
+#[derive(Debug)]
+pub struct Inspection {
+    pub vault: Vault,
+    pub errors: Vec<NoteError>,
 }
 
 /// A note as it is on disk, for the checks and edits that need more than its domain value.
@@ -28,12 +37,34 @@ pub struct NoteFile {
     pub note_type: NoteType,
     /// The whole file, frontmatter included.
     pub text: String,
+    pub frontmatter: Node,
     pub body: Body,
+}
+
+/// A Markdown file outside the note folders that declares a note `type` in its frontmatter, so it is a note in
+/// the wrong place.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Stray {
+    /// Relative to the vault root.
+    pub path: PathBuf,
+    /// The `type` as written, which need not be a note type.
+    pub declared_type: String,
 }
 
 impl Vault {
     /// Reads every note. Fails with every problem of every note, or when a file cannot be read at all.
     pub fn load(root: &Path) -> Result<Self, LoadError> {
+        let Inspection { vault, errors } = Self::inspect(root)?;
+        if errors.is_empty() {
+            Ok(vault)
+        } else {
+            Err(LoadError::InvalidNotes(errors))
+        }
+    }
+
+    /// Reads every note and keeps going past the notes that do not read: the vault holds the notes that did, the
+    /// errors the ones that did not. Links to a note that did not read still resolve.
+    pub fn inspect(root: &Path) -> Result<Inspection, LoadError> {
         let mut raw_notes = read_notes(root)?;
         let names = index_names(&mut raw_notes);
         let mut career = Career::default();
@@ -45,15 +76,12 @@ impl Vault {
                 Err(note_errors) => errors.extend(note_errors),
             }
         }
-        if errors.is_empty() {
-            Ok(Self {
-                root: root.to_owned(),
-                career,
-                notes,
-            })
-        } else {
-            Err(LoadError::InvalidNotes(errors))
-        }
+        let vault = Self {
+            root: root.to_owned(),
+            career,
+            notes,
+        };
+        Ok(Inspection { vault, errors })
     }
 
     #[must_use]
@@ -71,6 +99,35 @@ impl Vault {
     pub fn notes(&self) -> &[NoteFile] {
         &self.notes
     }
+
+    /// Markdown files that declare a `type` but are not in a note folder. Markdown without a `type` is not a note
+    /// (agent instructions, a glossary, a to-do list) and `Templates/`, `Generated/`, `docs/` and `.scratch/`
+    /// are exempt (schema §1.1).
+    pub fn strays(&self) -> Result<Vec<Stray>, LoadError> {
+        let mut strays = Vec::new();
+        for path in other_markdown_paths(&self.root)? {
+            let absolute = self.root.join(&path);
+            let bytes = fs::read(&absolute).map_err(|source| LoadError::Unreadable {
+                path: absolute,
+                source,
+            })?;
+            if let Some(declared_type) = declared_type(&RawNote::read(path.clone(), bytes)) {
+                strays.push(Stray {
+                    path,
+                    declared_type,
+                });
+            }
+        }
+        Ok(strays)
+    }
+}
+
+fn declared_type(raw_note: &RawNote) -> Option<String> {
+    let node = raw_note.frontmatter.as_ref()?.get("type")?;
+    scalar_text(node)
+        .ok()
+        .filter(|_| !node.is_empty())
+        .map(str::to_owned)
 }
 
 fn read_notes(root: &Path) -> Result<Vec<RawNote>, LoadError> {
@@ -138,6 +195,7 @@ fn add_note(
         name,
         note_type,
         text,
+        frontmatter,
         body,
     })
 }

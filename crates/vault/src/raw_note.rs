@@ -156,6 +156,7 @@ fn frontmatter(yaml: &str) -> Result<Node, Problem> {
         None => Ok(Node {
             line: FIRST_YAML_LINE,
             value: Value::Mapping(Vec::new()),
+            flow: false,
         }),
     }
 }

@@ -1,4 +1,5 @@
 use std::fmt;
+use std::iter::Sum;
 use std::str::FromStr;
 
 use crate::ValueError;
@@ -73,6 +74,15 @@ fn hundredths_of_fraction(fraction: &str) -> Option<u32> {
     }
 }
 
+impl Sum for Hours {
+    fn sum<I: Iterator<Item = Self>>(hours: I) -> Self {
+        let hundredths = hours.fold(0, |total: u32, hours| {
+            total.saturating_add(hours.hundredths)
+        });
+        Self { hundredths }
+    }
+}
+
 impl fmt::Display for Hours {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         let whole = self.hundredths / 100;
@@ -116,6 +126,21 @@ mod tests {
     fn trailing_zeros_of_hours_are_dropped() {
         assert_eq!(format!("{:?}", "30.50".parse::<Hours>().unwrap()), "30.5");
         assert_eq!("12.0".parse::<Hours>().unwrap().to_string(), "12");
+    }
+
+    #[test]
+    fn hours_add_up_exactly() {
+        let hours = ["30.25", "100", "0.1"].map(|text| text.parse::<Hours>().unwrap());
+
+        assert_eq!(hours.into_iter().sum::<Hours>().to_string(), "130.35");
+        assert_eq!(std::iter::empty::<Hours>().sum::<Hours>().to_string(), "0");
+    }
+
+    #[test]
+    fn hours_that_overflow_stay_at_the_largest_value() {
+        let largest = "42949672.95".parse::<Hours>().unwrap();
+
+        assert_eq!([largest, largest].into_iter().sum::<Hours>(), largest);
     }
 
     #[test]

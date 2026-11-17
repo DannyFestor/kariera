@@ -27,7 +27,8 @@ impl Names {
 }
 
 /// Names and link targets are compared in NFC (schema §1.1): macOS and Syncthing also write NFD.
-pub(crate) fn nfc(text: &str) -> String {
+#[must_use]
+pub fn nfc(text: &str) -> String {
     text.nfc().collect()
 }
 
