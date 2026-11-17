@@ -317,7 +317,7 @@ def variant_b(book, model):
 def variant_c(book, model):
     """The project blocks: a 12-column grid, one labelled block per Project, never split across pages."""
     ink, accent, pale = "#3B2F5C", "#D9D2EA", "#F4F1F9"
-    sheet = Sheet(book, "スキルシート", 12, 7.5, "游ゴシック")
+    sheet = Sheet(book, "スキルシート", 12, 7.5, "BIZ UDPゴシック")
     ws, profile = sheet.ws, model["profile"]
     rule = {"border_color": "#8A7FA8"}
     key = {"bold": True, "font_color": ink, "bg_color": pale, "border": 1, **rule}

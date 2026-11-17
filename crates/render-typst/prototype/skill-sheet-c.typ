@@ -16,7 +16,7 @@
     align(center, counter(page).display("1 / 1", both: true))
   },
 )
-#set text(font: "IBM Plex Sans JP", size: 8pt, lang: "ja")
+#set text(font: "BIZ UDPGothic", size: 8pt, lang: "ja")
 #set par(leading: 0.5em, spacing: 0.75em)
 #set table(stroke: rule, inset: (x: 4pt, y: 3pt))
 

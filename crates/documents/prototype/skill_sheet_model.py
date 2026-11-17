@@ -2,7 +2,11 @@
 # prototypes can be judged on real content before `documents` exists. The real model is built in Rust from the
 # domain types (issue #7); this file only shows which fields the layout needs.
 #
-#   uv run --with pyyaml python -I crates/documents/prototype/skill_sheet_model.py <vault> <build-month> <out.json>
+#   uv run --with pyyaml python -I crates/documents/prototype/skill_sheet_model.py <vault> <build-month> <out.json> \
+#     [<recent-years>]
+#
+# With <recent-years>, only Skills last used within that many years up to the build month are kept. The last use is
+# the later of the Skill's last Project month and its `last_used` field, which never adds to the years.
 
 import json
 import re
@@ -111,7 +115,18 @@ def load(root, folder):
     return {unicodedata.normalize("NFC", path.stem): read_note(path) for path in sorted((root / folder).rglob("*.md")) if not path.name.startswith(".")}
 
 
-def skill_rows(skills, projects, build_month):
+def organization_name(organizations, name):
+    front, _ = organizations[name]
+    return (front.get("labels") or {}).get(LANG) or front["name"]
+
+
+def last_use(front, last_project_month):
+    stated = month_index(front["last_used"]) if front.get("last_used") else None
+    known = [month for month in (last_project_month, stated) if month is not None]
+    return max(known) if known else None
+
+
+def skill_rows(skills, projects, build_month, recent_years):
     months_by_skill, last_by_skill, count_by_skill = {}, {}, {}
     for front, _ in projects.values():
         start = month_index(front["start"])
@@ -125,6 +140,9 @@ def skill_rows(skills, projects, build_month):
     for name, (front, _) in skills.items():
         labels = front.get("labels") or {}
         months = len(months_by_skill.get(name, ()))
+        last = last_use(front, last_by_skill.get(name))
+        if recent_years and (last is None or last <= build_month - recent_years * 12):
+            continue
         rows.append(
             {
                 "name": name,
@@ -135,8 +153,8 @@ def skill_rows(skills, projects, build_month):
                 "months": months,
                 "years": round(months / 12, 1),
                 "duration": duration_text(months) if months else "",
-                "last_used": month_text(last_by_skill[name]) if name in last_by_skill else "",
-                "last_used_index": last_by_skill.get(name),
+                "last_used": month_text(last) if last is not None else "",
+                "last_used_index": last,
                 "projects": count_by_skill.get(name, 0),
             }
         )
@@ -171,9 +189,9 @@ def project_rows(projects, engagements, contracts, organizations, skills, build_
                 "start_index": start,
                 "duration": duration_text((end if end is not None else build_month) - start + 1),
                 "title": map3(front["public_title"] if confidential else front["title"]),
-                "client": organizations[client_name][0]["name"] if client_name else "",
+                "client": organization_name(organizations, client_name) if client_name else "",
                 "end_client": "" if confidential or not front.get("end_client")
-                else organizations[link_target(front["end_client"])][0]["name"],
+                else organization_name(organizations, link_target(front["end_client"])),
                 "confidential": confidential,
                 "industry": map3(front["industry"]),
                 "role": map3(front["role"]),
@@ -200,7 +218,7 @@ def profile_block(root, organizations, qualifications):
     return {
         "name": front["name"],
         "headline": map3(front["headline"]),
-        "business": organizations[business][0]["name"],
+        "business": organization_name(organizations, business),
         "available_from": str(front.get("available_from") or ""),
         "days_per_week": [front.get("days_per_week_min"), front.get("days_per_week_max")],
         "portfolio_url": front.get("portfolio_url") or "",
@@ -219,7 +237,7 @@ def profile_block(root, organizations, qualifications):
     }
 
 
-def main(vault, build_month, out):
+def main(vault, build_month, out, recent_years=None):
     root = Path(vault).expanduser()
     organizations = load(root, "Organizations")
     projects = load(root, "Projects")
@@ -231,7 +249,7 @@ def main(vault, build_month, out):
         "phase_labels": [label for _, label in PHASES],
         "category_labels": CATEGORIES,
         "profile": profile_block(root, organizations, load(root, "Qualifications")),
-        "skills": skill_rows(skills, projects, month),
+        "skills": skill_rows(skills, projects, month, int(recent_years) if recent_years else None),
         "projects": project_rows(
             projects, load(root, "Engagements"), load(root, "Contracts"), organizations, skills, month
         ),
