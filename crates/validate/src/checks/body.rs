@@ -12,7 +12,7 @@ const JAPANESE: &str = "日本語";
 const GERMAN: &str = "Deutsch";
 
 /// Monthly Log outcomes (schema §2.5).
-const OUTCOMES: std::ops::RangeInclusive<usize> = 3..=5;
+const OUTCOMES: std::ops::RangeInclusive<usize> = 1..=5;
 
 pub(super) fn check(context: &Context<'_>) -> Vec<Finding> {
     context
@@ -313,9 +313,13 @@ mod tests {
     }
 
     #[test]
-    fn a_monthly_log_has_three_to_five_outcomes() {
+    fn a_monthly_log_has_one_to_five_outcomes() {
         let vault = TestVault::new("body_outcomes");
-        vault.replace(LOG, "- Started the audit log of the admin area\n", "");
+        vault.replace(
+            LOG,
+            "- Released the new ranking for category pages\n- Built staff invitation by e-mail\n- Started the audit log of the admin area\n",
+            "",
+        );
         vault.replace(
             "Monthly Logs/2022/2022-05 Acme Log.md",
             "- Started the returns workflow\n",
@@ -325,19 +329,24 @@ mod tests {
         assert_eq!(
             vault.lines(),
             [
-                "Monthly Logs/2022/2022-05 Acme Log.md:16: error [body] section `## Outcomes` has 6 bullets, but a Monthly Log has 3 to 5",
-                "Monthly Logs/2025/2025-06 Globex Log.md:22: error [body] section `## Outcomes` has 2 bullets, but a Monthly Log has 3 to 5",
+                "Monthly Logs/2022/2022-05 Acme Log.md:16: error [body] section `## Outcomes` has 6 bullets, but a Monthly Log has 1 to 5",
+                "Monthly Logs/2025/2025-06 Globex Log.md:22: error [body] section `## Outcomes` has 0 bullets, but a Monthly Log has 1 to 5",
             ]
         );
     }
 
     #[test]
-    fn three_and_five_outcomes_are_fine() {
+    fn one_and_five_outcomes_are_fine() {
         let vault = TestVault::new("body_outcomes_bounds");
         vault.replace(
             "Monthly Logs/2022/2022-05 Acme Log.md",
-            "- Started the returns workflow\n",
-            "- Started the returns workflow\n- One\n- Two\n",
+            "- Finished the order confirmation e-mails\n- Fixed rounding errors in the tax calculation\n- Started the returns workflow\n",
+            "- Finished the order confirmation e-mails\n",
+        );
+        vault.replace(
+            LOG,
+            "- Started the audit log of the admin area\n",
+            "- Started the audit log of the admin area\n- One\n- Two\n",
         );
 
         assert_eq!(vault.lines(), Vec::<String>::new());
