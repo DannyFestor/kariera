@@ -11,6 +11,7 @@
 
 mod body;
 mod config;
+mod creation;
 mod cursor;
 mod discovery;
 mod error;
@@ -30,6 +31,7 @@ mod yaml;
 
 pub use body::{Body, Line, Section};
 pub use config::{Config, ConfigError};
+pub use creation::{CreateError, NewEngagement, NewLog, NewNote, NewProject, OrganizationRole};
 pub use error::{LoadError, Location, NoteError, Problem};
 pub use translated_from::EditError;
 pub use translations::{MarkError, Translation};

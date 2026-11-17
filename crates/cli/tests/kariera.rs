@@ -3,8 +3,8 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
-#[path = "../../vault/tests/support/temp_vault.rs"]
-mod temp_vault;
+#[path = "../../vault/tests/support/vault_copy.rs"]
+mod vault_copy;
 
 // clippy.toml allows expect inside #[test] functions only, so the helpers return errors for the tests to expect.
 fn kariera(arguments: &[&str]) -> io::Result<Output> {
@@ -46,7 +46,7 @@ fn an_unknown_argument_goes_to_stderr_and_exits_two() {
 
 /// A home directory whose kariera config names a fresh copy of the fixture vault.
 fn home_with_vault(test: &str) -> io::Result<(PathBuf, PathBuf)> {
-    let vault = temp_vault::copy_of_fixture_vault(test)?;
+    let vault = vault_copy::copy_of_fixture_vault(test)?;
     let home = vault.with_extension("home");
     let config = home.join(".config/kariera");
     fs::create_dir_all(&config)?;

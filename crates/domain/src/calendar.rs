@@ -18,6 +18,11 @@ pub struct Date {
 }
 
 impl Month {
+    #[must_use]
+    pub const fn year(self) -> u16 {
+        self.year
+    }
+
     fn new(year: u16, month: u8) -> Option<Self> {
         (1..=12).contains(&month).then_some(Self { year, month })
     }
@@ -118,6 +123,11 @@ mod tests {
     fn a_month_reads_and_writes_as_yyyy_mm() {
         assert_eq!(month("2024-05").to_string(), "2024-05");
         assert_eq!(format!("{:?}", month("0999-12")), "0999-12");
+    }
+
+    #[test]
+    fn a_month_knows_its_year() {
+        assert_eq!(month("2024-05").year(), 2024);
     }
 
     #[test]
