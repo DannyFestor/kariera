@@ -1,0 +1,345 @@
+---
+source: crates/cli/tests/document_models.rs
+expression: built
+---
+Built {
+    document: Cv(
+        Cv {
+            language: "de",
+            name: "Robin Beispiel",
+            headline: "Full-Stack-Entwickler in Japan",
+            contact: Contact {
+                location: Some(
+                    "Sapporo, Japan",
+                ),
+                phone: Some(
+                    "+81 90 0000 0000",
+                ),
+                email: Some(
+                    "robin@example.com",
+                ),
+                portfolio_url: Some(
+                    "https://example.com",
+                ),
+                github_url: Some(
+                    "https://github.com/example",
+                ),
+            },
+            photo: Some(
+                Photo(16 bytes),
+            ),
+            availability: Some(
+                Availability {
+                    from: "01.04.2026",
+                    days_per_week: Some(
+                        "3–5",
+                    ),
+                },
+            ),
+            languages: [
+                SpokenLanguage {
+                    name: "Deutsch",
+                    level: Some(
+                        "Muttersprache",
+                    ),
+                },
+                SpokenLanguage {
+                    name: "Japanisch",
+                    level: Some(
+                        "Verhandlungssicher",
+                    ),
+                },
+            ],
+            personal_details: Some(
+                PersonalDetails {
+                    birth_date: Some(
+                        "01.01.1990",
+                    ),
+                    nationality: Some(
+                        "deutsch",
+                    ),
+                },
+            ),
+            summary: [
+                "Full-Stack-Entwickler mit sieben Jahren Erfahrung in Logistik und E-Commerce, von Backend-Diensten in Go bis zu React-Frontends.",
+            ],
+            strengths: [
+                "Backend-Entwurf mit PostgreSQL",
+                "Arbeit auf Japanisch, Deutsch und Englisch",
+            ],
+            projects: [
+                CvProject {
+                    title: "Web shop admin area",
+                    period: "seit 01/2025",
+                    role: "Full-stack developer",
+                    focus: None,
+                    client: "Globex",
+                    end_client: None,
+                    industry: "Retail",
+                    team_size: None,
+                    description: Some(
+                        "Builds the admin area for product and staff management.",
+                    ),
+                    achievements: [],
+                    skills: [
+                        "TypeScript",
+                        "React",
+                        "Example Charts",
+                    ],
+                },
+                CvProject {
+                    title: "Produktsuche des Webshops",
+                    period: "seit 10/2023",
+                    role: "Full-stack developer",
+                    focus: Some(
+                        "Search",
+                    ),
+                    client: "Globex",
+                    end_client: None,
+                    industry: "Einzelhandel",
+                    team_size: Some(
+                        8,
+                    ),
+                    description: Some(
+                        "Develops the product search of the web shop, from the ranking service on Google Cloud to the React front end.",
+                    ),
+                    achievements: [
+                        "Introduces typo-tolerant search",
+                    ],
+                    skills: [
+                        "TypeScript",
+                        "React",
+                        "Node.js",
+                        "Google Cloud",
+                        "Claude Code",
+                    ],
+                },
+                CvProject {
+                    title: "Accounting platform for a logistics company",
+                    period: "10/2022 – 09/2023",
+                    role: "Backend developer",
+                    focus: None,
+                    client: "Acme",
+                    end_client: None,
+                    industry: "Logistik",
+                    team_size: None,
+                    description: Some(
+                        "Built the invoicing backend of an accounting platform for a logistics company.",
+                    ),
+                    achievements: [],
+                    skills: [
+                        "TypeScript",
+                        "PostgreSQL",
+                    ],
+                },
+                CvProject {
+                    title: "Backend des Contoso-Spielwarenshops",
+                    period: "04/2021 – 09/2022",
+                    role: "Backend-Entwickler",
+                    focus: Some(
+                        "Backend",
+                    ),
+                    client: "Acme",
+                    end_client: Some(
+                        "Contoso",
+                    ),
+                    industry: "E-Commerce",
+                    team_size: Some(
+                        5,
+                    ),
+                    description: Some(
+                        "Baute das Backend eines Spielwaren-Onlineshops in Go auf PostgreSQL, vom Produktkatalog bis zur Bestellabwicklung.",
+                    ),
+                    achievements: [
+                        "Entwarf den Bestell- und Zahlungsablauf",
+                        "Halbierte die Ladezeit der Katalogseiten",
+                    ],
+                    skills: [
+                        "Go",
+                        "PostgreSQL",
+                        "Docker",
+                    ],
+                },
+                CvProject {
+                    title: "Sendungsverfolgungssystem",
+                    period: "04/2019 – 03/2021",
+                    role: "Softwareentwickler",
+                    focus: None,
+                    client: "Müller Logistik",
+                    end_client: None,
+                    industry: "Logistik",
+                    team_size: Some(
+                        4,
+                    ),
+                    description: Some(
+                        "Entwickelte das Verfolgungssystem für Pakete und Paletten in C#.",
+                    ),
+                    achievements: [
+                        "Ersetzte den nächtlichen Batch-Import durch Statusmeldungen in Echtzeit",
+                    ],
+                    skills: [
+                        "C#",
+                        "Scrum",
+                    ],
+                },
+            ],
+            career: [
+                CareerEntry {
+                    period: "seit 10/2023",
+                    role: "Full-Stack-Entwickler",
+                    organization: "Globex",
+                    engagement_type: "Freiberuflich",
+                    projects: 2,
+                },
+                CareerEntry {
+                    period: "04/2021 – 09/2023",
+                    role: "Backend developer",
+                    organization: "Acme",
+                    engagement_type: "Freiberuflich",
+                    projects: 2,
+                },
+                CareerEntry {
+                    period: "04/2019 – 03/2021",
+                    role: "Softwareentwickler",
+                    organization: "Müller Logistik",
+                    engagement_type: "Festanstellung",
+                    projects: 1,
+                },
+                CareerEntry {
+                    period: "07/2018 – 09/2018",
+                    role: "Praktikum",
+                    organization: "Initech",
+                    engagement_type: "Praktikum",
+                    projects: 0,
+                },
+            ],
+            skills: [
+                SkillGroup {
+                    category: "Programmiersprache",
+                    skills: [
+                        SkillEntry {
+                            name: "TypeScript",
+                            months: 50,
+                            experience: "4,2 J.",
+                            last_use: "11/2026",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "Framework",
+                    skills: [
+                        SkillEntry {
+                            name: "React",
+                            months: 38,
+                            experience: "3,2 J.",
+                            last_use: "11/2026",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "Bibliothek",
+                    skills: [
+                        SkillEntry {
+                            name: "Example Charts",
+                            months: 23,
+                            experience: "1,9 J.",
+                            last_use: "11/2026",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "Cloud",
+                    skills: [
+                        SkillEntry {
+                            name: "Google Cloud",
+                            months: 38,
+                            experience: "3,2 J.",
+                            last_use: "11/2026",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "Plattform",
+                    skills: [
+                        SkillEntry {
+                            name: "Node.js",
+                            months: 38,
+                            experience: "3,2 J.",
+                            last_use: "11/2026",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "Werkzeug",
+                    skills: [
+                        SkillEntry {
+                            name: "Docker",
+                            months: 18,
+                            experience: "1,5 J.",
+                            last_use: "08/2025",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "KI-Werkzeug",
+                    skills: [
+                        SkillEntry {
+                            name: "Claude Code",
+                            months: 38,
+                            experience: "3,2 J.",
+                            last_use: "11/2026",
+                        },
+                    ],
+                },
+            ],
+            education: [
+                QualificationEntry {
+                    title: "Bachelor Informatik",
+                    issuer: Some(
+                        "Example University",
+                    ),
+                    date: "03/2018",
+                },
+            ],
+            certificates: [
+                QualificationEntry {
+                    title: "Example Cloud Associate",
+                    issuer: None,
+                    date: "02/2024",
+                },
+                QualificationEntry {
+                    title: "Example Japanese Test B2, 185/200",
+                    issuer: Some(
+                        "Example Language Institute",
+                    ),
+                    date: "12/2022",
+                },
+                QualificationEntry {
+                    title: "Führerschein Klasse B",
+                    issuer: Some(
+                        "Example Licensing Office",
+                    ),
+                    date: "06/2013",
+                },
+            ],
+        },
+    ),
+    missing_translations: [
+        MissingTranslation {
+            note: "2021-04 Acme",
+            language: German,
+        },
+        MissingTranslation {
+            note: "Acme - Ledger",
+            language: German,
+        },
+        MissingTranslation {
+            note: "Globex - Admin",
+            language: German,
+        },
+        MissingTranslation {
+            note: "Globex - Search",
+            language: German,
+        },
+    ],
+}

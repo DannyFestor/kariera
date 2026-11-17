@@ -1,0 +1,505 @@
+---
+source: crates/cli/tests/document_models.rs
+expression: built
+---
+Built {
+    document: SkillSheet(
+        SkillSheet {
+            name: "Robin Beispiel",
+            updated: "2026年11月",
+            headline: "日本在住のフルスタック開発者",
+            business: "Example Works",
+            available_from: Some(
+                "2026年4月1日",
+            ),
+            days_per_week: Some(
+                "3～5",
+            ),
+            portfolio_url: Some(
+                "https://example.com",
+            ),
+            github_url: Some(
+                "https://github.com/example",
+            ),
+            certificates: [
+                QualificationEntry {
+                    title: "日本語試験B2",
+                    issuer: Some(
+                        "Example Language Institute",
+                    ),
+                    date: "2022年12月",
+                },
+                QualificationEntry {
+                    title: "Example Cloud Associate",
+                    issuer: None,
+                    date: "2024年2月",
+                },
+            ],
+            education: [
+                QualificationEntry {
+                    title: "情報科学 学士",
+                    issuer: Some(
+                        "Example University",
+                    ),
+                    date: "2018年3月",
+                },
+            ],
+            strengths: [
+                "PostgreSQLを用いたバックエンド設計",
+                "日本語・ドイツ語・英語での業務",
+            ],
+            skill_window_years: 5,
+            skills: [
+                SkillGroup {
+                    category: "プログラミング言語",
+                    skills: [
+                        SkillEntry {
+                            name: "タイプスクリプト",
+                            months: 50,
+                            experience: "4年2ヶ月",
+                            last_use: "2026年11月",
+                        },
+                        SkillEntry {
+                            name: "Go",
+                            months: 18,
+                            experience: "1年6ヶ月",
+                            last_use: "2022年9月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "フレームワーク",
+                    skills: [
+                        SkillEntry {
+                            name: "React",
+                            months: 38,
+                            experience: "3年2ヶ月",
+                            last_use: "2026年11月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "ライブラリ",
+                    skills: [
+                        SkillEntry {
+                            name: "エグザンプルチャート",
+                            months: 23,
+                            experience: "1年11ヶ月",
+                            last_use: "2026年11月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "データベース",
+                    skills: [
+                        SkillEntry {
+                            name: "PostgreSQL",
+                            months: 30,
+                            experience: "2年6ヶ月",
+                            last_use: "2023年9月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "クラウド",
+                    skills: [
+                        SkillEntry {
+                            name: "Google Cloud",
+                            months: 38,
+                            experience: "3年2ヶ月",
+                            last_use: "2026年11月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "プラットフォーム",
+                    skills: [
+                        SkillEntry {
+                            name: "Node.js",
+                            months: 38,
+                            experience: "3年2ヶ月",
+                            last_use: "2026年11月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "ツール",
+                    skills: [
+                        SkillEntry {
+                            name: "Docker",
+                            months: 18,
+                            experience: "1年6ヶ月",
+                            last_use: "2025年8月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "AIツール",
+                    skills: [
+                        SkillEntry {
+                            name: "Claude Code",
+                            months: 38,
+                            experience: "3年2ヶ月",
+                            last_use: "2026年11月",
+                        },
+                    ],
+                },
+            ],
+            self_pr: [
+                "物流とECの分野で7年の経験を持つフルスタック開発者。GoのバックエンドからReactのフロントエンドまで担当する。",
+                "機能の要望からリリースまで一貫して担当する。",
+            ],
+            projects: [
+                SheetProject {
+                    number: 1,
+                    title: "Web shop admin area",
+                    period: "2025年1月～現在",
+                    duration: "1年11ヶ月",
+                    client: "Globex",
+                    end_client: None,
+                    industry: "Retail",
+                    contract_type: "業務委託契約",
+                    role: "Full-stack developer",
+                    focus: None,
+                    team_size: None,
+                    phases: [
+                        PhaseMark {
+                            label: "要件定義",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "基本設計",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "詳細設計",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "製造",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "テスト",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "運用・保守",
+                            done: false,
+                        },
+                    ],
+                    technology: [
+                        Technology {
+                            category: "プログラミング言語",
+                            skills: [
+                                "タイプスクリプト",
+                            ],
+                        },
+                        Technology {
+                            category: "フレームワーク",
+                            skills: [
+                                "React",
+                            ],
+                        },
+                        Technology {
+                            category: "ライブラリ",
+                            skills: [
+                                "エグザンプルチャート",
+                            ],
+                        },
+                    ],
+                    description: [
+                        "Builds the admin area for product and staff management.",
+                    ],
+                    achievements: [],
+                },
+                SheetProject {
+                    number: 2,
+                    title: "ウェブショップの商品検索",
+                    period: "2023年10月～現在",
+                    duration: "3年2ヶ月",
+                    client: "Globex",
+                    end_client: None,
+                    industry: "小売",
+                    contract_type: "業務委託契約",
+                    role: "フルスタック開発者",
+                    focus: Some(
+                        "Search",
+                    ),
+                    team_size: Some(
+                        8,
+                    ),
+                    phases: [
+                        PhaseMark {
+                            label: "要件定義",
+                            done: true,
+                        },
+                        PhaseMark {
+                            label: "基本設計",
+                            done: true,
+                        },
+                        PhaseMark {
+                            label: "詳細設計",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "製造",
+                            done: true,
+                        },
+                        PhaseMark {
+                            label: "テスト",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "運用・保守",
+                            done: true,
+                        },
+                    ],
+                    technology: [
+                        Technology {
+                            category: "プログラミング言語",
+                            skills: [
+                                "タイプスクリプト",
+                            ],
+                        },
+                        Technology {
+                            category: "フレームワーク",
+                            skills: [
+                                "React",
+                            ],
+                        },
+                        Technology {
+                            category: "クラウド",
+                            skills: [
+                                "Google Cloud",
+                            ],
+                        },
+                        Technology {
+                            category: "プラットフォーム",
+                            skills: [
+                                "Node.js",
+                            ],
+                        },
+                        Technology {
+                            category: "AIツール",
+                            skills: [
+                                "Claude Code",
+                            ],
+                        },
+                    ],
+                    description: [
+                        "Develops the product search of the web shop, from the ranking service on Google Cloud to the React front end.",
+                    ],
+                    achievements: [
+                        "Introduces typo-tolerant search",
+                    ],
+                },
+                SheetProject {
+                    number: 3,
+                    title: "物流会社向け会計プラットフォーム",
+                    period: "2022年10月～2023年9月",
+                    duration: "1年",
+                    client: "株式会社アクメ",
+                    end_client: None,
+                    industry: "物流",
+                    contract_type: "業務委託契約",
+                    role: "Backend developer",
+                    focus: None,
+                    team_size: None,
+                    phases: [
+                        PhaseMark {
+                            label: "要件定義",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "基本設計",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "詳細設計",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "製造",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "テスト",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "運用・保守",
+                            done: false,
+                        },
+                    ],
+                    technology: [
+                        Technology {
+                            category: "プログラミング言語",
+                            skills: [
+                                "タイプスクリプト",
+                            ],
+                        },
+                        Technology {
+                            category: "データベース",
+                            skills: [
+                                "PostgreSQL",
+                            ],
+                        },
+                    ],
+                    description: [
+                        "Built the invoicing backend of an accounting platform for a logistics company.",
+                    ],
+                    achievements: [],
+                },
+                SheetProject {
+                    number: 4,
+                    title: "Contoso玩具ECサイトのバックエンド",
+                    period: "2021年4月～2022年9月",
+                    duration: "1年6ヶ月",
+                    client: "株式会社アクメ",
+                    end_client: Some(
+                        "Contoso",
+                    ),
+                    industry: "EC",
+                    contract_type: "業務委託契約",
+                    role: "バックエンド開発者",
+                    focus: Some(
+                        "バックエンド",
+                    ),
+                    team_size: Some(
+                        5,
+                    ),
+                    phases: [
+                        PhaseMark {
+                            label: "要件定義",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "基本設計",
+                            done: true,
+                        },
+                        PhaseMark {
+                            label: "詳細設計",
+                            done: true,
+                        },
+                        PhaseMark {
+                            label: "製造",
+                            done: true,
+                        },
+                        PhaseMark {
+                            label: "テスト",
+                            done: true,
+                        },
+                        PhaseMark {
+                            label: "運用・保守",
+                            done: false,
+                        },
+                    ],
+                    technology: [
+                        Technology {
+                            category: "プログラミング言語",
+                            skills: [
+                                "Go",
+                            ],
+                        },
+                        Technology {
+                            category: "データベース",
+                            skills: [
+                                "PostgreSQL",
+                            ],
+                        },
+                        Technology {
+                            category: "ツール",
+                            skills: [
+                                "Docker",
+                            ],
+                        },
+                    ],
+                    description: [
+                        "GoとPostgreSQLで玩具ECサイトのバックエンドを商品カタログから受注処理まで構築した。",
+                        "サービスはDockerコンテナで稼働する。",
+                    ],
+                    achievements: [
+                        "受注・決済フローを設計した",
+                        "カタログページの表示時間を半分に短縮した",
+                    ],
+                },
+                SheetProject {
+                    number: 5,
+                    title: "配送追跡システム",
+                    period: "2019年4月～2021年3月",
+                    duration: "2年",
+                    client: "Müller Logistik",
+                    end_client: None,
+                    industry: "物流",
+                    contract_type: "雇用契約",
+                    role: "ソフトウェア開発者",
+                    focus: None,
+                    team_size: Some(
+                        4,
+                    ),
+                    phases: [
+                        PhaseMark {
+                            label: "要件定義",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "基本設計",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "詳細設計",
+                            done: false,
+                        },
+                        PhaseMark {
+                            label: "製造",
+                            done: true,
+                        },
+                        PhaseMark {
+                            label: "テスト",
+                            done: true,
+                        },
+                        PhaseMark {
+                            label: "運用・保守",
+                            done: true,
+                        },
+                    ],
+                    technology: [
+                        Technology {
+                            category: "プログラミング言語",
+                            skills: [
+                                "C#",
+                            ],
+                        },
+                        Technology {
+                            category: "手法",
+                            skills: [
+                                "Scrum",
+                            ],
+                        },
+                    ],
+                    description: [
+                        "C#で小包とパレットの追跡システムを開発した。",
+                    ],
+                    achievements: [
+                        "夜間バッチ取込をリアルタイムの状況更新に置き換えた",
+                    ],
+                },
+            ],
+        },
+    ),
+    missing_translations: [
+        MissingTranslation {
+            note: "Acme - Ledger",
+            language: Japanese,
+        },
+        MissingTranslation {
+            note: "Globex - Admin",
+            language: Japanese,
+        },
+        MissingTranslation {
+            note: "Globex - Search",
+            language: Japanese,
+        },
+    ],
+}

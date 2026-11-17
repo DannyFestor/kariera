@@ -130,6 +130,8 @@ dependencies = [
 name = "kariera-cli"
 version = "0.1.0"
 dependencies = [
+ "insta",
+ "kariera-documents",
  "kariera-domain",
  "kariera-validate",
  "kariera-vault",
@@ -139,6 +141,11 @@ dependencies = [
 [[package]]
 name = "kariera-documents"
 version = "0.1.0"
+dependencies = [
+ "kariera-domain",
+ "serde",
+ "thiserror",
+]
 
 [[package]]
 name = "kariera-domain"
