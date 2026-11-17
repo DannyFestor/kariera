@@ -1,9 +1,10 @@
 //! `kariera translations`: which translations are out of date, and recording that one is up to date (schema §1.6.1).
 
 use kariera_domain::{Fingerprint, TranslationLanguage};
-use kariera_vault::{Config, Translation, Vault};
+use kariera_vault::Translation;
 
 use crate::reply::Reply;
+use crate::vault_access::open_vault;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum TranslationsCommand {
@@ -88,12 +89,6 @@ fn language_of(
     value_of("--lang", "ja or de", arguments)?
         .parse()
         .map_err(|error| format!("--lang {error}"))
-}
-
-fn open_vault() -> Result<Vault, String> {
-    let config_path = Config::default_path().map_err(|error| error.to_string())?;
-    let config = Config::load(&config_path).map_err(|error| error.to_string())?;
-    Vault::load(config.vault()).map_err(|error| error.to_string())
 }
 
 fn stale_report(translations: &[Translation]) -> String {

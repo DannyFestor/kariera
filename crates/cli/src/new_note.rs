@@ -2,13 +2,13 @@
 
 mod flags;
 
-use std::error::Error;
 use std::path::PathBuf;
 
 use kariera_domain::EngagementType;
-use kariera_vault::{Config, NewEngagement, NewLog, NewNote, NewProject, OrganizationRole, Vault};
+use kariera_vault::{NewEngagement, NewLog, NewNote, NewProject, OrganizationRole};
 
 use crate::reply::Reply;
+use crate::vault_access::open_vault;
 use flags::{ArgumentError, Flags};
 
 pub(crate) fn parse(arguments: impl IntoIterator<Item = String>) -> Result<NewNote, ArgumentError> {
@@ -28,7 +28,7 @@ pub(crate) fn parse(arguments: impl IntoIterator<Item = String>) -> Result<NewNo
 pub(crate) fn reply(note: &NewNote) -> Reply {
     match create(note) {
         Ok(path) => Reply::success(format!("Created {}", path.display())),
-        Err(error) => Reply::failure(format!("kariera: {error}")),
+        Err(message) => Reply::failure(message),
     }
 }
 
@@ -60,10 +60,10 @@ fn parse_engagement(flags: &mut Flags) -> Result<NewNote, ArgumentError> {
     }))
 }
 
-fn create(note: &NewNote) -> Result<PathBuf, Box<dyn Error>> {
-    let config = Config::load(&Config::default_path()?)?;
-    let vault = Vault::load(config.vault())?;
-    Ok(vault.create(note)?)
+fn create(note: &NewNote) -> Result<PathBuf, String> {
+    open_vault()?
+        .create(note)
+        .map_err(|error| error.to_string())
 }
 
 #[cfg(test)]

@@ -111,7 +111,7 @@ fn new_refuses_to_overwrite_and_exits_one() {
     assert_eq!(output.status.code(), Some(1));
     assert_eq!(
         String::from_utf8(output.stderr).unwrap(),
-        "kariera: Monthly Logs/2025/2025-06 Globex Log.md already has that name, ignoring case\n"
+        "Monthly Logs/2025/2025-06 Globex Log.md already has that name, ignoring case\n"
     );
     assert_eq!(String::from_utf8(output.stdout).unwrap(), "");
 }
@@ -150,6 +150,6 @@ fn new_without_a_config_says_so_and_exits_one() {
     assert!(
         String::from_utf8(output.stderr)
             .unwrap()
-            .starts_with("kariera: cannot read "),
+            .starts_with("cannot read "),
     );
 }

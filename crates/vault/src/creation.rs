@@ -6,8 +6,7 @@ mod fill;
 mod plan;
 mod request;
 
-use std::fs::{self, OpenOptions};
-use std::io::{self, Write};
+use std::fs;
 use std::path::{Path, PathBuf};
 
 pub use error::CreateError;
@@ -18,6 +17,7 @@ use kariera_domain::FixedList;
 use crate::Vault;
 use crate::creation::fill::fill_template;
 use crate::creation::plan::Plan;
+use crate::write::create_file;
 
 const TEMPLATES_FOLDER: &str = "Templates";
 
@@ -34,7 +34,12 @@ impl Vault {
                 field,
             }
         })?;
-        write_new(&self.root().join(plan.path()), &text)
+        let path = self.root().join(plan.path());
+        create_file(&path, &text).map_err(|source| CreateError::Unwritable {
+            path: path.clone(),
+            source,
+        })?;
+        Ok(path)
     }
 
     fn refuse_taken_name(&self, plan: &Plan) -> Result<(), CreateError> {
@@ -67,23 +72,4 @@ struct Template {
     /// Relative to the vault root.
     path: PathBuf,
     text: String,
-}
-
-/// `create_new` fails if the file exists, so a race with another writer cannot overwrite either.
-fn write_new(path: &Path, text: &str) -> Result<PathBuf, CreateError> {
-    let written = path
-        .parent()
-        .map_or(Ok(()), fs::create_dir_all)
-        .and_then(|()| OpenOptions::new().write(true).create_new(true).open(path))
-        .and_then(|mut file| file.write_all(text.as_bytes()));
-    written
-        .map(|()| path.to_owned())
-        .map_err(|source| write_error(path, source))
-}
-
-fn write_error(path: &Path, source: io::Error) -> CreateError {
-    CreateError::Unwritable {
-        path: path.to_owned(),
-        source,
-    }
 }

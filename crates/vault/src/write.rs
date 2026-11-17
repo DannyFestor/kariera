@@ -1,6 +1,6 @@
 use std::ffi::OsStr;
-use std::fs;
-use std::io;
+use std::fs::{self, OpenOptions};
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
 /// The note is replaced in one step, so a crash or a full disk leaves the old note and not half of the new one.
@@ -15,6 +15,18 @@ pub(crate) fn replace_file(path: &Path, text: &str) -> io::Result<()> {
         drop(fs::remove_file(&temporary));
     }
     written
+}
+
+/// `create_new` fails if the file exists, so a race with another writer cannot overwrite either.
+pub(crate) fn create_file(path: &Path, text: &str) -> io::Result<()> {
+    if let Some(folder) = path.parent() {
+        fs::create_dir_all(folder)?;
+    }
+    OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(path)?
+        .write_all(text.as_bytes())
 }
 
 /// In the same folder, because a rename cannot cross file systems. Not a note: it does not end in `.md`.
