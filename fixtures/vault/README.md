@@ -1,6 +1,6 @@
 # Fixture vault
 
-A fictional copy of the career vault for the tests: a fictional person, Robin Beispiel, with a fictional trade name (Example Works) and fictional Organizations. It holds no real person, company or project, and every Source path points to a file that does not exist.
+A fictional copy of the career vault for the tests: a fictional person, Robin Beispiel, with a fictional trade name (Example Works) and fictional Organizations. It holds no real person, company or project, and every Source path points to an empty placeholder file in `.scratch/_inputs/`, so that validation finds every cited file.
 
 kariera reads only the Markdown files in the note folders and `Profile.md`, so this file, `Templates/`, the canvas `Projects/Acme - Shop.canvas` and the hidden `Projects/.draft.md` are part of the fixture too: the tests check that none of them is read as a note.
 

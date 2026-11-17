@@ -15,6 +15,7 @@ license = "MIT"
 # reason in the [bans] allow list of deny.toml (AGENTS.md).
 [workspace.dependencies]
 kariera-domain = { path = "crates/domain" }
+kariera-validate = { path = "crates/validate" }
 kariera-vault = { path = "crates/vault" }
 insta = { version = "1.49.0", default-features = false }
 saphyr-parser = "0.3.4"
