@@ -1,0 +1,19 @@
+# Thresholds are maxima: a function with 41 lines or 5 arguments fails.
+too-many-lines-threshold = 40
+cognitive-complexity-threshold = 12
+too-many-arguments-threshold = 4
+
+# Nothing outside this workspace uses its API, so Clippy may suggest changes to public signatures too.
+avoid-breaking-exported-api = false
+
+# A failing test should panic, so tests may unwrap, expect, panic and index. dbg! and printing stay denied there too.
+allow-unwrap-in-tests = true
+allow-expect-in-tests = true
+allow-panic-in-tests = true
+allow-indexing-slicing-in-tests = true
+
+# print_stdout and print_stderr only catch the macros, so writing to the handles directly is denied as well (ADR 0001).
+disallowed-methods = [
+  { path = "std::io::stdout", reason = "only the cli writes to the terminal, through println! (ADR 0001)" },
+  { path = "std::io::stderr", reason = "only the cli writes to the terminal, through eprintln! (ADR 0001)" },
+]

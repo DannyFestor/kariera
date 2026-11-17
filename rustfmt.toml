@@ -1,0 +1,7 @@
+# Stable options only: the pinned toolchain is stable, and unstable options would only print warnings.
+edition = "2024"
+style_edition = "2024"
+max_width = 100
+newline_style = "Unix"
+use_field_init_shorthand = true
+use_try_shorthand = true

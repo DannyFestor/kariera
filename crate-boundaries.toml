@@ -1,0 +1,31 @@
+# The crate boundaries of docs/adr/0001-crate-boundaries.md, checked by `make deny`. Each workspace crate may only be
+# a direct dependency of the crates listed as its `wrappers`; any other dependency on it fails.
+# kariera-cli is not listed: it has no library target, so no crate can depend on it. cargo-deny warns about a wrapper
+# that does not depend on its crate yet, which `make deny` allows with `-A unused-wrapper`.
+
+[bans]
+deny = [
+  { crate = "kariera-domain", wrappers = [
+    "kariera-vault",
+    "kariera-validate",
+    "kariera-documents",
+    "kariera-render-typst",
+    "kariera-render-docx",
+    "kariera-render-xlsx",
+    "kariera-cli",
+  ], reason = "domain may be used by every crate (ADR 0001)" },
+  { crate = "kariera-vault", wrappers = [
+    "kariera-validate",
+    "kariera-cli",
+  ], reason = "only validate and cli read the vault (ADR 0001)" },
+  { crate = "kariera-validate", wrappers = ["kariera-cli"], reason = "only cli runs validation (ADR 0001)" },
+  { crate = "kariera-documents", wrappers = [
+    "kariera-render-typst",
+    "kariera-render-docx",
+    "kariera-render-xlsx",
+    "kariera-cli",
+  ], reason = "only the renderers and cli use document models (ADR 0001)" },
+  { crate = "kariera-render-typst", wrappers = ["kariera-cli"], reason = "only cli picks a renderer (ADR 0001)" },
+  { crate = "kariera-render-docx", wrappers = ["kariera-cli"], reason = "only cli picks a renderer (ADR 0001)" },
+  { crate = "kariera-render-xlsx", wrappers = ["kariera-cli"], reason = "only cli picks a renderer (ADR 0001)" },
+]

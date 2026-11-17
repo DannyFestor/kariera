@@ -1,0 +1,10 @@
+.DS_Store
+# Build output, the pinned tools and scratch space.
+/target/
+/bin/
+/tmp/
+# Personal data and secrets never enter the repository.
+personal.yaml
+.env
+.env.*
+*.local.*
