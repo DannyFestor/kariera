@@ -10,7 +10,7 @@ Where each pinned item is pinned, how to bump it and what to run afterwards. Bum
 
 ## Tools from GitHub releases
 
-cargo-deny, cargo-machete, cargo-nextest, typstyle, gitleaks, lefthook, cog, jq and shellcheck.
+cargo-deny, cargo-machete, cargo-nextest, cargo-insta, typstyle, gitleaks, lefthook, cog, jq and shellcheck.
 
 - **Pinned in**: `tools/<tool>.version` (the release version) and `tools/<tool>.sha256` (one checksum per supported platform). The Makefile builds each download URL from them, and `scripts/install-pinned-binary.sh` refuses a download whose checksum differs.
 - **Bump**: write the new version to `tools/<tool>.version`, then `make pin-<tool>`, which rewrites `tools/<tool>.sha256` from the digests GitHub records for the release (needs `gh`). `make pin-tools` does this for every tool.
@@ -21,6 +21,7 @@ cargo-deny, cargo-machete, cargo-nextest, typstyle, gitleaks, lefthook, cog, jq 
 | cargo-deny | `make deny`; read the changelog for new checks or config keys |
 | cargo-machete | `make machete` |
 | cargo-nextest | `make test` |
+| cargo-insta | `make test`, then change a snapshot on purpose and run `make snapshots` |
 | typstyle | `make fmt-typst` and review the diff: a new version may format templates differently |
 | gitleaks | stage a change, then `make lint-secrets`; read the changelog for new default rules |
 | lefthook | `make hooks-install`, then commit on a branch to see the hooks run |
