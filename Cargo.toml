@@ -1,0 +1,82 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.100"
+# Nothing is published to crates.io, which also exempts the crates from clippy::cargo_common_metadata.
+publish = false
+repository = "https://github.com/DannyFestor/kariera"
+license = "MIT"
+
+# Every crate inherits this table with `[lints] workspace = true`. Cargo allows no per-crate additions, so an exception
+# is a `#[expect(lint, reason = "…")]` on the one item that needs it (AGENTS.md).
+[workspace.lints.rust]
+unsafe_code = "forbid"
+# missing_docs stays off: forcing a doc comment on every item produces comments that restate the code (AGENTS.md).
+# Groups sit below the single lints, so a single lint can override its group.
+rust_2018_idioms = { level = "deny", priority = -1 }
+# Only items another crate uses are `pub`, which keeps each crate's API, and so the crate boundaries, visible.
+unreachable_pub = "deny"
+missing_debug_implementations = "deny"
+let_underscore_drop = "deny"
+trivial_casts = "deny"
+trivial_numeric_casts = "deny"
+unused_lifetimes = "deny"
+unused_qualifications = "deny"
+# unused_crate_dependencies stays off: every test target sees all dev-dependencies, so it reports false positives
+# there. cargo-machete (`make machete`) finds unused dependencies instead.
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+pedantic = { level = "deny", priority = -1 }
+nursery = { level = "deny", priority = -1 }
+cargo = { level = "deny", priority = -1 }
+# The one group lint switched off: it asks for `pub` where rustc's unreachable_pub asks for `pub(crate)`, and no code
+# satisfies both. unreachable_pub wins, because it keeps `pub` meaning "part of the crate's API".
+redundant_pub_crate = "allow"
+# Off for the same reason as missing_docs: they demand `# Errors` / `# Panics` prose for every function. Error types
+# carry the meaning, and panicking is denied outright below.
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+
+# Restriction lints. clippy.toml allows the panicking ones inside tests.
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+indexing_slicing = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+# Only the cli prints, through one function that expects these with a reason (ADR 0001).
+print_stdout = "deny"
+print_stderr = "deny"
+# `#[allow]` hides a lint for good; `#[expect(lint, reason = "…")]` fails once the lint no longer fires.
+allow_attributes = "deny"
+allow_attributes_without_reason = "deny"
+
+# Further restriction lints, beyond the ticket's list.
+# A panic inside a function that already returns a Result skips the error path its caller handles.
+unwrap_in_result = "deny"
+panic_in_result_fn = "deny"
+unreachable = "deny"
+# Byte-index slicing panics in the middle of a multi-byte character, and the vault is full of Japanese text.
+string_slice = "deny"
+# `as` truncates and wraps silently; From and TryFrom make the conversion and its failure explicit.
+as_conversions = "deny"
+# The build is deterministic, and a HashMap or HashSet iterates in a different order on every run.
+iter_over_hash_type = "deny"
+# A new enum variant has to be handled everywhere instead of falling into a `_` arm.
+wildcard_enum_match_arm = "deny"
+# Errors are handled or propagated, never dropped or stripped of their cause.
+let_underscore_must_use = "deny"
+unused_result_ok = "deny"
+map_err_ignore = "deny"
+# Library code returns errors; only the cli decides the exit code, and returns it from main.
+exit = "deny"
+mem_forget = "deny"
+shadow_unrelated = "deny"
+# One module layout: `foo.rs` beside a `foo/` directory, never `foo/mod.rs`.
+mod_module_files = "deny"

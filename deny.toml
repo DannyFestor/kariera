@@ -1,0 +1,59 @@
+# `make deny` runs every check below. Each new dependency needs an entry in [bans] allow, with the reason it is
+# needed, before `make check` passes (AGENTS.md).
+
+[graph]
+all-features = true
+
+[advisories]
+yanked = "deny"
+unmaintained = "all"
+unsound = "all"
+ignore = []
+
+[licenses]
+# Permissive licences only. A copyleft licence would bind the whole binary, so it needs a decision first.
+allow = [
+  "MIT",
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Zlib",
+  "Unicode-3.0",
+]
+confidence-threshold = 0.93
+# Listed ahead of the dependencies that will need them, so the list is the policy rather than an inventory.
+unused-allowed-license = "allow"
+
+[licenses.private]
+# The workspace crates are unpublished and have no licence of their own yet.
+ignore = true
+
+[bans]
+multiple-versions = "deny"
+wildcards = "deny"
+# Path dependencies between workspace crates carry no version, which is not a crates.io wildcard.
+allow-wildcard-paths = true
+highlight = "all"
+workspace-default-features = "allow"
+external-default-features = "allow"
+# The crate allowlist. A non-empty list refuses every crate it does not name, so the workspace crates are listed too.
+# Each third-party entry states why kariera needs it. The boundaries between the workspace crates are checked
+# separately, by crate-boundaries.toml, because cargo-deny refuses a crate named in both `allow` and `deny`.
+allow = [
+  { crate = "kariera-cli", reason = "workspace crate" },
+  { crate = "kariera-documents", reason = "workspace crate" },
+  { crate = "kariera-domain", reason = "workspace crate" },
+  { crate = "kariera-render-docx", reason = "workspace crate" },
+  { crate = "kariera-render-typst", reason = "workspace crate" },
+  { crate = "kariera-render-xlsx", reason = "workspace crate" },
+  { crate = "kariera-validate", reason = "workspace crate" },
+  { crate = "kariera-vault", reason = "workspace crate" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]
+allow-git = []
