@@ -2,11 +2,11 @@
 # prototypes can be judged on real content before `documents` exists. The real model is built in Rust from the
 # domain types (issue #7); this file only shows which fields the layout needs.
 #
-#   uv run --with pyyaml python -I crates/documents/prototype/skill_sheet_model.py <vault> <build-month> <out.json> \
-#     [<recent-years>]
+#   uv run --with pyyaml python -I crates/documents/prototype/skill_sheet_model.py <vault> <build-month> <out.json>
 #
-# With <recent-years>, only Skills last used within that many years up to the build month are kept. The last use is
-# the later of the Skill's last Project month and its `last_used` field, which never adds to the years.
+# Skill rule (owner, 2026-11-18): a Skill is shown when a Project links it and its last use falls within
+# SKILL_WINDOW_YEARS up to the build month. The last use is the later of its last Project month and its `last_used`
+# field; `last_used` only extends recency, never adds to the years, and never brings in a Skill without a Project.
 
 import json
 import re
@@ -17,6 +17,8 @@ from pathlib import Path
 import yaml
 
 LANG = "ja"
+# The 職務経歴書 uses the same window; the CV uses 3 years.
+SKILL_WINDOW_YEARS = 5
 PHASES = [
     ("requirements", "要件定義"),
     ("basic-design", "基本設計"),
@@ -126,7 +128,11 @@ def last_use(front, last_project_month):
     return max(known) if known else None
 
 
-def skill_rows(skills, projects, build_month, recent_years):
+def is_shown(months, last, build_month):
+    return months > 0 and last > build_month - SKILL_WINDOW_YEARS * 12
+
+
+def skill_rows(skills, projects, build_month):
     months_by_skill, last_by_skill, count_by_skill = {}, {}, {}
     for front, _ in projects.values():
         start = month_index(front["start"])
@@ -141,7 +147,7 @@ def skill_rows(skills, projects, build_month, recent_years):
         labels = front.get("labels") or {}
         months = len(months_by_skill.get(name, ()))
         last = last_use(front, last_by_skill.get(name))
-        if recent_years and (last is None or last <= build_month - recent_years * 12):
+        if not is_shown(months, last, build_month):
             continue
         rows.append(
             {
@@ -237,7 +243,7 @@ def profile_block(root, organizations, qualifications):
     }
 
 
-def main(vault, build_month, out, recent_years=None):
+def main(vault, build_month, out):
     root = Path(vault).expanduser()
     organizations = load(root, "Organizations")
     projects = load(root, "Projects")
@@ -249,7 +255,7 @@ def main(vault, build_month, out, recent_years=None):
         "phase_labels": [label for _, label in PHASES],
         "category_labels": CATEGORIES,
         "profile": profile_block(root, organizations, load(root, "Qualifications")),
-        "skills": skill_rows(skills, projects, month, int(recent_years) if recent_years else None),
+        "skills": skill_rows(skills, projects, month),
         "projects": project_rows(
             projects, load(root, "Engagements"), load(root, "Contracts"), organizations, skills, month
         ),

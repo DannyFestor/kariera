@@ -12,7 +12,7 @@ The question: what should the Skill Sheet (スキルシート) look like, as XLS
 
 ## Files
 
-- `crates/documents/prototype/skill_sheet_model.py`: reads a vault's notes into the model JSON, with the years per Skill computed from Project periods (overlaps counted once). Stands in for the `documents` crate.
+- `crates/documents/prototype/skill_sheet_model.py`: reads a vault's notes into the model JSON, with the years per Skill computed from Project periods (overlaps counted once) and the Skill rule: linked to a Project and last used within 5 years, where `last_used` extends recency only. Stands in for the `documents` crate.
 - `crates/render-typst/prototype/skill-sheet-{a,b,c}.typ`: the PDF templates. They read the model from `sys.inputs.data`.
 - `crates/render-xlsx/prototype/skill_sheet_xlsx.py`: the XLSX variants, written with Python's XlsxWriter, using only what rust_xlsxwriter also supports.
 
@@ -21,7 +21,7 @@ The question: what should the Skill Sheet (スキルシート) look like, as XLS
 Needs `uv`, the Typst CLI at the version the renderer embeds (0.15.1), and the font files in a folder (they are not in the repository; all three are SIL OFL 1.1).
 
 ```sh
-uv run --with pyyaml python -I crates/documents/prototype/skill_sheet_model.py fixtures/vault 2026-11 tmp/model.json [<recent-years>]
+uv run --with pyyaml python -I crates/documents/prototype/skill_sheet_model.py fixtures/vault 2026-11 tmp/model.json
 typst compile --ignore-system-fonts --font-path <fonts> --root . --input data=/tmp/model.json \
   crates/render-typst/prototype/skill-sheet-c.typ tmp/skill-sheet-c.pdf
 uv run --with xlsxwriter python -I crates/render-xlsx/prototype/skill_sheet_xlsx.py tmp/model.json c tmp/skill-sheet-c.xlsx
