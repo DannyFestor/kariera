@@ -9,6 +9,10 @@ use kariera_vault::{MarkError, Translation, Vault};
 #[path = "support/vault_copy.rs"]
 mod vault_copy;
 
+#[path = "support/replace_in.rs"]
+mod replace_in_support;
+
+use replace_in_support::replace_in;
 use vault_copy::{copy_of_fixture_vault, fixture_vault};
 
 const JAPANESE: TranslationLanguage = TranslationLanguage::Japanese;
@@ -41,17 +45,6 @@ fn mark(vault: &Path, name: &str, language: TranslationLanguage) -> Result<(), S
         .mark(name, language)
         .map(drop)
         .map_err(|error| error.to_string())
-}
-
-fn replace_in(vault: &Path, note: &str, from: &str, to: &str) -> io::Result<()> {
-    let path = vault.join(note);
-    let text = fs::read_to_string(&path)?;
-    if !text.contains(from) {
-        return Err(io::Error::other(format!(
-            "{note} does not contain {from:?}"
-        )));
-    }
-    fs::write(path, text.replacen(from, to, 1))
 }
 
 /// Every file of a vault with its bytes.

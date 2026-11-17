@@ -1079,7 +1079,9 @@ Career {
         "2022-05 Acme Log": MonthlyLog {
             engagement: [[2021-04 Acme]],
             month: 2022-05,
-            hours: 150,
+            hours: Some(
+                150,
+            ),
             project_hours: {},
             sources: [
                 Source {
@@ -1099,10 +1101,35 @@ Career {
                 "Started the returns workflow",
             ],
         },
+        "2022-06 Acme Log": MonthlyLog {
+            engagement: [[2021-04 Acme]],
+            month: 2022-06,
+            hours: None,
+            project_hours: {},
+            sources: [
+                Source {
+                    kind: WorkReport,
+                    path: Some(
+                        ".scratch/_inputs/reports/acme/2022-06.pdf",
+                    ),
+                    note: Some(
+                        "Describes the work but states no hours",
+                    ),
+                },
+            ],
+            focus: "Returns workflow for the toy shop.",
+            outcomes: [
+                "Finished the returns form",
+                "Connected the returns to the stock count",
+                "Started the refund payments",
+            ],
+        },
         "2025-06 Globex Log": MonthlyLog {
             engagement: [[2023-10 Globex]],
             month: 2025-06,
-            hours: 160,
+            hours: Some(
+                160,
+            ),
             project_hours: {
                 [[Globex - Admin]]: 40,
                 [[Globex - Search]]: 120,
@@ -1137,7 +1164,9 @@ Career {
         "2025-07 Globex Log": MonthlyLog {
             engagement: [[2023-10 Globex]],
             month: 2025-07,
-            hours: 152.5,
+            hours: Some(
+                152.5,
+            ),
             project_hours: {
                 [[Globex - Admin]]: 50.25,
                 [[Globex - Search]]: 100,

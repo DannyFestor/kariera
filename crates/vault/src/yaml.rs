@@ -1,26 +1,40 @@
 //! The frontmatter as a tree that keeps what the schema's rules need: the order of keys, the line of every value,
-//! and whether a scalar was written plain, which tells `null` from the quoted text `"null"`.
+//! how a scalar was written (plain, quoted, as a block), which tells `null` from the quoted text `"null"`, and
+//! whether a collection was written in flow style.
 
 use saphyr_parser::{Event, Parser, ScalarStyle, ScanError, Span, StrInput};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct Node {
+pub struct Node {
     /// 1-based, counted from the first line of the file.
-    pub(crate) line: usize,
-    pub(crate) value: Value,
+    pub line: usize,
+    pub value: Value,
+    /// A list or map written in flow style, `[a, b]` or `{a: b}`. Never set for a scalar.
+    pub flow: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) enum Value {
-    Scalar { text: String, plain: bool },
+pub enum Value {
+    Scalar { text: String, style: Style },
     Sequence(Vec<Node>),
     Mapping(Vec<Entry>),
 }
 
+/// How a scalar is written.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Style {
+    Plain,
+    SingleQuoted,
+    DoubleQuoted,
+    /// A `|` literal or a `>` folded block.
+    Block,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub(crate) struct Entry {
-    pub(crate) key: String,
-    pub(crate) value: Node,
+pub struct Entry {
+    pub key: String,
+    pub key_style: Style,
+    pub value: Node,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -31,17 +45,20 @@ pub(crate) struct SyntaxError {
 
 impl Node {
     /// Empty in the sense of schema §1.2: no value, `null`, `[]` or `{}`.
-    pub(crate) fn is_empty(&self) -> bool {
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
         match &self.value {
-            Value::Scalar { text, plain } => {
-                *plain && matches!(text.as_str(), "" | "~" | "null" | "Null" | "NULL")
+            Value::Scalar { text, style } => {
+                *style == Style::Plain
+                    && matches!(text.as_str(), "" | "~" | "null" | "Null" | "NULL")
             }
             Value::Sequence(items) => items.is_empty(),
             Value::Mapping(entries) => entries.is_empty(),
         }
     }
 
-    pub(crate) fn get(&self, key: &str) -> Option<&Self> {
+    #[must_use]
+    pub fn get(&self, key: &str) -> Option<&Self> {
         match &self.value {
             Value::Mapping(entries) => entries
                 .iter()
@@ -56,6 +73,7 @@ impl Node {
 pub(crate) fn parse(text: &str, first_line: usize) -> Result<Option<Node>, SyntaxError> {
     let mut builder = Builder {
         events: Parser::new_from_str(text),
+        characters: text.chars().collect(),
         lines_before: first_line.saturating_sub(1),
     };
     builder.document()
@@ -63,6 +81,8 @@ pub(crate) fn parse(text: &str, first_line: usize) -> Result<Option<Node>, Synta
 
 struct Builder<'input> {
     events: Parser<'input, StrInput<'input>>,
+    /// The scanner reports positions in characters; the events do not say whether a collection is in flow style.
+    characters: Vec<char>,
     lines_before: usize,
 }
 
@@ -95,7 +115,7 @@ impl<'input> Builder<'input> {
             Event::Alias(_) => return Err(self.error(span, "must not use YAML aliases")),
             Event::Scalar(text, style, _, None) => Value::Scalar {
                 text: text.into_owned(),
-                plain: style == ScalarStyle::Plain,
+                style: style_of(style),
             },
             Event::SequenceStart(_, None) => Value::Sequence(self.sequence()?),
             Event::MappingStart(_, None) => Value::Mapping(self.mapping()?),
@@ -107,7 +127,12 @@ impl<'input> Builder<'input> {
             | Event::SequenceEnd
             | Event::MappingEnd => return Err(self.error(span, "is not valid YAML here")),
         };
-        Ok(Node { line, value })
+        let flow = !matches!(value, Value::Scalar { .. }) && self.starts_flow_collection(span);
+        Ok(Node { line, value, flow })
+    }
+
+    fn starts_flow_collection(&self, span: Span) -> bool {
+        matches!(self.characters.get(span.start.index()), Some('[' | '{'))
     }
 
     fn sequence(&mut self) -> Result<Vec<Node>, SyntaxError> {
@@ -128,19 +153,23 @@ impl<'input> Builder<'input> {
             if matches!(event, Event::MappingEnd) {
                 return Ok(entries);
             }
-            let key = self.key(event, span)?;
+            let (key, key_style) = self.key(event, span)?;
             if entries.iter().any(|entry| entry.key == key) {
                 return Err(self.error(span, &format!("repeats the key `{key}`")));
             }
             let (value_event, value_span) = self.next()?;
             let value = self.node(value_event, value_span)?;
-            entries.push(Entry { key, value });
+            entries.push(Entry {
+                key,
+                key_style,
+                value,
+            });
         }
     }
 
-    fn key(&mut self, event: Event<'input>, span: Span) -> Result<String, SyntaxError> {
+    fn key(&mut self, event: Event<'input>, span: Span) -> Result<(String, Style), SyntaxError> {
         match self.node(event, span)?.value {
-            Value::Scalar { text, .. } => Ok(text),
+            Value::Scalar { text, style } => Ok((text, style)),
             Value::Sequence(_) | Value::Mapping(_) => {
                 Err(self.error(span, "must use text as keys, not lists or maps"))
             }
@@ -177,17 +206,27 @@ impl<'input> Builder<'input> {
     }
 }
 
+const fn style_of(style: ScalarStyle) -> Style {
+    match style {
+        ScalarStyle::Plain => Style::Plain,
+        ScalarStyle::SingleQuoted => Style::SingleQuoted,
+        ScalarStyle::DoubleQuoted => Style::DoubleQuoted,
+        ScalarStyle::Literal | ScalarStyle::Folded => Style::Block,
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::{Entry, Node, SyntaxError, Value, parse};
+    use super::{Entry, Node, Style, SyntaxError, Value, parse};
 
-    fn scalar(line: usize, text: &str, plain: bool) -> Node {
+    fn scalar(line: usize, text: &str, style: Style) -> Node {
         Node {
             line,
             value: Value::Scalar {
                 text: text.to_owned(),
-                plain,
+                style,
             },
+            flow: false,
         }
     }
 
@@ -206,13 +245,16 @@ mod tests {
                 value: Value::Mapping(vec![
                     Entry {
                         key: "type".to_owned(),
-                        value: scalar(2, "skill", true),
+                        key_style: Style::Plain,
+                        value: scalar(2, "skill", Style::Plain),
                     },
                     Entry {
                         key: "name".to_owned(),
-                        value: scalar(3, "Go", false),
+                        key_style: Style::Plain,
+                        value: scalar(3, "Go", Style::DoubleQuoted),
                     },
                 ]),
+                flow: false,
             }
         );
     }
@@ -225,8 +267,81 @@ mod tests {
             node.get("kind"),
             Some(&Node {
                 line: 3,
-                value: Value::Sequence(vec![scalar(3, "client", true), scalar(4, "agency", true)]),
+                value: Value::Sequence(vec![
+                    scalar(3, "client", Style::Plain),
+                    scalar(4, "agency", Style::Plain)
+                ]),
+                flow: false,
             })
+        );
+    }
+
+    #[test]
+    fn every_way_to_write_a_scalar_has_its_style() {
+        let node = root("a: x\nb: 'x'\nc: \"x\"\nd: |-\n  x\ne: >-\n  x\n");
+
+        let styles = ["a", "b", "c", "d", "e"].map(|key| match node.get(key).map(|n| &n.value) {
+            Some(Value::Scalar { style, .. }) => Some(*style),
+            _ => None,
+        });
+
+        assert_eq!(
+            styles,
+            [
+                Some(Style::Plain),
+                Some(Style::SingleQuoted),
+                Some(Style::DoubleQuoted),
+                Some(Style::Block),
+                Some(Style::Block)
+            ]
+        );
+    }
+
+    #[test]
+    fn a_key_keeps_its_style() {
+        let node = root("\"[[A]]\": 1\nb: 2\n");
+
+        let Value::Mapping(entries) = node.value else {
+            panic!("not a map");
+        };
+
+        assert_eq!(
+            entries
+                .iter()
+                .map(|entry| entry.key_style)
+                .collect::<Vec<_>>(),
+            [Style::DoubleQuoted, Style::Plain]
+        );
+    }
+
+    #[test]
+    fn only_a_collection_written_in_flow_style_is_flow() {
+        let node = root(
+            "a: [x]\nb: {c: d}\ne: []\nf: {}\ng:\n  - h\ni:\n  j: k\nl: m\nn:\n  - [o]\n  - {p: q}\n",
+        );
+
+        let flow =
+            ["a", "b", "e", "f", "g", "i", "l", "n"].map(|key| node.get(key).map(|node| node.flow));
+
+        assert_eq!(
+            flow,
+            [
+                Some(true),
+                Some(true),
+                Some(true),
+                Some(true),
+                Some(false),
+                Some(false),
+                Some(false),
+                Some(false)
+            ]
+        );
+        let Some(Value::Sequence(items)) = node.get("n").map(|node| &node.value) else {
+            panic!("not a list");
+        };
+        assert_eq!(
+            items.iter().map(|item| item.flow).collect::<Vec<_>>(),
+            [true, true]
         );
     }
 

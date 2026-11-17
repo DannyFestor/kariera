@@ -8,10 +8,7 @@ use kariera_domain::{
 use crate::creation::error::CreateError;
 use crate::creation::fill::Fill;
 use crate::creation::request::{NewEngagement, NewLog, NewProject, OrganizationRole};
-
-const ENGAGEMENTS_FOLDER: &str = "Engagements";
-const PROJECTS_FOLDER: &str = "Projects";
-const MONTHLY_LOGS_FOLDER: &str = "Monthly Logs";
+use crate::discovery::{monthly_log_folder, note_folder};
 
 /// Where a note goes and what is written into its template, decided from the vault before anything is written.
 #[derive(Debug, PartialEq, Eq)]
@@ -45,7 +42,7 @@ impl Plan {
         ))?;
         Ok(Self {
             note_type: NoteType::MonthlyLog,
-            folder: PathBuf::from(MONTHLY_LOGS_FOLDER).join(format!("{:04}", log.month.year())),
+            folder: monthly_log_folder(log.month),
             name,
             fills: vec![
                 Fill::link("engagement", &log.engagement),
@@ -63,7 +60,7 @@ impl Plan {
         ))?;
         Ok(Self {
             note_type: NoteType::Project,
-            folder: PathBuf::from(PROJECTS_FOLDER),
+            folder: PathBuf::from(note_folder(NoteType::Project)),
             name,
             fills: vec![
                 Fill::link("engagement", &project.engagement),
@@ -81,7 +78,7 @@ impl Plan {
         let name = note_name(format!("{} {}", engagement.start, engagement.organization))?;
         Ok(Self {
             note_type: NoteType::Engagement,
-            folder: PathBuf::from(ENGAGEMENTS_FOLDER),
+            folder: PathBuf::from(note_folder(NoteType::Engagement)),
             name,
             fills: vec![
                 Fill::link(engagement.role.field(), &engagement.organization),

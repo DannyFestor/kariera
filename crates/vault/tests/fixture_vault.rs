@@ -1,25 +1,17 @@
 use std::fs;
-use std::io;
 use std::path::{Path, PathBuf};
 
 use kariera_domain::{FixedList, Link, NoteType, Organization};
-use kariera_vault::{LoadError, Location, NoteError, Problem, Vault};
+use kariera_vault::{Inspection, LoadError, Location, NoteError, Problem, Stray, Value, Vault};
 
 #[path = "support/vault_copy.rs"]
 mod vault_copy;
 
-use vault_copy::{copy_of_fixture_vault, fixture_vault};
+#[path = "support/replace_in.rs"]
+mod replace_in_support;
 
-fn replace_in(vault: &Path, note: &str, from: &str, to: &str) -> io::Result<()> {
-    let path = vault.join(note);
-    let text = fs::read_to_string(&path)?;
-    if !text.contains(from) {
-        return Err(io::Error::other(format!(
-            "{note} does not contain {from:?}"
-        )));
-    }
-    fs::write(path, text.replacen(from, to, 1))
-}
+use replace_in_support::replace_in;
+use vault_copy::{copy_of_fixture_vault, fixture_vault};
 
 /// The problems of a vault that must not load.
 fn errors_of(vault: &Path) -> Result<Vec<NoteError>, String> {
@@ -259,5 +251,100 @@ fn a_missing_vault_cannot_be_read() {
     assert!(
         matches!(error, LoadError::Unreadable { ref path, .. } if *path == missing),
         "{error}"
+    );
+}
+
+#[test]
+fn a_note_keeps_its_frontmatter_with_the_style_of_every_value() {
+    let vault = Vault::load(&fixture_vault()).expect("the fixture vault loads");
+    let go = vault
+        .notes()
+        .iter()
+        .find(|note| note.name.as_str() == "Go")
+        .expect("the fixture vault has the Skill Go");
+
+    let keys: Vec<&str> = match &go.frontmatter.value {
+        Value::Mapping(entries) => entries.iter().map(|entry| entry.key.as_str()).collect(),
+        Value::Scalar { .. } | Value::Sequence(_) => Vec::new(),
+    };
+
+    assert_eq!(keys, ["type", "name", "aliases", "category", "reviewed"]);
+    assert_eq!(
+        go.frontmatter
+            .get("aliases")
+            .map(|node| (node.line, node.flow)),
+        Some((5, false))
+    );
+}
+
+fn stray(path: &str, declared_type: &str) -> Stray {
+    Stray {
+        path: PathBuf::from(path),
+        declared_type: declared_type.to_owned(),
+    }
+}
+
+#[test]
+fn the_fixture_vault_has_no_note_outside_its_folders() {
+    let vault = Vault::load(&fixture_vault()).expect("the fixture vault loads");
+
+    assert_eq!(vault.strays().expect("the vault is readable"), []);
+}
+
+#[test]
+fn markdown_with_a_type_outside_the_note_folders_is_a_stray() {
+    let copy = copy_of_fixture_vault("strays_with_a_type").expect("the copy is made");
+    let typed = "---\ntype: skill\n---\n";
+    for (path, text) in [
+        ("Todo.md", "- [ ] write notes\n"),
+        ("AGENTS.md", "# Instructions\n"),
+        ("Leads/Idea.md", "---\ntype: idea\n---\n"),
+        ("Leads/Deep/Rust.md", typed),
+        ("Root.md", typed),
+        ("Leads/Empty type.md", "---\ntype:\n---\n"),
+        ("Leads/Broken.md", "---\ntype: [\n---\n"),
+        ("Templates/skill-copy.md", typed),
+        ("Generated/out.md", typed),
+        ("docs/schema.md", typed),
+        (".scratch/inbox.md", typed),
+        (".obsidian/notes.md", typed),
+        ("Leads/.hidden.md", typed),
+        ("Leads/diagram.canvas", typed),
+    ] {
+        let target = copy.join(path);
+        fs::create_dir_all(target.parent().expect("a file has a folder"))
+            .expect("the folder is made");
+        fs::write(target, text).expect("the file is written");
+    }
+    let vault = Vault::load(&copy).expect("the copy still loads");
+
+    assert_eq!(
+        vault.strays().expect("the vault is readable"),
+        [
+            stray("Leads/Deep/Rust.md", "skill"),
+            stray("Leads/Idea.md", "idea"),
+            stray("Root.md", "skill"),
+        ]
+    );
+}
+
+#[test]
+fn inspecting_keeps_the_notes_that_read_and_the_problems_of_those_that_did_not() {
+    let copy = copy_of_fixture_vault("inspect_partial").expect("the copy is made");
+    replace_in(
+        &copy,
+        "Skills/Go.md",
+        "category: language",
+        "category: dialect",
+    )
+    .expect("the note is broken");
+
+    let Inspection { vault, errors } = Vault::inspect(&copy).expect("the vault is readable");
+
+    assert_eq!(vault.notes().len(), 43);
+    assert!(vault.notes().iter().all(|note| note.name.as_str() != "Go"));
+    assert_eq!(errors.len(), 1);
+    assert!(
+        matches!(Vault::load(&copy), Err(LoadError::InvalidNotes(load_errors)) if load_errors == errors)
     );
 }

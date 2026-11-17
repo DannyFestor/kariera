@@ -131,6 +131,7 @@ name = "kariera-cli"
 version = "0.1.0"
 dependencies = [
  "kariera-domain",
+ "kariera-validate",
  "kariera-vault",
  "thiserror",
 ]
@@ -162,6 +163,10 @@ version = "0.1.0"
 [[package]]
 name = "kariera-validate"
 version = "0.1.0"
+dependencies = [
+ "kariera-domain",
+ "kariera-vault",
+]
 
 [[package]]
 name = "kariera-vault"

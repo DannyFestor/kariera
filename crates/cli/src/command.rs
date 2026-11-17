@@ -1,4 +1,5 @@
 use crate::translations::TranslationsCommand;
+use crate::validate::Format;
 use kariera_vault::NewNote;
 
 use crate::new_note;
@@ -9,6 +10,7 @@ pub(crate) enum Command {
     Version,
     Translations(TranslationsCommand),
     New(NewNote),
+    Validate(Format),
     Unknown(String),
     /// A known command given arguments it cannot use; the text says what is wrong.
     Misused(String),
@@ -31,6 +33,7 @@ impl Command {
             }
             "new" => new_note::parse(rest)
                 .map_or_else(|error| Self::Misused(error.to_string()), Self::New),
+            "validate" => Format::parse(rest).map_or_else(Self::Misused, Self::Validate),
             _ => Self::Unknown(argument),
         }
     }
@@ -40,6 +43,7 @@ impl Command {
 mod tests {
     use super::Command;
     use crate::translations::TranslationsCommand;
+    use crate::validate::Format;
 
     fn parse(arguments: &[&str]) -> Command {
         Command::parse(arguments.iter().map(ToString::to_string))
@@ -77,6 +81,23 @@ mod tests {
         assert_eq!(
             parse(&["translations", "--all"]),
             Command::Misused("unknown argument \"--all\"".to_owned())
+        );
+    }
+
+    #[test]
+    fn validate_takes_json() {
+        assert_eq!(parse(&["validate"]), Command::Validate(Format::Human));
+        assert_eq!(
+            parse(&["validate", "--json"]),
+            Command::Validate(Format::Json)
+        );
+    }
+
+    #[test]
+    fn validate_with_an_option_it_cannot_use_is_misused() {
+        assert_eq!(
+            parse(&["validate", "--xml"]),
+            Command::Misused("unknown argument \"--xml\"".to_owned())
         );
     }
 

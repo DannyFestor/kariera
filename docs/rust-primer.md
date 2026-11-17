@@ -203,9 +203,36 @@ The macro turns this into an enum, its slugs and its labels.
 - **Integration tests** live in `crates/<crate>/tests/` and use the crate from outside, like a user. [`crates/cli/tests/kariera.rs`](../crates/cli/tests/kariera.rs) runs the built binary.
 - `make test` runs both with [cargo-nextest](https://nexte.st), then the examples in doc comments ("doc tests") with `cargo test --doc`, because nextest skips those.
 - Tests run on the fictional vault in [`fixtures/vault/`](../fixtures/vault/), never on real data.
+- A test that breaks a rule copies the fixture vault into a temporary folder, changes one note and compares the findings, as in [`test_vault.rs`](../crates/validate/src/test_vault.rs). The copy is deleted when the test value is dropped: `Drop` is the trait that runs code when a value goes out of scope.
 - `make mutants` runs [cargo-mutants](https://mutants.rs): it changes the code (for example, replaces a function body with a default value) and reports every change the tests still pass with. It is slow and not part of `make check`.
 - Two integration test files of one crate share helpers by including the same file with `#[path = "support/vault_copy.rs"] mod vault_copy;`, as [`crates/vault/tests/`](../crates/vault/tests/) does for the copy of the fixture vault. A helper file directly in `tests/` would be built as a test of its own, and `support/mod.rs` is denied like every `mod.rs`. Tests that write copy the fixture vault into cargo's scratch directory (`CARGO_TARGET_TMPDIR`) first.
 - **Snapshot tests** with [insta](https://insta.rs) compare a whole value with a file written earlier, the snapshot. [`crates/vault/tests/fixture_vault.rs`](../crates/vault/tests/fixture_vault.rs) snapshots the whole fixture vault as read, with `insta::assert_debug_snapshot!`; the snapshots sit in `tests/snapshots/` beside the test and are committed. When a value changes, the test fails and insta writes the new value next to the snapshot as `.snap.new`. `make snapshots` shows each change and asks whether to accept it; `make snapshots-accept` accepts them all, so read every `.snap.new` first.
+
+## Rules over the whole vault
+
+`vault` reads each note on its own; [`kariera-validate`](../crates/validate/src/lib.rs) checks what only the whole vault can tell. [`checks.rs`](../crates/validate/src/checks.rs) lists one function per concern of the schema, all of the same type:
+
+```rust
+type Check = fn(&Context<'_>) -> Vec<Finding>;
+
+const CHECKS: [Check; 15] = [placement::check, file_names::check, /* … */ profile::check];
+```
+
+A `fn(…) -> …` type is a plain function stored in an array, like a function pointer in C. `run` calls each one on the same [`Context`](../crates/validate/src/context.rs), which wraps the loaded vault with the lookups the checks share, and concatenates what they return with `flat_map`. A check never prints and never stops at the first problem: it returns every [`Finding`](../crates/validate/src/finding.rs), and `cli` decides how to show them.
+
+`Context::notes::<Engagement>()` shows two things about generics. The turbofish `::<Engagement>` names the type that Rust cannot infer from the arguments, and the bound `T: Note + 'a` says the notes may be borrowed for as long as the vault is (`'a` is a lifetime: how long a reference stays valid). The result is a [`Found`](../crates/validate/src/context.rs), a note with its name and file, so a finding knows where to point.
+
+Each check starts with the data it needs and ends in a chain of `filter_map`, which keeps the `Some` values of an `Option`-returning closure, so "this note is fine" is `None` and "this note breaks the rule" is `Some(Finding)`:
+
+```rust
+context.notes::<Project>().filter_map(|project| project_name(context, &project))
+```
+
+`validate` calls `Vault::inspect`, which keeps going past notes that do not read: the notes that read are the vault, the others come back as errors and become `Finding`s of rule `schema`. The checks run on what read; the two that need every note ask `context.is_complete()` first.
+
+[`layout.rs`](../crates/validate/src/layout.rs) writes the frontmatter of each note type as `const` tables (`const PROJECT: &[Field] = &[…]`): the fields in the order of the schema, each with a `Shape` that says how its value is written. `const` data is built at compile time, and `&'static` references into it cost nothing at run time. The order check and the style check both walk these tables.
+
+`kariera validate --json` is written by hand in [`json.rs`](../crates/cli/src/json.rs): the output has a fixed shape of strings, numbers, booleans, lists and objects, so the standard library is enough and no crate is added for it.
 
 ## When a check fails
 

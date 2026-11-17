@@ -11,7 +11,7 @@ pub(super) fn read(
 ) -> Result<MonthlyLog, Reported> {
     let engagement = fields.required("engagement");
     let month = fields.required("month");
-    let hours = fields.required("hours");
+    let hours = fields.optional("hours");
     let project_hours = fields.optional("project_hours");
     let sources = fields.required("sources");
     let focus = sections.one_line("Focus");
