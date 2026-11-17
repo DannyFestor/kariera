@@ -14,6 +14,8 @@ A Rust CLI that builds career documents from an Obsidian vault. See `README.md` 
 8. **Run everything through `make`.** `make help` lists the targets. Do not call the tools in `bin/` directly.
 9. **Comments say why, never what.** Names, types and tests carry the meaning. Write a comment only for something the code cannot say: a constraint, a reason, a non-obvious consequence, a link to an ADR. Never write a comment or doc comment that restates the item's name, signature or body (`/// Parses the arguments` above `fn parse`). When a comment seems necessary to explain what code does, rename or split the code instead.
 
+10. **Report back when you finish.** A T3 thread or subagent started by another thread or session reports to it when it is done, blocked or waiting on the owner, without being told. A T3 thread sends its final report with `t3_thread_send` (`mode: "queue"`) to the starting thread's id, given in its launch message or `delegatedFrom`; if the id is missing, ask the owner for it before starting work. A subagent returns its report as its result. Whoever starts a thread or subagent passes their own thread id and repeats this rule in the brief.
+
 ## How the checks reach you
 
 - Before an edit, a hook denies `#[allow]` and edits to `Cargo.lock`, and asks the human before an edit to a guardrail file (`Cargo.toml`, `deny.toml`, `crate-boundaries.toml`, `clippy.toml`, `rustfmt.toml`, `rust-toolchain.toml`, `Makefile`, `lefthook.yml`, `scripts/`, `tools/`, `docs/adr/`, this file).
