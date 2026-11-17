@@ -223,7 +223,7 @@ install: ## Install the kariera binary into cargo's bin directory for this machi
 	$(CARGO) install --path crates/cli --locked
 
 .PHONY: check-vault
-check-vault: ## Smoke-test kariera against the real vault named in KARIERA_CONFIG (local only, never in hooks)
+check-vault: ## Run kariera validate on the real vault named in KARIERA_CONFIG (local only, never in hooks)
 	scripts/check-vault.sh $(KARIERA_CONFIG)
 
 ##@ Upgrade
