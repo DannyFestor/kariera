@@ -1,0 +1,12 @@
+# PROTOTYPE: fictional personal data for Robin Beispiel of fixtures/vault, in the shape the CV variants read. The real
+# file lives in ~/.config/kariera/personal.yaml on the owner's machines only; its schema is not decided yet.
+email: robin@example.com
+phone: +81 90 0000 0000
+location: Sapporo, Japan
+birth_date: 1990-01-01
+nationality:
+  en: German
+  de: deutsch
+# The languages whose CV prints the photo and the birth date and nationality (an open question for the owner).
+show_on:
+  - de
