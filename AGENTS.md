@@ -25,3 +25,17 @@ A Rust CLI that builds career documents from an Obsidian vault. See `README.md` 
 - `docs/rust-primer.md`: how the Rust in this repository works, for readers new to Rust. Keep it accurate when you change a pattern it describes.
 - `docs/upgrading.md`: bumping the toolchain or a pinned tool.
 - `docs/adr/`: one file per decision.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues for `DannyFestor/kariera`, used through the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+The five default triage labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/agents/domain.md`.
