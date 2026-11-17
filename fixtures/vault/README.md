@@ -11,7 +11,7 @@ kariera reads only the Markdown files in the note folders and `Profile.md`, so t
 - Engagements: an internship, an employment with a Contract, a finished freelance Engagement, and an ongoing one (`2023-10 Globex`) whose work was first placed by an Agency and then contracted directly.
 - Contracts: one via an Agency (`2023-10 Globex via Fabrikam Contract`), open-ended, by the hour with a `rate_history`, by the month, and an employment Contract without a rate.
 - A confidential Project with a `public_title` (`Acme - Ledger`), and a non-confidential one that names its End Client (`Acme - Shop`).
-- Monthly Logs with `project_hours` split over two Projects, once adding up to `hours` and once not, with an `Hours mismatch:` Source note.
+- Monthly Logs with `project_hours` split over two Projects, once adding up to `hours` and once not, with an `Hours mismatch:` Source note; and a Monthly Log without `hours`, because the Work Report states none (schema §1.11).
 - Japanese and German text in fields and body sections, translated, untranslated and partly translated; `translated_from` fingerprints; `reviewed: true` and `false`.
 - Names from schema §1.1: `C Sharp` with the alias `C#`, and `Müller Logistik` with an umlaut.
 - A Skill alias equal to one of its `labels` (`Example Charts`, schema §2.6).

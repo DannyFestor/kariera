@@ -341,7 +341,7 @@ fn inspecting_keeps_the_notes_that_read_and_the_problems_of_those_that_did_not()
 
     let Inspection { vault, errors } = Vault::inspect(&copy).expect("the vault is readable");
 
-    assert_eq!(vault.notes().len(), 42);
+    assert_eq!(vault.notes().len(), 43);
     assert!(vault.notes().iter().all(|note| note.name.as_str() != "Go"));
     assert_eq!(errors.len(), 1);
     assert!(

@@ -83,7 +83,7 @@ mod tests {
         MonthlyLog {
             engagement: Link::new("2025-06 Acme".parse().unwrap()),
             month: "2025-07".parse::<Month>().unwrap(),
-            hours: "152.5".parse().unwrap(),
+            hours: Some("152.5".parse().unwrap()),
             project_hours: std::collections::BTreeMap::new(),
             sources: Vec::new(),
             focus: "Shipped the search".parse().unwrap(),

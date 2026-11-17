@@ -59,17 +59,18 @@ fn project_mismatch(
         .then(|| format!("links [[{}]], which does not run in {month}", link.target()))
 }
 
+/// Without `hours` there is nothing to add up to: hours are never derived (schema §1.11).
 fn sum_matches_or_is_explained(log: &Found<'_, MonthlyLog>) -> Option<Finding> {
+    let hours = log.note.hours?;
     let sum: Hours = log.note.project_hours.values().copied().sum();
-    let differs = !log.note.project_hours.is_empty() && sum != log.note.hours;
+    let differs = !log.note.project_hours.is_empty() && sum != hours;
     (differs && !has_mismatch_note(log.note)).then(|| {
         Finding::new(
             log.file,
             Rule::Hours,
             At::Field(FieldPath::of("project_hours")),
             format!(
-                "adds up to {sum} h, but `hours` is {}: a Source `note` starting with `{MISMATCH_PREFIX}` must explain the difference",
-                log.note.hours
+                "adds up to {sum} h, but `hours` is {hours}: a Source `note` starting with `{MISMATCH_PREFIX}` must explain the difference"
             ),
         )
         .warning()
@@ -77,8 +78,10 @@ fn sum_matches_or_is_explained(log: &Found<'_, MonthlyLog>) -> Option<Finding> {
 }
 
 /// `hours` comes from an Invoice, a Timesheet or a Work Report, and that Source is cited (schema §1.11). Which of
-/// them it came from is not recorded, so a log is only reported when it cites none of the three.
+/// them it came from is not recorded, so a log is only reported when it cites none of the three. A log without
+/// `hours` has no such Source.
 fn cites_the_source_of_hours(log: &Found<'_, MonthlyLog>) -> Option<Finding> {
+    log.note.hours?;
     let cites_one = log.note.sources.iter().any(|source| {
         matches!(
             source.kind,
@@ -192,6 +195,35 @@ mod tests {
 
             assert_eq!(vault.lines(), Vec::<String>::new(), "{kind}");
         }
+    }
+
+    #[test]
+    fn a_log_without_hours_has_nothing_to_add_up_to_and_no_source_of_hours_to_cite() {
+        let vault = TestVault::new("hours_empty");
+        vault.replace(
+            "Monthly Logs/2025/2025-06 Globex Log.md",
+            "hours: 160\n",
+            "",
+        );
+        vault.replace(
+            "Monthly Logs/2025/2025-06 Globex Log.md",
+            "  - kind: invoice\n    path: .scratch/_inputs/invoices/2025/globex-2025-06.pdf\n    note: 160 h\n",
+            "  - kind: recalled\n    note: no document states the hours\n",
+        );
+
+        assert_eq!(vault.lines(), Vec::<String>::new());
+    }
+
+    #[test]
+    fn project_hours_without_hours_are_not_a_mismatch() {
+        let vault = TestVault::new("hours_empty_with_project_hours");
+        vault.replace(
+            "Monthly Logs/2025/2025-06 Globex Log.md",
+            "hours: 160\n",
+            "",
+        );
+
+        assert_eq!(vault.lines(), Vec::<String>::new());
     }
 
     #[test]

@@ -190,7 +190,7 @@ fn validate_says_so_when_a_vault_has_no_findings_and_exits_zero() {
 
     let output = kariera_at(&home, &["validate"]).unwrap();
 
-    assert_eq!(stdout(&output), "No problems in 43 notes.\n");
+    assert_eq!(stdout(&output), "No problems in 44 notes.\n");
     assert_eq!(stderr(&output), "");
     assert_eq!(output.status.code(), Some(0));
 }
@@ -206,7 +206,7 @@ fn validate_lists_errors_per_note_and_exits_one() {
         stdout(&output),
         "Organizations/Globex.md: error [file-name] the note must be named `Globex Inc` (its field `name`), not `Globex`\n\
          Skills/Go.md:4: error [yaml-style] field `aliases` must be written in block style, not as `[…]` or `{…}`\n\
-         2 errors, 0 warnings in 43 notes.\n"
+         2 errors, 0 warnings in 44 notes.\n"
     );
     assert_eq!(output.status.code(), Some(1));
 }
@@ -219,7 +219,7 @@ fn validate_does_not_pluralize_one_error() {
     let output = kariera_at(&home, &["validate"]).unwrap();
 
     assert!(
-        stdout(&output).ends_with("1 error, 0 warnings in 43 notes.\n"),
+        stdout(&output).ends_with("1 error, 0 warnings in 44 notes.\n"),
         "{}",
         stdout(&output)
     );
@@ -241,7 +241,7 @@ fn validate_exits_zero_with_warnings_only() {
     assert_eq!(
         stdout(&output),
         "Monthly Logs/2025/2025-07 Globex Log.md:7: warning [hours] field `project_hours` adds up to 150.25 h, but `hours` is 152.5: a Source `note` starting with `Hours mismatch:` must explain the difference\n\
-         0 errors, 1 warning in 43 notes.\n"
+         0 errors, 1 warning in 44 notes.\n"
     );
     assert_eq!(output.status.code(), Some(0));
 }
@@ -271,7 +271,7 @@ fn validate_reports_a_note_the_reader_refuses_and_still_runs_the_other_rules() {
         "Organizations/Globex.md: error [file-name] the note must be named `Globex Inc` (its field `name`), not `Globex`\n\
          Skills/Go.md:6: error [schema] field `category` must be one of language, framework, library, database, cloud, platform, tool, ai-tool, method, human-language\n\
          Some notes could not be read, so the rules that need every note (a Contract listed by exactly one Engagement, exactly one Profile) did not run: fix the problems above first.\n\
-         2 errors, 0 warnings in 42 notes.\n"
+         2 errors, 0 warnings in 43 notes.\n"
     );
     assert_eq!(output.status.code(), Some(1));
 }
@@ -284,7 +284,7 @@ fn validate_json_is_clean_for_a_clean_vault() {
 
     assert_eq!(
         stdout(&output),
-        "{\"errors\":0,\"warnings\":0,\"notes_checked\":43,\"complete\":true,\"findings\":[]}\n"
+        "{\"errors\":0,\"warnings\":0,\"notes_checked\":44,\"complete\":true,\"findings\":[]}\n"
     );
     assert_eq!(output.status.code(), Some(0));
 }
@@ -298,7 +298,7 @@ fn validate_json_lists_every_finding_with_its_parts() {
 
     assert_eq!(
         stdout(&output),
-        "{\"errors\":2,\"warnings\":0,\"notes_checked\":43,\"complete\":true,\"findings\":[\
+        "{\"errors\":2,\"warnings\":0,\"notes_checked\":44,\"complete\":true,\"findings\":[\
          {\"path\":\"Organizations/Globex.md\",\"line\":null,\"severity\":\"error\",\"rule\":\"file-name\",\
          \"location\":{\"kind\":\"note\",\"name\":null},\
          \"message\":\"must be named `Globex Inc` (its field `name`), not `Globex`\"},\

@@ -51,7 +51,7 @@ mod tests {
         let report = vault.report();
 
         assert_eq!(report.findings(), []);
-        assert_eq!(report.notes_checked(), 43);
+        assert_eq!(report.notes_checked(), 44);
         assert!(report.is_complete());
         assert!(!report.has_errors());
     }
@@ -235,7 +235,7 @@ mod tests {
             ]
         );
         assert!(!report.is_complete());
-        assert_eq!(report.notes_checked(), 42);
+        assert_eq!(report.notes_checked(), 43);
     }
 
     #[test]
