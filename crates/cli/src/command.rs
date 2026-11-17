@@ -1,10 +1,14 @@
 use crate::translations::TranslationsCommand;
+use kariera_vault::NewNote;
+
+use crate::new_note;
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum Command {
     Help,
     Version,
     Translations(TranslationsCommand),
+    New(NewNote),
     Unknown(String),
     /// A known command given arguments it cannot use; the text says what is wrong.
     Misused(String),
@@ -25,6 +29,8 @@ impl Command {
             "translations" => {
                 TranslationsCommand::parse(rest).map_or_else(Self::Misused, Self::Translations)
             }
+            "new" => new_note::parse(rest)
+                .map_or_else(|error| Self::Misused(error.to_string()), Self::New),
             _ => Self::Unknown(argument),
         }
     }
