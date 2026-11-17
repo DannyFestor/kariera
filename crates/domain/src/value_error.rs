@@ -23,6 +23,10 @@ pub enum ValueError {
     ForbiddenCharacter(char),
     #[error("must not start or end with a space or a dot")]
     SpaceOrDotAtEdge,
+    #[error("must be 12 lowercase hex digits, such as 3f9a1c0b7e2d")]
+    NotAFingerprint,
+    #[error("must be ja or de")]
+    NotATranslationLanguage,
     #[error("must be a path relative to the vault, with / separators and no ..")]
     NotRelativePath,
 }

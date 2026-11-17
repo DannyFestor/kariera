@@ -25,10 +25,20 @@ pub(crate) struct RawNote {
 /// The frontmatter's YAML starts on the line after the opening `---` (schema §1.2).
 const FIRST_YAML_LINE: usize = 2;
 
-struct Split<'text> {
-    yaml: &'text str,
+const OPENING_LINE: &str = "---\n";
+
+/// The parts of a note's text. Joined again with `with_yaml`, they give the text back byte for byte.
+pub(crate) struct Split<'text> {
+    pub(crate) yaml: &'text str,
+    closing: &'text str,
     body: &'text str,
     first_body_line: usize,
+}
+
+impl Split<'_> {
+    pub(crate) fn with_yaml(&self, yaml: &str) -> String {
+        format!("{OPENING_LINE}{yaml}{}{}", self.closing, self.body)
+    }
 }
 
 impl RawNote {
@@ -101,7 +111,7 @@ fn text(bytes: Vec<u8>) -> Result<String, Problem> {
     }
 }
 
-fn split(text: &str) -> Result<Split<'_>, Problem> {
+pub(crate) fn split(text: &str) -> Result<Split<'_>, Problem> {
     let missing = || {
         Problem::new(
             Location::Frontmatter,
@@ -109,12 +119,13 @@ fn split(text: &str) -> Result<Split<'_>, Problem> {
             "must open the note: a `---` line, the fields, then another `---` line",
         )
     };
-    let after_opening = text.strip_prefix("---\n").ok_or_else(missing)?;
+    let after_opening = text.strip_prefix(OPENING_LINE).ok_or_else(missing)?;
     let mut yaml_length = 0;
     for (closing_line, line) in (FIRST_YAML_LINE..).zip(after_opening.split_inclusive('\n')) {
         if line.trim_end_matches('\n') == "---" {
             return Ok(Split {
                 yaml: after_opening.get(..yaml_length).unwrap_or_default(),
+                closing: line,
                 body: after_opening
                     .get(yaml_length + line.len()..)
                     .unwrap_or_default(),

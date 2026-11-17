@@ -5,9 +5,9 @@
 use std::collections::BTreeMap;
 
 use kariera_domain::{
-    ContractType, Date, EngagementType, FixedList, Hours, Link, Month, Note, NoteName, NoteType,
-    OrganizationKind, Phase, QualificationCategory, RateStep, RateUnit, SkillCategory, Source,
-    SourceKind, SourcePath, Text, Translated, Translations, Url, ValueError, WholeNumber,
+    ContractType, Date, EngagementType, Fingerprint, FixedList, Hours, Link, Month, Note, NoteName,
+    NoteType, OrganizationKind, Phase, QualificationCategory, RateStep, RateUnit, SkillCategory,
+    Source, SourceKind, SourcePath, Text, Translated, Translations, Url, ValueError, WholeNumber,
 };
 
 use crate::Problem;
@@ -58,7 +58,7 @@ macro_rules! parsed_scalars {
     };
 }
 
-parsed_scalars!(Text, Url, Month, Date, Hours, SourcePath);
+parsed_scalars!(Text, Url, Month, Date, Hours, SourcePath, Fingerprint);
 
 impl<const MIN: u32, const MAX: u32> FromScalar for WholeNumber<MIN, MAX> {
     fn from_scalar(text: &str) -> Result<Self, String> {
@@ -193,7 +193,7 @@ impl FromNode for Translated<Text> {
     }
 }
 
-impl FromNode for Translations<Text> {
+impl<T: FromNode> FromNode for Translations<T> {
     fn from_node(node: &Node, cursor: &Cursor<'_>) -> Result<Self, Vec<Problem>> {
         read_map(node, cursor, |fields| {
             let ja = fields.optional("ja");

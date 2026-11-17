@@ -15,7 +15,8 @@ Not usable yet. The project is being set up.
 | `kariera validate` | Checks every note against the schema, finds broken links and missing sources |
 | `kariera new <log\|project\|engagement>` | Creates a note from the vault's templates |
 | `kariera build` | Builds every document in every language and format; `--doc` and `--lang` narrow it down |
-| `kariera translations --stale` | Lists notes whose English text changed after their translations |
+| `kariera translations --stale` | Lists the notes and languages whose translation is empty or older than the note's English text |
+| `kariera translations --mark <note> --lang <ja\|de>` | Records that the translation matches the English text as it is now |
 
 ## Configuration
 
@@ -31,7 +32,7 @@ vault = "~/Notes/Career"
 
 Any other key is an error, so a misspelt setting is not silently ignored. Personal data for the 履歴書 does not go here: it lives in `~/.config/kariera/personal.yaml`.
 
-kariera reads the notes in `Organizations/`, `Engagements/`, `Contracts/`, `Projects/`, `Monthly Logs/`, `Skills/` and `Qualifications/` (with their subfolders) and `Profile.md` in the vault root. It reads nothing else in the vault and never writes to it.
+kariera reads the notes in `Organizations/`, `Engagements/`, `Contracts/`, `Projects/`, `Monthly Logs/`, `Skills/` and `Qualifications/` (with their subfolders) and `Profile.md` in the vault root. It reads nothing else in the vault. The only thing it writes is the `translated_from` value of one note, set by `kariera translations --mark`; the fingerprint it stores is defined in [ADR 0002](docs/adr/0002-translation-fingerprints.md).
 
 ## Design
 

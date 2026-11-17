@@ -1,4 +1,4 @@
-use kariera_domain::{Text, Translations};
+use kariera_domain::Translations;
 
 use crate::Problem;
 use crate::cursor::Cursor;
@@ -67,7 +67,10 @@ impl<'a> Fields<'a> {
         self.optional(key).map(Option::unwrap_or_default)
     }
 
-    pub(crate) fn translations(&mut self, key: &'a str) -> Result<Translations<Text>, Reported> {
+    pub(crate) fn translations<T>(&mut self, key: &'a str) -> Result<Translations<T>, Reported>
+    where
+        Translations<T>: FromNode,
+    {
         self.optional(key)
             .map(|translations| translations.unwrap_or_else(Translations::none))
     }
@@ -279,7 +282,7 @@ mod tests {
 
     #[test]
     fn absent_translations_are_none() {
-        let labels = read("{}", |fields| fields.translations("labels"));
+        let labels = read("{}", |fields| fields.translations::<Text>("labels"));
 
         assert_eq!(labels, Ok(Translations::none()));
     }

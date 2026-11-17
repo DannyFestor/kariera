@@ -1,5 +1,5 @@
 use crate::fixed_list::labelled_list;
-use crate::{Month, Source, Text, Translations};
+use crate::{Fingerprint, Month, Source, Text, Translations};
 
 /// Schema §2.7.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -15,7 +15,7 @@ pub struct Qualification {
     pub date: Month,
     pub level: Option<Text>,
     pub score: Option<Text>,
-    pub translated_from: Translations<Text>,
+    pub translated_from: Translations<Fingerprint>,
     pub sources: Vec<Source>,
     pub reviewed: bool,
 }

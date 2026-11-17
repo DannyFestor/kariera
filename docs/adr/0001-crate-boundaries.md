@@ -5,13 +5,15 @@ kariera is a Cargo workspace of eight crates under `crates/`, each with one job.
 | Crate | Job | May depend on |
 |---|---|---|
 | `domain` | The vault's glossary as types (Engagement, Contract, Project, Monthly Log, Skill, …). No I/O. | nothing in the workspace |
-| `vault` | Reads the vault's notes (Markdown with YAML frontmatter) into domain types. | `domain` |
+| `vault` | Reads the vault's notes (Markdown with YAML frontmatter) into domain types, and is the only crate that writes to the vault. | `domain` |
 | `validate` | Checks the notes against the schema and against each other. | `domain`, `vault` |
 | `documents` | Assembles each document's content (CV, 職務経歴書, 履歴書, Skill Sheet) per language, independent of the output format. | `domain` |
 | `render-typst` | Renders documents to PDF with Typst embedded as a library. | `documents`, `domain` |
 | `render-docx` | Renders documents to DOCX. | `documents`, `domain` |
 | `render-xlsx` | Renders documents to XLSX. | `documents`, `domain` |
 | `cli` | The `kariera` binary: parses arguments, wires the other crates together, prints, and sets the exit code. | every crate |
+
+`vault` also writes, because it is the crate that knows what a note on disk looks like: the writes are the few the schema leaves to kariera (the `translated_from` value, ADR 0002; new notes from the vault's templates). They are small edits of one note's text through one helper, never a rewrite of a note from its domain value. No other crate touches the vault's files, so a change to how notes are written has one place to go.
 
 Only `cli` prints. Every other crate returns values and errors, so it can be tested without capturing output, and what the user sees is decided in one place.
 

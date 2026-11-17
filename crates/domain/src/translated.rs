@@ -1,4 +1,4 @@
-use crate::Language;
+use crate::{Language, TranslationLanguage};
 
 /// A value in English with its optional Japanese and German translations.
 ///
@@ -34,12 +34,20 @@ impl<T> Translations<T> {
     pub const fn none() -> Self {
         Self { ja: None, de: None }
     }
+
+    #[must_use]
+    pub const fn get(&self, language: TranslationLanguage) -> Option<&T> {
+        match language {
+            TranslationLanguage::Japanese => self.ja.as_ref(),
+            TranslationLanguage::German => self.de.as_ref(),
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::{Translated, Translations};
-    use crate::Language;
+    use crate::{Language, TranslationLanguage};
 
     #[test]
     fn each_language_gets_its_own_value() {
@@ -74,5 +82,17 @@ mod tests {
             Translations::<u8>::none(),
             Translations { ja: None, de: None }
         );
+    }
+
+    #[test]
+    fn each_translation_language_gets_its_own_value() {
+        let labels = Translations {
+            ja: Some("ゴー"),
+            de: None,
+        };
+
+        let values = TranslationLanguage::ALL.map(|language| labels.get(language).copied());
+
+        assert_eq!(values, [Some("ゴー"), None]);
     }
 }

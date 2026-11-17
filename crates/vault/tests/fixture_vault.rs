@@ -5,34 +5,10 @@ use std::path::{Path, PathBuf};
 use kariera_domain::{FixedList, Link, NoteType, Organization};
 use kariera_vault::{LoadError, Location, NoteError, Problem, Vault};
 
-fn fixture_vault() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/vault")
-}
+#[path = "support/vault_copy.rs"]
+mod vault_copy;
 
-/// A fresh copy of the fixture vault, for a test that breaks it. It lives in cargo's scratch directory for
-/// integration tests, under `target/`.
-fn copy_of_fixture_vault(test: &str) -> io::Result<PathBuf> {
-    let copy = Path::new(env!("CARGO_TARGET_TMPDIR")).join(test);
-    if copy.exists() {
-        fs::remove_dir_all(&copy)?;
-    }
-    copy_directory(&fixture_vault(), &copy)?;
-    Ok(copy)
-}
-
-fn copy_directory(from: &Path, to: &Path) -> io::Result<()> {
-    fs::create_dir_all(to)?;
-    for entry in fs::read_dir(from)? {
-        let entry = entry?;
-        let target = to.join(entry.file_name());
-        if entry.file_type()?.is_dir() {
-            copy_directory(&entry.path(), &target)?;
-        } else {
-            fs::copy(entry.path(), target)?;
-        }
-    }
-    Ok(())
-}
+use vault_copy::{copy_of_fixture_vault, fixture_vault};
 
 fn replace_in(vault: &Path, note: &str, from: &str, to: &str) -> io::Result<()> {
     let path = vault.join(note);

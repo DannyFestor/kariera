@@ -1,6 +1,7 @@
 use crate::fixed_list::labelled_list;
 use crate::{
-    Contract, Link, Month, Organization, Paragraphs, Source, Text, Translated, Translations,
+    Contract, Fingerprint, Link, Month, Organization, Paragraphs, Source, Text, Translated,
+    Translations,
 };
 
 /// Schema §2.2. Exactly one of `client` and `employer` is set, the one `engagement_type` asks for.
@@ -18,7 +19,7 @@ pub struct Engagement {
     /// Empty while the Engagement is ongoing.
     pub end: Option<Month>,
     pub contracts: Vec<Link<Contract>>,
-    pub translated_from: Translations<Text>,
+    pub translated_from: Translations<Fingerprint>,
     pub sources: Vec<Source>,
     pub reviewed: bool,
     pub summary: Translated<Paragraphs>,

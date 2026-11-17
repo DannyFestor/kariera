@@ -1,5 +1,5 @@
 use crate::fixed_list::labelled_list;
-use crate::{Source, Text, Translated, Translations};
+use crate::{Fingerprint, Source, Text, Translated, Translations};
 
 /// Schema §2.6. `level` is set only for a `human-language`.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -10,7 +10,7 @@ pub struct Skill {
     /// Empty where `name` is used as it is.
     pub labels: Translations<Text>,
     pub level: Option<Translated<Text>>,
-    pub translated_from: Translations<Text>,
+    pub translated_from: Translations<Fingerprint>,
     pub sources: Vec<Source>,
     pub reviewed: bool,
 }

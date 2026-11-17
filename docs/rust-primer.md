@@ -151,6 +151,22 @@ The first line reads every type that is written as one YAML value (a `Month`, a 
 
 `Link<T>` in [`link.rs`](../crates/domain/src/link.rs) is a generic struct: a `Link<Skill>` and a `Link<Project>` hold the same note name, but the compiler keeps them apart, so a Project's `skills` cannot hold a link to an Organization. The `PhantomData` field exists only to use `T`, which the struct does not store.
 
+## Trait objects
+
+Generics are resolved at compile time: `fn show<T: Display>(value: T)` is compiled once for every `T` it is called with. A **trait object** decides at run time instead. `&dyn Translatable` in [`translatable.rs`](../crates/domain/src/translatable.rs) is a reference to any value whose type implements `Translatable`, without saying which, so one function can return "the Skill, the Project or the Organization of this name" and its caller needs only the trait's methods:
+
+```rust
+pub fn translatable(&self, note_type: NoteType, name: &NoteName) -> Option<&dyn Translatable> {
+    match note_type {
+        NoteType::Organization => self.organizations.get(name).map(as_translatable),
+        NoteType::Skill => self.skills.get(name).map(as_translatable),
+        // …
+    }
+}
+```
+
+`as_translatable` exists because `map` needs a function to name the conversion from `&Organization` to `&dyn Translatable`, and a bare `as` cast there is denied (`trivial_casts`).
+
 ## serde
 
 [serde](https://serde.rs) turns data formats into Rust values. `#[derive(Deserialize)]` writes the code that fills a struct from any format serde supports; the `toml` crate supplies the format. The config file in [`config.rs`](../crates/vault/src/config.rs) is read this way:
@@ -188,6 +204,7 @@ The macro turns this into an enum, its slugs and its labels.
 - `make test` runs both with [cargo-nextest](https://nexte.st), then the examples in doc comments ("doc tests") with `cargo test --doc`, because nextest skips those.
 - Tests run on the fictional vault in [`fixtures/vault/`](../fixtures/vault/), never on real data.
 - `make mutants` runs [cargo-mutants](https://mutants.rs): it changes the code (for example, replaces a function body with a default value) and reports every change the tests still pass with. It is slow and not part of `make check`.
+- Two integration test files of one crate share helpers by including the same file with `#[path = "support/vault_copy.rs"] mod vault_copy;`, as [`crates/vault/tests/`](../crates/vault/tests/) does for the copy of the fixture vault. A helper file directly in `tests/` would be built as a test of its own, and `support/mod.rs` is denied like every `mod.rs`. Tests that write copy the fixture vault into cargo's scratch directory (`CARGO_TARGET_TMPDIR`) first.
 - **Snapshot tests** with [insta](https://insta.rs) compare a whole value with a file written earlier, the snapshot. [`crates/vault/tests/fixture_vault.rs`](../crates/vault/tests/fixture_vault.rs) snapshots the whole fixture vault as read, with `insta::assert_debug_snapshot!`; the snapshots sit in `tests/snapshots/` beside the test and are committed. When a value changes, the test fails and insta writes the new value next to the snapshot as `.snap.new`. `make snapshots` shows each change and asks whether to accept it; `make snapshots-accept` accepts them all, so read every `.snap.new` first.
 
 ## When a check fails

@@ -2,6 +2,7 @@
 
 mod command;
 mod reply;
+mod translations;
 
 use std::process::ExitCode;
 
