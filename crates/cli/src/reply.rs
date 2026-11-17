@@ -5,8 +5,13 @@ use std::process::ExitCode;
 use crate::command::Command;
 
 const USAGE: &str = "Usage: kariera [--help | --version]
+       kariera translations --stale
+       kariera translations --mark <note> --lang <ja|de>
 
-Builds career documents from an Obsidian vault. No commands exist yet.";
+Builds career documents from an Obsidian vault.
+
+translations --stale   Lists the translations whose English text changed since they were marked
+translations --mark    Records that a note's translation matches its current English text";
 
 // The exit code most Unix tools use for a command line they do not understand.
 const USAGE_ERROR: u8 = 2;
@@ -29,7 +34,11 @@ impl Reply {
         match command {
             Command::Help => Self::success(USAGE.to_owned()),
             Command::Version => Self::success(version()),
-            Command::Unknown(argument) => Self::usage_error(argument),
+            Command::Translations(translations) => translations.run(),
+            Command::Unknown(argument) => {
+                Self::usage_error(&format!("unknown argument {argument:?}"))
+            }
+            Command::Misused(message) => Self::usage_error(message),
         }
     }
 
@@ -41,7 +50,7 @@ impl Reply {
         self.exit_code
     }
 
-    const fn success(text: String) -> Self {
+    pub(crate) const fn success(text: String) -> Self {
         Self {
             stream: Stream::Stdout,
             text,
@@ -49,10 +58,18 @@ impl Reply {
         }
     }
 
-    fn usage_error(argument: &str) -> Self {
+    pub(crate) const fn failure(text: String) -> Self {
         Self {
             stream: Stream::Stderr,
-            text: format!("kariera: unknown argument {argument:?}\n\n{USAGE}"),
+            text,
+            exit_code: ExitCode::FAILURE,
+        }
+    }
+
+    fn usage_error(message: &str) -> Self {
+        Self {
+            stream: Stream::Stderr,
+            text: format!("kariera: {message}\n\n{USAGE}"),
             exit_code: ExitCode::from(USAGE_ERROR),
         }
     }
@@ -101,6 +118,31 @@ mod tests {
         assert_eq!(reply.stream, Stream::Stdout);
         assert_eq!(reply.text, format!("kariera {}", env!("CARGO_PKG_VERSION")));
         assert_eq!(reply.exit_code, ExitCode::SUCCESS);
+    }
+
+    #[test]
+    fn a_failure_goes_to_stderr_as_it_is_and_fails() {
+        let reply = Reply::failure("cannot read the vault".to_owned());
+
+        assert_eq!(reply.stream, Stream::Stderr);
+        assert_eq!(reply.text, "cannot read the vault");
+        assert_eq!(reply.exit_code, ExitCode::FAILURE);
+    }
+
+    #[test]
+    fn a_misused_command_is_reported_with_the_usage_and_fails() {
+        let reply = Reply::for_command(&Command::Misused("--mark needs --lang <ja|de>".to_owned()));
+
+        assert_eq!(reply.stream, Stream::Stderr);
+        assert!(
+            reply
+                .text
+                .starts_with("kariera: --mark needs --lang <ja|de>"),
+            "{}",
+            reply.text
+        );
+        assert!(reply.text.ends_with(USAGE), "{}", reply.text);
+        assert_eq!(reply.exit_code, ExitCode::from(USAGE_ERROR));
     }
 
     #[test]
