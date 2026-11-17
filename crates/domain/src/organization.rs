@@ -1,5 +1,5 @@
 use crate::fixed_list::labelled_list;
-use crate::{Paragraphs, Source, Text, Translated, Translations, Url};
+use crate::{Fingerprint, Paragraphs, Source, Text, Translated, Translations, Url};
 
 /// Schema §2.1.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -10,7 +10,7 @@ pub struct Organization {
     pub kind: Vec<OrganizationKind>,
     pub location: Option<Text>,
     pub website: Option<Url>,
-    pub translated_from: Translations<Text>,
+    pub translated_from: Translations<Fingerprint>,
     pub sources: Vec<Source>,
     pub reviewed: bool,
     pub description: Translated<Paragraphs>,

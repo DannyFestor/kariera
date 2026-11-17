@@ -1,6 +1,6 @@
 use crate::{
-    Bullets, Date, DaysPerWeek, Link, Organization, Paragraphs, Source, Text, Translated,
-    Translations, Url,
+    Bullets, Date, DaysPerWeek, Fingerprint, Link, Organization, Paragraphs, Source, Text,
+    Translated, Translations, Url,
 };
 
 /// Schema §2.8. Personal data never appears here: it lives outside the vault.
@@ -15,7 +15,7 @@ pub struct Profile {
     pub days_per_week_max: Option<DaysPerWeek>,
     pub portfolio_url: Option<Url>,
     pub github_url: Option<Url>,
-    pub translated_from: Translations<Text>,
+    pub translated_from: Translations<Fingerprint>,
     pub sources: Vec<Source>,
     pub reviewed: bool,
     pub summary: Translated<Paragraphs>,

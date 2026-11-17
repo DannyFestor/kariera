@@ -1,7 +1,7 @@
 use crate::fixed_list::labelled_list;
 use crate::{
-    Bullets, Engagement, Link, Month, Organization, Paragraphs, Skill, Source, TeamSize, Text,
-    Translated, Translations,
+    Bullets, Engagement, Fingerprint, Link, Month, Organization, Paragraphs, Skill, Source,
+    TeamSize, Text, Translated, Translations,
 };
 
 /// Schema §2.4. `public_title` is set exactly when `confidential` is (§1.9).
@@ -23,7 +23,7 @@ pub struct Project {
     pub phases: Vec<Phase>,
     /// At least one.
     pub skills: Vec<Link<Skill>>,
-    pub translated_from: Translations<Text>,
+    pub translated_from: Translations<Fingerprint>,
     pub sources: Vec<Source>,
     pub reviewed: bool,
     pub description: Translated<Paragraphs>,

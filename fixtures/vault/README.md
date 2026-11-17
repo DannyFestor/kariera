@@ -19,4 +19,4 @@ kariera reads only the Markdown files in the note folders and `Profile.md`, so t
 ## Written on purpose
 
 - `Engagements/2019-04 Müller Logistik.md` writes its `employer` link in Unicode NFD, as macOS does; the file name and the link target of every other note are NFC. kariera compares names in NFC (schema §1.1), so the link resolves. An editor that normalizes on save would undo this.
-- The `translated_from` values are made up; the fingerprint algorithm does not exist yet.
+- The `translated_from` values are made up, so none of them equals a real fingerprint (ADR 0002): every translated note counts as stale until a test marks it in a copy of the vault.

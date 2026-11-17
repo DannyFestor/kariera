@@ -63,6 +63,13 @@ allow = [
   { crate = "serde", reason = "derives the deserialization of config.toml into a struct" },
   { crate = "serde_core", reason = "serde: the traits, split out of serde" },
   { crate = "serde_derive", reason = "serde: the derive macros" },
+  { crate = "sha2", reason = "SHA-256 for translation fingerprints (ADR 0002): a frozen, published algorithm that anyone can recompute with `shasum`; hand-written crypto is not worth the risk" },
+  { crate = "digest", reason = "sha2: the hash traits" },
+  { crate = "crypto-common", reason = "digest: shared traits of hash types" },
+  { crate = "block-buffer", reason = "digest: buffers input into hash blocks" },
+  { crate = "hybrid-array", reason = "crypto-common and block-buffer: fixed-size arrays of a size known at compile time" },
+  { crate = "typenum", reason = "hybrid-array: type-level numbers for those sizes" },
+  { crate = "cpufeatures", reason = "sha2: detects CPU instructions for SHA-256" },
   # Error types.
   { crate = "thiserror", reason = "derives Display and Error for the error enums, so each message sits on its variant" },
   { crate = "thiserror-impl", reason = "thiserror: the derive macro" },
