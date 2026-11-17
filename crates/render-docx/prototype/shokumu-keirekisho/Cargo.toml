@@ -1,0 +1,13 @@
+# PROTOTYPE, throwaway: the 職務経歴書 variant B as DOCX, to check that docx-rs can produce the structure (issue #8).
+# Deliberately outside the workspace (its own [workspace] table), so the workspace's dependency policy is untouched.
+[package]
+name = "prototype-shokumu-keirekisho-docx"
+version = "0.0.0"
+edition = "2024"
+publish = false
+
+[workspace]
+
+[dependencies]
+docx-rs = "=0.4.22"
+serde_json = "1"
