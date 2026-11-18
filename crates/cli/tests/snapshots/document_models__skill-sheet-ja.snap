@@ -28,6 +28,7 @@ Built {
                 team: "体制",
                 description: "業務内容",
                 achievements: "実績",
+                done_mark: "●",
                 unknown: "—",
             },
             name: "Robin Beispiel",

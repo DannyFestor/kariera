@@ -128,6 +128,9 @@ pub struct SkillSheetLabels {
     pub team: &'static str,
     pub description: &'static str,
     pub achievements: &'static str,
+    /// Printed before a phase the Project covered, where the fill alone would not survive an edit or a black and
+    /// white print.
+    pub done_mark: &'static str,
     /// Printed where a value is unknown, such as a team size not recorded.
     pub unknown: &'static str,
 }
@@ -156,6 +159,7 @@ impl SkillSheetLabels {
         team: "体制",
         description: "業務内容",
         achievements: "実績",
+        done_mark: "●",
         unknown: "—",
     };
 }

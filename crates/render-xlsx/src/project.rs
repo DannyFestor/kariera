@@ -52,7 +52,7 @@ fn write(
 ) -> Result<(), XlsxError> {
     write_title_band(canvas, labels, project)?;
     write_facts(canvas, labels, project)?;
-    write_phases(canvas, &project.phases)?;
+    write_phases(canvas, labels, &project.phases)?;
     write_technology(canvas, &project.technology)?;
     write_prose(canvas, labels.description, &project.description)?;
     let achievements: Vec<String> = project
@@ -123,15 +123,19 @@ fn write_fact_row(
 }
 
 /// Two columns to a phase, so the six phases fill the row.
-fn write_phases(canvas: &mut Canvas<'_>, phases: &[PhaseMark]) -> Result<(), XlsxError> {
+fn write_phases(
+    canvas: &mut Canvas<'_>,
+    labels: &SkillSheetLabels,
+    phases: &[PhaseMark],
+) -> Result<(), XlsxError> {
     for (first, phase) in (0..).step_by(2).zip(phases) {
-        let look = if phase.done {
-            Look::PhaseDone
-        } else {
-            Look::PhasePending
-        };
         let columns = Columns::new(PHASE_PAIR.first + first, PHASE_PAIR.last + first);
-        canvas.put(Slot::new(columns, look), &phase.label)?;
+        if phase.done {
+            let text = format!("{} {}", labels.done_mark, phase.label);
+            canvas.put(Slot::new(columns, Look::PhaseDone), &text)?;
+        } else {
+            canvas.put(Slot::new(columns, Look::PhasePending), &phase.label)?;
+        }
     }
     canvas.next_row();
     Ok(())

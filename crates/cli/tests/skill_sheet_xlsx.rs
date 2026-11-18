@@ -191,6 +191,23 @@ fn the_phase_strip_fills_in_the_phases_the_project_covered() {
 }
 
 #[test]
+fn a_covered_phase_also_carries_the_done_mark_in_its_cell() {
+    let xlsx = rendered(&fixture_skill_sheet());
+
+    let strip = project_top(&xlsx, 2) + 3;
+    let phases: Vec<Option<String>> = (0..6).map(|phase| xlsx.cell(strip, phase * 2)).collect();
+    let expected = [
+        "● 要件定義",
+        "● 基本設計",
+        "詳細設計",
+        "● 製造",
+        "テスト",
+        "● 運用・保守",
+    ];
+    assert_eq!(phases, expected.map(|text| Some(text.to_owned())));
+}
+
+#[test]
 fn a_project_block_lists_its_technology_by_category() {
     let xlsx = rendered(&fixture_skill_sheet());
 
