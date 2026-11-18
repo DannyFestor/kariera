@@ -8,6 +8,8 @@ use kariera_vault::{
     CreateError, NewEngagement, NewLog, NewNote, NewProject, OrganizationRole, Vault,
 };
 
+#[path = "support/scratch.rs"]
+mod scratch;
 #[path = "support/vault_copy.rs"]
 mod vault_copy;
 

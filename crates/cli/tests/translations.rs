@@ -3,19 +3,15 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
+#[path = "../../vault/tests/support/scratch.rs"]
+mod scratch;
+
+use scratch::fresh_directory;
+
 const GO: &str = "---\ntype: skill\nname: Go\ncategory: language\nreviewed: false\n---\n";
 
 fn fixture_vault() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/vault")
-}
-
-fn fresh_directory(name: &str) -> io::Result<PathBuf> {
-    let directory = Path::new(env!("CARGO_TARGET_TMPDIR")).join(name);
-    if directory.exists() {
-        fs::remove_dir_all(&directory)?;
-    }
-    fs::create_dir_all(&directory)?;
-    Ok(directory)
 }
 
 /// A home directory whose config names `vault`.

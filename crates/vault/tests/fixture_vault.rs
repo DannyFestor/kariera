@@ -4,6 +4,8 @@ use std::path::{Path, PathBuf};
 use kariera_domain::{FixedList, Link, NoteType, Organization};
 use kariera_vault::{Inspection, LoadError, Location, NoteError, Problem, Stray, Value, Vault};
 
+#[path = "support/scratch.rs"]
+mod scratch;
 #[path = "support/vault_copy.rs"]
 mod vault_copy;
 
@@ -244,7 +246,9 @@ fn a_missing_body_section_is_reported() {
 
 #[test]
 fn a_missing_vault_cannot_be_read() {
-    let missing = Path::new(env!("CARGO_TARGET_TMPDIR")).join("no-such-vault");
+    let missing = scratch::fresh_directory("no_such_vault_parent")
+        .unwrap()
+        .join("no-such-vault");
 
     let error = Vault::load(&missing).unwrap_err();
 

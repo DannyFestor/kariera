@@ -5,6 +5,8 @@ use std::process::{Command, Output};
 
 #[path = "../../vault/tests/support/replace_in.rs"]
 mod replace_in_support;
+#[path = "../../vault/tests/support/scratch.rs"]
+mod scratch;
 #[path = "../../vault/tests/support/vault_copy.rs"]
 mod vault_copy;
 
@@ -134,8 +136,7 @@ fn new_with_bad_arguments_prints_the_usage_and_exits_two() {
 
 #[test]
 fn new_without_a_config_says_so_and_exits_one() {
-    let empty_home = Path::new(env!("CARGO_TARGET_TMPDIR")).join("cli_no_config_home");
-    fs::create_dir_all(&empty_home).unwrap();
+    let empty_home = scratch::fresh_directory("cli_no_config_home").unwrap();
 
     let output = kariera_at(
         &empty_home,
@@ -354,8 +355,7 @@ fn validate_json_names_a_section() {
 
 #[test]
 fn validate_without_a_config_says_so_and_exits_one() {
-    let empty_home = Path::new(env!("CARGO_TARGET_TMPDIR")).join("cli_validate_no_config_home");
-    fs::create_dir_all(&empty_home).unwrap();
+    let empty_home = scratch::fresh_directory("cli_validate_no_config_home").unwrap();
 
     let output = kariera_at(&empty_home, &["validate"]).unwrap();
 
