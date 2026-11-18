@@ -16,14 +16,21 @@ license = "MIT"
 [workspace.dependencies]
 kariera-documents = { path = "crates/documents" }
 kariera-domain = { path = "crates/domain" }
+kariera-render-typst = { path = "crates/render-typst" }
 kariera-validate = { path = "crates/validate" }
 kariera-vault = { path = "crates/vault" }
 insta = { version = "1.49.0", default-features = false }
 saphyr-parser = "0.3.4"
 serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
 sha2 = { version = "0.11.1", default-features = false }
 thiserror = "2.0.21"
 toml = { version = "1.2.1", default-features = false, features = ["parse", "serde", "std"] }
+# Typst is embedded as a library (README, issue #7). The templates are written for this version, so a bump re-checks
+# every document's layout.
+typst = "0.15.1"
+typst-layout = "0.15.1"
+typst-pdf = "0.15.1"
 unicode-normalization = "0.1.26"
 
 # Every crate inherits this table with `[lints] workspace = true`. Cargo allows no per-crate additions, so an exception

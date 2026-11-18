@@ -61,6 +61,7 @@ Only the `hours` rule has warnings: `project_hours` that do not add up to `hours
 
 - Written in Rust, as a workspace of small crates whose dependency rules are enforced by Cargo.
 - PDF rendering uses [Typst](https://typst.app) embedded as a library: one binary, no browser, no TeX installation.
+- The PDF fonts are embedded in the binary: Inter for Latin text and BIZ UDPGothic for Japanese, both under the SIL Open Font License 1.1 (`crates/render-typst/fonts/`).
 - DOCX via `docx-rs`, XLSX via `rust_xlsxwriter`.
 - The build is deterministic and offline: no LLM calls, no network.
 - Tests run against a fictional fixture vault in this repository, never against real personal data.
