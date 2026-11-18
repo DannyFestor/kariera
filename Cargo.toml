@@ -25,6 +25,8 @@ serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.154"
 sha2 = { version = "0.11.1", default-features = false }
 thiserror = "2.0.21"
+# The local date the documents state; std has no time zones.
+time = { version = "0.3.55", default-features = false, features = ["std", "local-offset"] }
 toml = { version = "1.2.1", default-features = false, features = ["parse", "serde", "std"] }
 # Typst is embedded as a library (README, issue #7). The templates are written for this version, so a bump re-checks
 # every document's layout.
