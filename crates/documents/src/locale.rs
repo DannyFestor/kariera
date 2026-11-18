@@ -64,6 +64,37 @@ impl Locale {
         }
     }
 
+    /// From when, and on how many days a week, the owner can work. `days_per_week` is a range from `range`.
+    pub(crate) fn availability(self, from: Date, days_per_week: Option<&str>) -> String {
+        let from = self.date(from);
+        match (self.0, days_per_week) {
+            (Language::English, Some(days)) => {
+                format!("Available from {from}, {days} days per week")
+            }
+            (Language::English, None) => format!("Available from {from}"),
+            (Language::German, Some(days)) => format!("Verfügbar ab {from}, {days} Tage pro Woche"),
+            (Language::German, None) => format!("Verfügbar ab {from}"),
+            (Language::Japanese, Some(days)) => format!("{from}から　週{days}日"),
+            (Language::Japanese, None) => format!("{from}から"),
+        }
+    }
+
+    pub(crate) fn team(self, size: u32) -> String {
+        match self.0 {
+            Language::English => format!("team of {size}"),
+            Language::German => format!("Team aus {size}"),
+            Language::Japanese => format!("{size}名"),
+        }
+    }
+
+    pub(crate) fn projects(self, count: usize) -> String {
+        match self.0 {
+            Language::English => format!("{count} projects"),
+            Language::German => format!("{count} Projekte"),
+            Language::Japanese => format!("{count}件"),
+        }
+    }
+
     /// The paragraphs of a Paragraphs section (schema §1.6), each on one line: the line breaks of a paragraph become
     /// spaces, or nothing in Japanese, which has no spaces between words.
     pub(crate) fn paragraphs(self, text: &str) -> Vec<String> {
@@ -170,6 +201,43 @@ mod tests {
         assert_eq!(ENGLISH.range(3, 5), "3–5");
         assert_eq!(JAPANESE.range(3, 5), "3～5");
         assert_eq!(GERMAN.range(4, 4), "4");
+    }
+
+    #[test]
+    fn availability_names_the_date_and_the_days_per_week() {
+        let date = "2026-04-01".parse().unwrap();
+        let days = Some("3–5".to_owned());
+
+        assert_eq!(
+            ENGLISH.availability(date, days.as_deref()),
+            "Available from 1 Apr 2026, 3–5 days per week"
+        );
+        assert_eq!(
+            GERMAN.availability(date, days.as_deref()),
+            "Verfügbar ab 01.04.2026, 3–5 Tage pro Woche"
+        );
+        assert_eq!(
+            JAPANESE.availability(date, Some("3～5")),
+            "2026年4月1日から　週3～5日"
+        );
+        assert_eq!(
+            ENGLISH.availability(date, None),
+            "Available from 1 Apr 2026"
+        );
+    }
+
+    #[test]
+    fn a_team_size_reads_as_the_language_says_it() {
+        assert_eq!(ENGLISH.team(8), "team of 8");
+        assert_eq!(GERMAN.team(8), "Team aus 8");
+        assert_eq!(JAPANESE.team(8), "8名");
+    }
+
+    #[test]
+    fn a_number_of_projects_reads_as_the_language_says_it() {
+        assert_eq!(ENGLISH.projects(2), "2 projects");
+        assert_eq!(GERMAN.projects(2), "2 Projekte");
+        assert_eq!(JAPANESE.projects(2), "2件");
     }
 
     #[test]

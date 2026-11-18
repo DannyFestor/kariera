@@ -1,15 +1,16 @@
 // The Skill Sheet, layout C: the profile beside the Skill table, then one block per Project (issue #9, branch
-// prototype/skill-sheet). The content comes from the documents crate as JSON in sys.inputs.data, already in
-// Japanese; this file holds the headings and the layout.
+// prototype/skill-sheet). The content, headings and labels come from the documents crate as JSON in
+// sys.inputs.data, already in Japanese; this file holds the layout.
 
 #let doc = json(sys.inputs.data)
+#let t = doc.labels
 
 #let ink = rgb("#3b2f5c")
 #let accent = rgb("#d9d2ea")
 #let pale = rgb("#f4f1f9")
 #let rule = 0.5pt + rgb("#8a7fa8")
 
-#set document(title: "スキルシート", author: doc.name)
+#set document(title: t.title, author: doc.name)
 #set page(
   paper: "a4",
   margin: (x: 12mm, top: 12mm, bottom: 14mm),
@@ -25,33 +26,31 @@
 #let key(body) = table.cell(fill: pale, text(weight: "bold", fill: ink, body))
 #let lines(items) = items.join(linebreak())
 #let dated(entries) = lines(entries.map(q => [#q.date #q.title]))
+#let optional(value) = if value == none { t.unknown } else { value }
 
 #block(width: 100%, fill: ink, inset: (x: 6pt, y: 4pt), text(
   fill: white,
   weight: "bold",
   size: 9.5pt,
-)[スキルシート　　#doc.name　　#h(1fr) #text(size: 8pt, weight: "regular")[更新日 #doc.updated]])
+)[#t.title　　#doc.name　　#h(1fr) #text(size: 8pt, weight: "regular")[#t.updated #doc.updated]])
 #v(4pt)
-
-#let availability = (
-  if doc.available_from != none [#doc.available_from から],
-  if doc.days_per_week != none [週#doc.days_per_week 日],
-).filter(x => x != none)
 
 #let profile-table = table(
   columns: (22mm, 1fr),
-  key[得意分野], doc.headline,
-  key[所属], doc.business,
-  key[稼働], availability.join("　"),
-  key[URL], lines((doc.portfolio_url, doc.github_url).filter(x => x != none)),
-  key[資格], dated(doc.certificates),
-  key[学歴], dated(doc.education),
-  key[得意技術], lines(doc.strengths.map(s => [・#s])),
+  key(t.headline), doc.headline,
+  key(t.business), doc.business,
+  key(t.availability), optional(doc.availability),
+  key(t.url), lines((doc.portfolio_url, doc.github_url).filter(x => x != none)),
+  key(t.certificates), dated(doc.certificates),
+  key(t.education), dated(doc.education),
+  key(t.strengths), lines(doc.strengths.map(s => [・#s])),
 )
 
 #let skill-table = table(
   columns: (auto, 1fr, auto, auto),
-  table.header(key[分類], key[スキル], key[経験], key[最終使用]),
+  table.header(
+    key(t.category), key(t.skill), key(t.experience), key(t.last_use)
+  ),
   ..doc
     .skills
     .map(group => (
@@ -76,7 +75,7 @@
 #v(4pt)
 #table(
   columns: (22mm, 1fr),
-  key[自己PR], doc.self_pr.join(parbreak()),
+  key(t.self_pr), doc.self_pr.join(parbreak()),
 )
 
 #let phase-strip(phases) = grid(
@@ -100,13 +99,15 @@
     group.category,
   )：#group.skills.join("、")]))
 
+#let bracketed(label) = text(weight: "bold", fill: ink)[【#label】]
+
 #for project in doc.projects {
   v(6pt)
   block(breakable: false, width: 100%, stroke: rule, {
     block(width: 100%, fill: accent, inset: (x: 6pt, y: 4pt), below: 0pt, grid(
       columns: (auto, 1fr, auto),
       gutter: 6pt,
-      text(weight: "bold", fill: ink)[No. #project.number],
+      text(weight: "bold", fill: ink)[#t.number #project.number],
       text(weight: "bold", size: 9.5pt, project.title),
       [#project.period（#project.duration）],
     ))
@@ -115,19 +116,19 @@
         columns: (auto, 1fr, auto, 1fr, auto, 1fr),
         stroke: none,
         inset: (x: 2pt, y: 1.5pt),
-        key[会社],
+        key(t.company),
         [#project.client#if (
             project.end_client != none
           ) [ ／ #project.end_client]],
-        key[業種],
+        key(t.industry),
         project.industry,
-        key[契約],
+        key(t.contract),
         project.contract_type,
 
-        key[役割],
+        key(t.role),
         [#project.role#if project.focus != none [（#project.focus）]],
-        key[体制],
-        if project.team_size == none [—] else [#project.team_size 名],
+        key(t.team),
+        optional(project.team),
         [],
         [],
       )
@@ -136,14 +137,11 @@
       v(3pt)
       technology(project)
       v(2pt)
-      [#text(
-          weight: "bold",
-          fill: ink,
-        )[【業務内容】] \ #project.description.join(parbreak())]
+      [#bracketed(t.description) \ #project.description.join(parbreak())]
       if project.achievements.len() > 0 {
-        [\ #text(weight: "bold", fill: ink)[【実績】] \ #lines(
-            project.achievements.map(a => [・#a]),
-          )]
+        [\ #bracketed(t.achievements) \ #lines(project.achievements.map(
+            a => [・#a],
+          ))]
       }
     })
   })
