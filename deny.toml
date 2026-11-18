@@ -115,6 +115,24 @@ allow = [
   # needs unsafe code, which the workspace forbids.
   { crate = "time", reason = "cli: the local date a document states (作成日); Typst also uses it for its datetime type" },
   { crate = "num_threads", reason = "time: reads the local offset only while the process has one thread, where that is safe" },
+  # The Skill Sheet as XLSX (render-xlsx, issue #9). An XLSX is a zip of XML files, which rust_xlsxwriter writes; the
+  # integration tests read it back through the same zip crate. crc32fast, flate2, indexmap and zlib-rs are listed
+  # under Typst below.
+  { crate = "rust_xlsxwriter", reason = "render-xlsx: writes the Skill Sheet as an editable XLSX with real cells, merges, row heights and A4 print setup; no standard library equivalent" },
+  { crate = "zip", reason = "rust_xlsxwriter: an XLSX is a zip archive; the cli tests read the XLSX back with it" },
+  { crate = "zopfli", reason = "zip: the optional Zopfli deflate encoder that zip links" },
+  { crate = "typed-path", reason = "zip: path types for archive entry names" },
+  { crate = "zeroize", reason = "zip: clears the key of its password-protected archives; it links them unconditionally" },
+  { crate = "zeroize_derive", reason = "zeroize: the derive macro" },
+  { crate = "constant_time_eq", reason = "zip: compares password checksums of encrypted archives" },
+  { crate = "rustversion", reason = "constant_time_eq and wasm-bindgen: build-time Rust version checks" },
+  { crate = "nix", reason = "zip: file permissions of archive entries on Unix" },
+  { crate = "cfg_aliases", reason = "nix: build-time cfg aliases" },
+  { crate = "js-sys", reason = "getrandom on WebAssembly; cargo-deny checks every target" },
+  { crate = "wasm-bindgen", reason = "js-sys and getrandom on WebAssembly; cargo-deny checks every target" },
+  { crate = "wasm-bindgen-macro", reason = "wasm-bindgen: the macro" },
+  { crate = "wasm-bindgen-macro-support", reason = "wasm-bindgen-macro: its implementation" },
+  { crate = "wasm-bindgen-shared", reason = "wasm-bindgen: types shared by the macro and the runtime" },
   # Typst, embedded by render-typst to write the PDFs (README, issue #7), and the crates it needs.
   { crate = "adler2", reason = "typst: a simple clean-room implementation of the Adler-32 checksum" },
   { crate = "aho-corasick", reason = "typst: fast multiple substring searching" },
@@ -393,7 +411,7 @@ skip = [
   { crate = "quick-xml@0.38.4", reason = "typst: citationberg is still on 0.38" },
   { crate = "roxmltree@0.20.0", reason = "typst: fontconfig-parser is still on 0.20" },
   { crate = "serde_spanned@0.6.9", reason = "typst: typst-eval and typst-library read TOML with toml 0.8" },
-  { crate = "syn@2.0.119", reason = "typst's proc macros, serde_derive and thiserror-impl are on syn 2; one crate in Typst's tree is on syn 3" },
+  { crate = "syn@2.0.119", reason = "typst's proc macros and zeroize_derive (behind rust_xlsxwriter) are on syn 2; serde_derive and thiserror-impl are on syn 3" },
   { crate = "toml@0.8.23", reason = "typst: typst-eval and typst-library read TOML with toml 0.8; vault reads the config with toml 1" },
   { crate = "toml_datetime@0.6.11", reason = "typst: typst-eval and typst-library read TOML with toml 0.8" },
   { crate = "winnow@0.7.15", reason = "typst: typst-eval and typst-library read TOML with toml 0.8" },

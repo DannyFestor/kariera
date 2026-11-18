@@ -19,6 +19,7 @@ workspace = true
 kariera-documents.workspace = true
 kariera-domain.workspace = true
 kariera-render-typst.workspace = true
+kariera-render-xlsx.workspace = true
 kariera-validate.workspace = true
 kariera-vault.workspace = true
 thiserror.workspace = true
@@ -26,3 +27,4 @@ time.workspace = true
 
 [dev-dependencies]
 insta.workspace = true
+zip.workspace = true

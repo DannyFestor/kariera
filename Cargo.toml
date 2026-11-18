@@ -17,9 +17,12 @@ license = "MIT"
 kariera-documents = { path = "crates/documents" }
 kariera-domain = { path = "crates/domain" }
 kariera-render-typst = { path = "crates/render-typst" }
+kariera-render-xlsx = { path = "crates/render-xlsx" }
 kariera-validate = { path = "crates/validate" }
 kariera-vault = { path = "crates/vault" }
 insta = { version = "1.49.0", default-features = false }
+# Writes the Skill Sheet as XLSX (render-xlsx, issue #9); the tests read it back with the zip crate it builds on.
+rust_xlsxwriter = "0.102.0"
 saphyr-parser = "0.3.4"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.154"
@@ -34,6 +37,8 @@ typst = "0.15.1"
 typst-layout = "0.15.1"
 typst-pdf = "0.15.1"
 unicode-normalization = "0.1.26"
+# Dev only: reads the XLSX back in the tests; rust_xlsxwriter already builds on it.
+zip = { version = "9.7.0", default-features = false, features = ["deflate"] }
 
 # Every crate inherits this table with `[lints] workspace = true`. Cargo allows no per-crate additions, so an exception
 # is a `#[expect(lint, reason = "…")]` on the one item that needs it (AGENTS.md).

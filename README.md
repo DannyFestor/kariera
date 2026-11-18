@@ -14,7 +14,7 @@ Not usable yet. The project is being set up.
 |---|---|
 | `kariera validate` | Checks every note against the schema and against the other notes (see below) |
 | `kariera new <log\|project\|engagement>` | Creates a note from the vault's templates, with what the arguments say filled in: `new log --engagement <name> --month <YYYY-MM>`, `new project --engagement <name> --title <title>`, `new engagement (--client <name> \| --employer <name>) --type <type> --start <YYYY-MM>`. Refuses to overwrite a note. |
-| `kariera build` | Builds every document in every language it is written in, as PDF for now; `--doc` and `--lang` narrow it down (see below) |
+| `kariera build` | Builds every document in every language it is written in, as PDF (and the Skill Sheet also as XLSX); `--doc` and `--lang` narrow it down (see below) |
 | `kariera translations --stale` | Lists the notes and languages whose translation is empty or older than the note's English text |
 | `kariera translations --mark <note> --lang <ja\|de>` | Records that the translation matches the English text as it is now |
 
@@ -85,24 +85,25 @@ kariera build --lang ja             # the 職務経歴書 and the Skill Sheet
 kariera build --doc cv --lang de    # the German CV only
 ```
 
-Writes each document as PDF into the vault's `Generated/`, replacing the file of the last build, and prints each file with its page count:
+Writes each document as PDF into the vault's `Generated/`, replacing the file of the last build, and prints each file with its page count. The Skill Sheet is also written as XLSX beside its PDF, because agencies edit it:
 
 | Document | `--doc` | Languages | File, for a Profile `name` of Jane Example |
 |---|---|---|---|
 | CV | `cv` | `en`, `de` | `Generated/CV_Jane_Example.pdf`, `Generated/Lebenslauf_Jane_Example.pdf` |
 | 職務経歴書 | `shokumu-keirekisho` | `ja` | `Generated/職務経歴書_Jane_Example.pdf` |
-| Skill Sheet | `skill-sheet` | `ja` | `Generated/スキルシート_Jane_Example.pdf` |
+| Skill Sheet | `skill-sheet` | `ja` | `Generated/スキルシート_Jane_Example.pdf` and `Generated/スキルシート_Jane_Example.xlsx` |
 
 A file is named by the document's title in its language and the Profile `name`, with spaces as `_`.
 
-The 履歴書 is not built yet: its layout is still open. DOCX and XLSX follow (#8, #9).
+The 履歴書 is not built yet: its layout is still open. DOCX follows (#8).
 
 - **Skills:** a skill table shows a Skill that at least one Project links and whose last use falls within the document's window: 3 years for the CV, 5 for the 職務経歴書 and the Skill Sheet. The last use is the later of its last Project month and its `last_used`. Its years are the months of its Projects, with months that two Projects share counted once; `last_used` never adds to them. Human languages are listed apart, not in the skill tables.
 - **Confidential Projects** print their `public_title`, and never an End Client.
 - **Organizations** print their `labels` for the document's language, else their `name`.
+- **The Skill Sheet XLSX** is real cells, with no image: the same sections and order as the PDF, on a grid of twelve columns, set in BIZ UDPゴシック (an XLSX cannot embed fonts, so the font must be on the machine that opens it; it ships with Windows). It prints on A4 portrait with page numbers, and a page break before each Project block that would not fit keeps the block on one page. Excel does not fit a row to its text when it opens a generated file, so each row's height is estimated from its text and column width; if a row looks too tall or too short in your Excel, resize it by hand. The scale is the sheet's own (no "fit to one page wide"), because Excel ignores manual page breaks under that option.
 - **Missing translations:** where a Japanese or German text is empty, the document prints the English one, and the build ends with a warning naming the note and the language. It still exits 0.
 
-The same notes, `personal.yaml` and date give the same PDF bytes. The date printed (作成日, 更新日) is today's date in the machine's time zone.
+The same notes, `personal.yaml` and date give the same PDF and XLSX bytes. The date printed (作成日, 更新日) is today's date in the machine's time zone.
 
 ## Design
 
