@@ -1,10 +1,13 @@
-//! `kariera build`: writes every document in every language it is written in as PDF into the vault's `Generated/`.
+//! `kariera build`: writes every document in every language it is written in as PDF into the vault's `Generated/`,
+//! and the Skill Sheet as XLSX beside its PDF.
 
 use std::collections::BTreeSet;
+use std::path::PathBuf;
 
-use kariera_documents::{DocumentKind, Edition, Inputs, MissingTranslation, build};
+use kariera_documents::{Document, DocumentKind, Edition, Inputs, MissingTranslation, build};
 use kariera_domain::Language;
 use kariera_render_typst::render;
+use kariera_render_xlsx::render as render_xlsx;
 use kariera_vault::{Vault, default_personal_path, load_personal};
 
 use crate::clock::today;
@@ -54,7 +57,7 @@ impl BuildCommand {
         let mut missing = BTreeSet::new();
         for &edition in &self.editions {
             let built = build_one(&vault, &inputs, edition)?;
-            written.push(built.line);
+            written.extend(built.lines);
             missing.extend(built.missing_translations);
         }
         written.extend(missing.iter().map(missing_line));
@@ -64,20 +67,45 @@ impl BuildCommand {
 
 /// What building one edition did.
 struct Written {
-    line: String,
+    lines: Vec<String>,
     missing_translations: Vec<MissingTranslation>,
 }
 
 fn build_one(vault: &Vault, inputs: &Inputs<'_>, edition: Edition) -> Result<Written, String> {
     let built = build(edition, inputs).map_err(|error| error.to_string())?;
-    let pdf = render(&built.document).map_err(|error| error.to_string())?;
-    let path = vault
-        .write_generated(&format!("{}.pdf", built.document.file_stem()), &pdf.bytes)
-        .map_err(|error| error.to_string())?;
+    let mut lines = vec![write_pdf(vault, &built.document)?];
+    lines.extend(write_xlsx(vault, &built.document)?);
     Ok(Written {
-        line: format!("Wrote {} ({})", path.display(), pages(pdf.pages)),
+        lines,
         missing_translations: built.missing_translations,
     })
+}
+
+fn write_pdf(vault: &Vault, document: &Document) -> Result<String, String> {
+    let pdf = render(document).map_err(|error| error.to_string())?;
+    let path = write_generated(vault, document, "pdf", &pdf.bytes)?;
+    Ok(format!("Wrote {} ({})", path.display(), pages(pdf.pages)))
+}
+
+/// Only the Skill Sheet is an XLSX: agencies edit it.
+fn write_xlsx(vault: &Vault, document: &Document) -> Result<Option<String>, String> {
+    let Document::SkillSheet(sheet) = document else {
+        return Ok(None);
+    };
+    let xlsx = render_xlsx(sheet).map_err(|error| error.to_string())?;
+    let path = write_generated(vault, document, "xlsx", &xlsx)?;
+    Ok(Some(format!("Wrote {}", path.display())))
+}
+
+fn write_generated(
+    vault: &Vault,
+    document: &Document,
+    extension: &str,
+    bytes: &[u8],
+) -> Result<PathBuf, String> {
+    vault
+        .write_generated(&format!("{}.{extension}", document.file_stem()), bytes)
+        .map_err(|error| error.to_string())
 }
 
 fn pages(count: usize) -> String {

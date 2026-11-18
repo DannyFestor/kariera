@@ -10,3 +10,8 @@ license.workspace = true
 
 [lints]
 workspace = true
+
+[dependencies]
+kariera-documents.workspace = true
+rust_xlsxwriter.workspace = true
+thiserror.workspace = true

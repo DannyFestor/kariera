@@ -61,6 +61,28 @@ fn build_writes_every_document_as_pdf_into_generated() {
 }
 
 #[test]
+fn build_writes_the_skill_sheet_as_xlsx_beside_its_pdf() {
+    let (home, vault) = home_with_vault_and_personal("cli_build_skill_sheet_xlsx").unwrap();
+
+    let output = kariera_at(&home, &["build"]).unwrap();
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert_eq!(output.status.code(), Some(0), "{stdout}");
+    let path = vault.join("Generated/スキルシート_Robin_Beispiel.xlsx");
+    assert!(
+        stdout.contains(&format!("Wrote {}\n", path.display())),
+        "{stdout}"
+    );
+    assert!(fs::read(&path).unwrap().starts_with(b"PK"));
+    let xlsx_files: Vec<_> = fs::read_dir(vault.join("Generated"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name())
+        .filter(|name| name.to_string_lossy().ends_with(".xlsx"))
+        .collect();
+    assert_eq!(xlsx_files.len(), 1, "{xlsx_files:?}");
+}
+
+#[test]
 fn build_warns_about_each_note_that_printed_its_english() {
     let (home, _) = home_with_vault_and_personal("cli_build_warnings").unwrap();
 
