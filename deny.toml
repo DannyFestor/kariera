@@ -19,6 +19,14 @@ ignore = [
   { id = "RUSTSEC-2026-0206", reason = "rustybuzz, unmaintained: Typst's text shaping; it only shapes the documents' own text with the embedded fonts" },
   { id = "RUSTSEC-2026-0194", reason = "quick-xml 0.38, quadratic attribute check: citationberg reads bibliography styles with it; the documents cite nothing and Typst reads no XML from outside the binary" },
   { id = "RUSTSEC-2026-0195", reason = "quick-xml 0.38, namespace allocation: citationberg reads bibliography styles with it; the documents cite nothing and Typst reads no XML from outside the binary" },
+  { id = "RUSTSEC-2026-0367", reason = "zip 8.6.0, which docx-rs pins: a flaw in ZipArchive::extract; render-docx only writes archives and never extracts or reads one" },
+  { id = "RUSTSEC-2026-0368", reason = "zip 8.6.0, which docx-rs pins: a flaw in ZipArchive::extract; render-docx only writes archives and never extracts or reads one" },
+  { id = "RUSTSEC-2026-0369", reason = "zip 8.6.0, which docx-rs pins: a flaw in ZipArchive::extract and ZipStreamReader; render-docx only writes archives and never extracts or reads one" },
+  { id = "RUSTSEC-2026-0429", reason = "zip 8.6.0, which docx-rs pins: a flaw in ZipArchive::extract; render-docx only writes archives and never extracts or reads one" },
+  { id = "RUSTSEC-2026-0545", reason = "zip 8.6.0, which docx-rs pins: a flaw in reading AES entries; render-docx only writes archives and never extracts or reads one" },
+  { id = "RUSTSEC-2026-0546", reason = "zip 8.6.0, which docx-rs pins: a flaw in ZipArchive::extract; render-docx only writes archives and never extracts or reads one" },
+  { id = "RUSTSEC-2026-0547", reason = "zip 8.6.0, which docx-rs pins: a flaw in the legacy Shrink, Reduce and Implode decoders; render-docx only writes archives and never extracts or reads one" },
+  { id = "RUSTSEC-2026-0548", reason = "zip 8.6.0, which docx-rs pins: a flaw in ZipStreamReader; render-docx only writes archives and never extracts or reads one" },
 ]
 
 [licenses]
@@ -119,13 +127,13 @@ allow = [
   # integration tests read it back through the same zip crate. crc32fast, flate2, indexmap and zlib-rs are listed
   # under Typst below.
   { crate = "rust_xlsxwriter", reason = "render-xlsx: writes the Skill Sheet as an editable XLSX with real cells, merges, row heights and A4 print setup; no standard library equivalent" },
-  { crate = "zip", reason = "rust_xlsxwriter: an XLSX is a zip archive; the cli tests read the XLSX back with it" },
+  { crate = "zip", reason = "rust_xlsxwriter (9.x) and docx-rs (8.6): an XLSX and a DOCX are zip archives; the cli tests read both back with it" },
   { crate = "zopfli", reason = "zip: the optional Zopfli deflate encoder that zip links" },
   { crate = "typed-path", reason = "zip: path types for archive entry names" },
   { crate = "zeroize", reason = "zip: clears the key of its password-protected archives; it links them unconditionally" },
   { crate = "zeroize_derive", reason = "zeroize: the derive macro" },
   { crate = "constant_time_eq", reason = "zip: compares password checksums of encrypted archives" },
-  { crate = "rustversion", reason = "constant_time_eq and wasm-bindgen: build-time Rust version checks" },
+  { crate = "rustversion", reason = "constant_time_eq, wasm-bindgen and encoding_rs: build-time Rust version checks" },
   { crate = "nix", reason = "zip: file permissions of archive entries on Unix" },
   { crate = "cfg_aliases", reason = "nix: build-time cfg aliases" },
   { crate = "js-sys", reason = "getrandom on WebAssembly; cargo-deny checks every target" },
@@ -133,6 +141,13 @@ allow = [
   { crate = "wasm-bindgen-macro", reason = "wasm-bindgen: the macro" },
   { crate = "wasm-bindgen-macro-support", reason = "wasm-bindgen-macro: its implementation" },
   { crate = "wasm-bindgen-shared", reason = "wasm-bindgen: types shared by the macro and the runtime" },
+  # docx-rs, used by render-docx to write the DOCX files (README, issue #8), and the crates it needs.
+  { crate = "docx-rs", reason = "render-docx: writes DOCX files with real paragraphs and tables (issue #8)" },
+  { crate = "quick-xml", reason = "docx-rs: writes the XML parts of a DOCX; Typst's citationberg uses it too" },
+  { crate = "encoding_rs", reason = "quick-xml: decodes the encodings an XML file may declare" },
+  { crate = "core_detect", reason = "encoding_rs: detects CPU features for its fast paths" },
+  { crate = "multiversion_no_op", reason = "encoding_rs: stands in for multiversion's function dispatch" },
+  { crate = "simdutf8", reason = "encoding_rs: fast UTF-8 validation" },
   # Typst, embedded by render-typst to write the PDFs (README, issue #7), and the crates it needs.
   { crate = "adler2", reason = "typst: a simple clean-room implementation of the Adler-32 checksum" },
   { crate = "aho-corasick", reason = "typst: fast multiple substring searching" },
@@ -230,7 +245,7 @@ allow = [
   { crate = "icu_segmenter_data", reason = "typst: data for the icu_segmenter crate" },
   { crate = "idna", reason = "typst: IDNA (Internationalizing Domain Names in Applications) and Punycode" },
   { crate = "idna_adapter", reason = "typst: back end adapter for idna" },
-  { crate = "image", reason = "typst: imaging library. Provides basic image processing and encoders/decoders for common image formats" },
+  { crate = "image", reason = "typst and render-docx (the German CV's photo, as the PNG a DOCX holds): imaging library. Provides basic image processing and encoders/decoders for common image formats" },
   { crate = "image-webp", reason = "typst: webP encoding and decoding in pure Rust" },
   { crate = "imagesize", reason = "typst: quick probing of image dimensions without loading the entire file" },
   { crate = "indexmap", reason = "typst: a hash table with consistent order and fast iteration" },
@@ -404,6 +419,9 @@ allow = [
 # Typst 0.15.1 depends on two versions of each of these, and on the 0.x line of toml beside the 1.x line vault reads
 # the config with. kariera cannot unify them; drop each entry once a Typst release does.
 skip = [
+  { crate = "quick-xml@0.41.0", reason = "docx-rs is on 0.41, citationberg in Typst on 0.38 and the rest of Typst on 0.42" },
+  { crate = "zip@8.6.0", reason = "docx-rs pins zip 8; rust_xlsxwriter and the cli tests use 9 (its eight advisories are ignored above)" },
+  { crate = "typed-path@0.12.4", reason = "zip 8, which docx-rs pins; zip 9 is on 0.13" },
   { crate = "base64@0.22.1", reason = "typst: hayro-svg, krilla and usvg are still on 0.22" },
   { crate = "fearless_simd@0.4.1", reason = "typst: hayro-jpeg2000 and vello_common are still on 0.4" },
   { crate = "hayro-ccitt@0.3.0", reason = "typst: hayro-syntax is still on 0.3" },

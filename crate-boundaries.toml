@@ -41,6 +41,7 @@ deny = [
     "typst-syntax",
   ], reason = "only vault reads the config naming the vault (ADR 0001); the typst crates use it inside Typst" },
   { crate = "sha2", wrappers = ["kariera-vault"], reason = "only vault fingerprints note content (ADR 0002)" },
+  { crate = "docx-rs", wrappers = ["kariera-render-docx"], reason = "only render-docx writes DOCX files (ADR 0001)" },
   { crate = "typst", wrappers = ["kariera-render-typst"], reason = "only render-typst lays out PDFs (ADR 0001)" },
   { crate = "typst-pdf", wrappers = ["kariera-render-typst"], reason = "only render-typst writes PDFs (ADR 0001)" },
 ]

@@ -1,0 +1,107 @@
+---
+source: crates/cli/tests/document_docx.rs
+expression: outline
+---
+職務経歴書
+Robin Beispiel　日本在住のフルスタック開発者	2026年11月18日現在
+職務要約
+物流とECの分野で7年の経験を持つフルスタック開発者。GoのバックエンドからReactのフロントエンドまで担当する。
+[table]
+  [cell]
+  得意分野
+  • PostgreSQLを用いたバックエンド設計
+  • 日本語・ドイツ語・英語での業務
+  [cell]
+  資格・語学
+  2013年6月　Class B Driving Licence
+  2022年12月　日本語試験B2（185/200）
+  2024年2月　Example Cloud Associate
+  語学　ドイツ語（ネイティブ）
+  語学　日本語（ビジネスレベル）
+テクニカルスキル
+直近5年以内に使用したスキル。バーは案件での使用期間の合計。
+[table]
+  [cell]
+  プログラミング言語
+  タイプスクリプト	4年2ヶ月
+  Go	1年6ヶ月
+  [cell]
+  フレームワーク
+  React	3年2ヶ月
+  [cell]
+  ライブラリ
+  エグザンプルチャート	1年11ヶ月
+  [cell]
+  データベース
+  PostgreSQL	2年6ヶ月
+  [cell]
+  クラウド
+  Google Cloud	3年2ヶ月
+  [cell]
+  プラットフォーム
+  Node.js	3年2ヶ月
+  [cell]
+  ツール
+  Docker	1年6ヶ月
+  [cell]
+  AIツール
+  Claude Code	3年2ヶ月
+  [cell]
+  
+職務経歴
+直近2年以内の案件は詳細を、それ以前の案件は概要を記載。
+Globex　2023年10月～現在	フリーランス
+役職：フルスタック開発者
+[table]
+  [cell]
+  2025年1月～現在　Web shop admin area	 Retail 
+  役割	Full-stack developer
+  担当工程	○要件定義　○基本設計　○詳細設計　○製造　○テスト　○運用・保守　
+  環境	タイプスクリプト / React / エグザンプルチャート
+  Builds the admin area for product and staff management.
+
+[table]
+  [cell]
+  2023年10月～現在　ウェブショップの商品検索	 小売 
+  役割	フルスタック開発者（Search）
+  体制	8名
+  担当工程	●要件定義　●基本設計　○詳細設計　●製造　○テスト　●運用・保守　
+  環境	タイプスクリプト / React / Node.js / Google Cloud / Claude Code
+  Develops the product search of the web shop, from the ranking service on Google Cloud to the React front end.
+  実績
+  • Introduces typo-tolerant search
+
+株式会社アクメ　2021年4月～2023年9月	フリーランス
+役職：バックエンド開発者
+[table]
+  [cell]
+  2022年10月～2023年9月
+  [cell]
+  物流会社向け会計プラットフォーム（物流）
+  タイプスクリプト / PostgreSQL
+  [cell]
+  Backend developer
+  [cell]
+  2021年4月～2022年9月
+  [cell]
+  Contoso玩具ECサイトのバックエンド（EC）
+  Go / PostgreSQL / Docker
+  [cell]
+  バックエンド開発者
+
+Müller Logistik　2019年4月～2021年3月	直接雇用
+役職：ソフトウェア開発者
+[table]
+  [cell]
+  2019年4月～2021年3月
+  [cell]
+  配送追跡システム（物流）
+  C# / Scrum
+  [cell]
+  ソフトウェア開発者
+
+Initech　2018年7月～2018年9月	インターンシップ
+自己PR
+機能の要望からリリースまで一貫して担当する。
+ポートフォリオ：https://example.com　GitHub：https://github.com/example　
+以上

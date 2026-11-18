@@ -1,0 +1,128 @@
+---
+source: crates/cli/tests/document_docx.rs
+expression: outline
+---
+[table]
+  [cell]
+  Robin Beispiel
+  Full-Stack-Entwickler in Japan
+  [cell]
+  Sapporo, Japan
+  +81 90 0000 0000
+  robin@example.com
+  example.com
+  github.com/example
+  [cell]
+  
+
+Verfügbar ab 01.04.2026, 3–5 Tage pro Woche      ·      Deutsch (Muttersprache) · Japanisch (Verhandlungssicher)      ·      Geburtsdatum 01.01.1990 · deutsch
+Profil
+[table]
+  [cell]
+  Full-Stack-Entwickler mit sieben Jahren Erfahrung in Logistik und E-Commerce, von Backend-Diensten in Go bis zu React-Frontends.
+  [cell]
+  Stärken
+  • Backend-Entwurf mit PostgreSQL
+  • Arbeit auf Japanisch, Deutsch und Englisch
+Ausgewählte Projekte
+Web shop admin area	seit 01/2025
+Full-stack developer  ·  Kunde Globex  ·  Retail
+Builds the admin area for product and staff management.
+TypeScript  ·  React  ·  Example Charts
+Produktsuche des Webshops	seit 10/2023
+Full-stack developer (Search)  ·  Kunde Globex  ·  Einzelhandel  ·  Team aus 8
+Develops the product search of the web shop, from the ranking service on Google Cloud to the React front end.
+• Introduces typo-tolerant search
+TypeScript  ·  React  ·  Node.js  ·  Google Cloud  ·  Claude Code
+Accounting platform for a logistics company	10/2022 – 09/2023
+Backend developer  ·  Kunde Acme  ·  Logistik
+Built the invoicing backend of an accounting platform for a logistics company.
+TypeScript  ·  PostgreSQL
+Backend des Contoso-Spielwarenshops	04/2021 – 09/2022
+Backend-Entwickler (Backend)  ·  Kunde Acme  ·  Endkunde Contoso  ·  E-Commerce  ·  Team aus 5
+Baute das Backend eines Spielwaren-Onlineshops in Go auf PostgreSQL, vom Produktkatalog bis zur Bestellabwicklung.
+• Entwarf den Bestell- und Zahlungsablauf
+• Halbierte die Ladezeit der Katalogseiten
+Go  ·  PostgreSQL  ·  Docker
+Sendungsverfolgungssystem	04/2019 – 03/2021
+Softwareentwickler  ·  Kunde Müller Logistik  ·  Logistik  ·  Team aus 4
+Entwickelte das Verfolgungssystem für Pakete und Paletten in C#.
+• Ersetzte den nächtlichen Batch-Import durch Statusmeldungen in Echtzeit
+C#  ·  Scrum
+Werdegang
+[table]
+  [cell]
+  seit 10/2023
+  [cell]
+  Full-Stack-Entwickler
+  [cell]
+  Globex
+  [cell]
+  Freiberuflich · 2 Projekte
+  [cell]
+  04/2021 – 09/2023
+  [cell]
+  Backend developer
+  [cell]
+  Acme
+  [cell]
+  Freiberuflich · 2 Projekte
+  [cell]
+  04/2019 – 03/2021
+  [cell]
+  Softwareentwickler
+  [cell]
+  Müller Logistik
+  [cell]
+  Festanstellung
+  [cell]
+  07/2018 – 09/2018
+  [cell]
+  Praktikum
+  [cell]
+  Initech
+  [cell]
+  Praktikum
+IT-Kenntnisse
+[table]
+  [cell]
+  Programmiersprache
+  [cell]
+  TypeScript 4,2 J.
+  [cell]
+  Framework
+  [cell]
+  React 3,2 J.
+  [cell]
+  Bibliothek
+  [cell]
+  Example Charts 1,9 J.
+  [cell]
+  Cloud
+  [cell]
+  Google Cloud 3,2 J.
+  [cell]
+  Plattform
+  [cell]
+  Node.js 3,2 J.
+  [cell]
+  Werkzeug
+  [cell]
+  Docker 1,5 J.
+  [cell]
+  KI-Werkzeug
+  [cell]
+  Claude Code 3,2 J.
+[table]
+  [cell]
+  Ausbildung
+  Bachelor Informatik
+  Example University · 03/2018
+  [cell]
+  Zertifikate und Lizenzen
+  Example Cloud Associate
+  02/2024
+  Example Japanese Test B2, 185/200
+  Example Language Institute · 12/2022
+  Führerschein Klasse B
+  Example Licensing Office · 06/2013

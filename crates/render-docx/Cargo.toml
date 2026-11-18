@@ -11,3 +11,10 @@ license.workspace = true
 [lints]
 workspace = true
 
+
+[dependencies]
+docx-rs.workspace = true
+image.workspace = true
+kariera-documents.workspace = true
+kariera-domain.workspace = true
+thiserror.workspace = true

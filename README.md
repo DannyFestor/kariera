@@ -14,7 +14,7 @@ Not usable yet. The project is being set up.
 |---|---|
 | `kariera validate` | Checks every note against the schema and against the other notes (see below) |
 | `kariera new <log\|project\|engagement>` | Creates a note from the vault's templates, with what the arguments say filled in: `new log --engagement <name> --month <YYYY-MM>`, `new project --engagement <name> --title <title>`, `new engagement (--client <name> \| --employer <name>) --type <type> --start <YYYY-MM>`. Refuses to overwrite a note. |
-| `kariera build` | Builds every document in every language it is written in, as PDF (and the Skill Sheet also as XLSX); `--doc` and `--lang` narrow it down (see below) |
+| `kariera build` | Builds every document in every language it is written in, as PDF, as DOCX where there is a layout (the CV and the 職務経歴書) and as XLSX (the Skill Sheet); `--doc` and `--lang` narrow it down (see below) |
 | `kariera translations --stale` | Lists the notes and languages whose translation is empty or older than the note's English text |
 | `kariera translations --mark <note> --lang <ja\|de>` | Records that the translation matches the English text as it is now |
 
@@ -85,7 +85,7 @@ kariera build --lang ja             # the 職務経歴書 and the Skill Sheet
 kariera build --doc cv --lang de    # the German CV only
 ```
 
-Writes each document as PDF into the vault's `Generated/`, replacing the file of the last build, and prints each file with its page count. The Skill Sheet is also written as XLSX beside its PDF, because agencies edit it:
+Writes each document as PDF into the vault's `Generated/`, replacing the file of the last build, and prints each file, a PDF with its page count. The CV and the 職務経歴書 also come as DOCX, and the Skill Sheet as XLSX, because agencies edit them; each is written beside the PDF with the same name and its own extension, and `--doc` and `--lang` choose all formats alike:
 
 | Document | `--doc` | Languages | File, for a Profile `name` of Jane Example |
 |---|---|---|---|
@@ -95,7 +95,9 @@ Writes each document as PDF into the vault's `Generated/`, replacing the file of
 
 A file is named by the document's title in its language and the Profile `name`, with spaces as `_`.
 
-The 履歴書 is not built yet: its layout is still open. DOCX follows (#8).
+The 履歴書 is not built yet: its layout is still open.
+
+The DOCX files are made to be edited: headings, lists and tables are Word's own, and no text is an image. They name their fonts and do not embed them: Inter and BIZ UDPGothic, which Word shows only where they are installed (BIZ UDPGothic ships with Windows 10 1809 and later), else it substitutes another font. The 職務経歴書 shows the time a Skill was used as text, where the PDF also draws a bar. Like the PDFs, the same notes, `personal.yaml` and date give the same bytes.
 
 - **Skills:** a skill table shows a Skill that at least one Project links and whose last use falls within the document's window: 3 years for the CV, 5 for the 職務経歴書 and the Skill Sheet. The last use is the later of its last Project month and its `last_used`. Its years are the months of its Projects, with months that two Projects share counted once; `last_used` never adds to them. Human languages are listed apart, not in the skill tables.
 - **Confidential Projects** print their `public_title`, and never an End Client.
@@ -103,14 +105,14 @@ The 履歴書 is not built yet: its layout is still open. DOCX follows (#8).
 - **The Skill Sheet XLSX** is real cells, with no image: the same sections and order as the PDF, on a grid of twelve columns, set in BIZ UDPゴシック (an XLSX cannot embed fonts, so the font must be on the machine that opens it; it ships with Windows). It prints on A4 portrait with page numbers, and a page break before each Project block that would not fit keeps the block on one page. Excel does not fit a row to its text when it opens a generated file, so each row's height is estimated from its text and column width; if a row looks too tall or too short in your Excel, resize it by hand. The scale is the sheet's own (no "fit to one page wide"), because Excel ignores manual page breaks under that option.
 - **Missing translations:** where a Japanese or German text is empty, the document prints the English one, and the build ends with a warning naming the note and the language. It still exits 0.
 
-The same notes, `personal.yaml` and date give the same PDF and XLSX bytes. The date printed (作成日, 更新日) is today's date in the machine's time zone.
+The same notes, `personal.yaml` and date give the same PDF, DOCX and XLSX bytes. The date printed (作成日, 更新日) is today's date in the machine's time zone.
 
 ## Design
 
 - Written in Rust, as a workspace of small crates whose dependency rules are enforced by Cargo.
 - PDF rendering uses [Typst](https://typst.app) embedded as a library: one binary, no browser, no TeX installation.
 - The PDF fonts are embedded in the binary: Inter for Latin text and BIZ UDPGothic for Japanese, both under the SIL Open Font License 1.1 (`crates/render-typst/fonts/`).
-- DOCX via `docx-rs`, XLSX via `rust_xlsxwriter`.
+- DOCX via `docx-rs` (it reads no language setting, so Word does not know the language of the text, and its `zip` has known flaws in extracting archives, which kariera never does: `deny.toml` lists them), XLSX via `rust_xlsxwriter`.
 - The build is deterministic and offline: no LLM calls, no network.
 - Tests run against a fictional fixture vault in this repository, never against real personal data.
 

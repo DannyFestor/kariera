@@ -83,6 +83,46 @@ fn build_writes_the_skill_sheet_as_xlsx_beside_its_pdf() {
 }
 
 #[test]
+fn build_writes_the_cv_and_the_shokumu_keirekisho_as_docx_beside_the_pdfs() {
+    let (home, vault) = home_with_vault_and_personal("cli_build_docx").unwrap();
+
+    let output = kariera_at(&home, &["build"]).unwrap();
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert_eq!(output.status.code(), Some(0), "{stdout}");
+    for file in [
+        "CV_Robin_Beispiel.docx",
+        "Lebenslauf_Robin_Beispiel.docx",
+        "職務経歴書_Robin_Beispiel.docx",
+    ] {
+        let path = vault.join("Generated").join(file);
+        assert!(
+            stdout.contains(&format!("Wrote {}\n", path.display())),
+            "{stdout}"
+        );
+        assert!(fs::read(&path).unwrap().starts_with(b"PK"), "{file}");
+    }
+    assert!(
+        !vault
+            .join("Generated/スキルシート_Robin_Beispiel.docx")
+            .exists()
+    );
+}
+
+#[test]
+fn a_second_build_writes_the_same_docx_bytes_whatever_was_built_before_it() {
+    let (home, vault) = home_with_vault_and_personal("cli_build_docx_twice").unwrap();
+    let docx = vault.join("Generated/Lebenslauf_Robin_Beispiel.docx");
+    kariera_at(&home, &["build"]).unwrap();
+    let after_everything = fs::read(&docx).unwrap();
+
+    fs::remove_file(&docx).unwrap();
+    kariera_at(&home, &["build", "--doc", "cv", "--lang", "de"]).unwrap();
+
+    assert!(fs::read(&docx).unwrap() == after_everything);
+}
+
+#[test]
 fn build_warns_about_each_note_that_printed_its_english() {
     let (home, _) = home_with_vault_and_personal("cli_build_warnings").unwrap();
 
