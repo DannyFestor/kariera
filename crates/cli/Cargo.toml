@@ -22,6 +22,7 @@ kariera-render-typst.workspace = true
 kariera-validate.workspace = true
 kariera-vault.workspace = true
 thiserror.workspace = true
+time.workspace = true
 
 [dev-dependencies]
 insta.workspace = true
