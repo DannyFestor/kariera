@@ -19,7 +19,10 @@ mod shokumu_keirekisho;
 mod theme;
 
 use kariera_documents::{Document, DocumentKind};
+use kariera_domain::Language;
 use thiserror::Error;
+
+use package::Properties;
 
 #[derive(Debug, Error)]
 pub enum RenderError {
@@ -41,12 +44,23 @@ pub const fn renders(kind: DocumentKind) -> bool {
 }
 
 pub fn render(document: &Document) -> Result<Vec<u8>, RenderError> {
-    let docx = match document {
-        Document::Cv(cv) => cv::render(cv)?,
-        Document::ShokumuKeirekisho(shokumu_keirekisho) => {
-            shokumu_keirekisho::render(shokumu_keirekisho)
-        }
-        Document::SkillSheet(_) => return Err(RenderError::NoLayout),
-    };
-    package::bytes(docx)
+    match document {
+        Document::Cv(cv) => package::bytes(
+            cv::render(cv)?,
+            &Properties {
+                title: cv.labels.title,
+                author: &cv.name,
+                language: cv.language,
+            },
+        ),
+        Document::ShokumuKeirekisho(document) => package::bytes(
+            shokumu_keirekisho::render(document),
+            &Properties {
+                title: document.labels.title,
+                author: &document.name,
+                language: Language::Japanese.code(),
+            },
+        ),
+        Document::SkillSheet(_) => Err(RenderError::NoLayout),
+    }
 }

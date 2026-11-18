@@ -71,7 +71,7 @@ Built {
                     ),
                 },
             ],
-            skills_note: "直近5年以内に使用したスキル。バーは案件での使用期間の合計。",
+            skills_note: "直近5年以内に使用したスキル。期間は案件での使用期間の合計。",
             skills: [
                 SkillGroup {
                     category: "プログラミング言語",

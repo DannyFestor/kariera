@@ -97,7 +97,7 @@ A file is named by the document's title in its language and the Profile `name`, 
 
 The 履歴書 is not built yet: its layout is still open.
 
-The DOCX files are made to be edited: headings, lists and tables are Word's own, and no text is an image. They name their fonts and do not embed them: Inter and BIZ UDPGothic, which Word shows only where they are installed (BIZ UDPGothic ships with Windows 10 1809 and later), else it substitutes another font. The 職務経歴書 shows the time a Skill was used as text, where the PDF also draws a bar. Like the PDFs, the same notes, `personal.yaml` and date give the same bytes.
+The DOCX files are made to be edited: headings, lists and tables are Word's own, and no text is an image. They name their fonts and do not embed them: Calibri for Latin text on the CV (it ships with Office), where the PDF uses Inter, and BIZ UDPGothic for Japanese (it ships with Windows 10 1809 and later; where it is missing, Word substitutes another font). The author is the Profile `name` and the document language is `en`, `de` or `ja`. The 職務経歴書 shows the time a Skill was used as text, where the PDF also draws a bar. Like the PDFs, the same notes, `personal.yaml` and date give the same bytes.
 
 - **Skills:** a skill table shows a Skill that at least one Project links and whose last use falls within the document's window: 3 years for the CV, 5 for the 職務経歴書 and the Skill Sheet. The last use is the later of its last Project month and its `last_used`. Its years are the months of its Projects, with months that two Projects share counted once; `last_used` never adds to them. Human languages are listed apart, not in the skill tables.
 - **Confidential Projects** print their `public_title`, and never an End Client.
@@ -112,7 +112,7 @@ The same notes, `personal.yaml` and date give the same PDF, DOCX and XLSX bytes.
 - Written in Rust, as a workspace of small crates whose dependency rules are enforced by Cargo.
 - PDF rendering uses [Typst](https://typst.app) embedded as a library: one binary, no browser, no TeX installation.
 - The PDF fonts are embedded in the binary: Inter for Latin text and BIZ UDPGothic for Japanese, both under the SIL Open Font License 1.1 (`crates/render-typst/fonts/`).
-- DOCX via `docx-rs` (it reads no language setting, so Word does not know the language of the text, and its `zip` has known flaws in extracting archives, which kariera never does: `deny.toml` lists them), XLSX via `rust_xlsxwriter`.
+- DOCX via `docx-rs` (it has no setter for the author or the document language, so `render-docx` replaces those parts of the file after docx-rs has written them; its `zip` has known flaws in extracting archives, which kariera never does: `deny.toml` lists them), XLSX via `rust_xlsxwriter`.
 - The build is deterministic and offline: no LLM calls, no network.
 - Tests run against a fictional fixture vault in this repository, never against real personal data.
 

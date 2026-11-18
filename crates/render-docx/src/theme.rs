@@ -21,9 +21,10 @@ pub(crate) struct Typeface {
 }
 
 impl Typeface {
-    /// Inter for Latin text, `BIZ UDPGothic` for Japanese glyphs (issue #7).
+    /// Calibri, which ships with Office on Windows and Mac, for Latin text; the PDF uses Inter. `BIZ UDPGothic` for
+    /// Japanese glyphs (issue #8).
     pub(crate) const CV: Self = Self {
-        latin: "Inter",
+        latin: "Calibri",
         east_asian: "BIZ UDPGothic",
     };
     pub(crate) const JAPANESE: Self = Self {

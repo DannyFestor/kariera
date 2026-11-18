@@ -99,7 +99,7 @@ fn the_fonts_are_named_and_not_embedded() {
     let cv_styles = cv.part("word/styles.xml").unwrap();
     let shokumu_styles = shokumu.part("word/styles.xml").unwrap();
 
-    assert!(cv_styles.contains(r#"w:ascii="Inter""#), "{cv_styles}");
+    assert!(cv_styles.contains(r#"w:ascii="Calibri""#), "{cv_styles}");
     assert!(
         cv_styles.contains(r#"w:eastAsia="BIZ UDPGothic""#),
         "{cv_styles}"
@@ -175,5 +175,45 @@ fn a_photo_in_a_format_docx_cannot_hold_is_an_error_not_a_panic() {
     assert!(
         error.to_string().starts_with("cannot read the photo"),
         "{error}"
+    );
+}
+
+#[test]
+fn the_properties_name_the_author_and_the_language_of_each_document() {
+    for (kind, language, code) in [
+        (DocumentKind::Cv, Language::English, "en"),
+        (DocumentKind::Cv, Language::German, "de"),
+        (DocumentKind::ShokumuKeirekisho, Language::Japanese, "ja"),
+    ] {
+        let mut package = docx_of(kind, language).unwrap();
+
+        let properties = package.part("docProps/core.xml").unwrap();
+        let styles = package.part("word/styles.xml").unwrap();
+
+        assert!(
+            properties.contains("<dc:creator>Robin Beispiel</dc:creator>"),
+            "{properties}"
+        );
+        assert!(
+            properties.contains(&format!("<dc:language>{code}</dc:language>")),
+            "{properties}"
+        );
+        assert!(
+            styles.contains(&format!(r#"<w:lang w:val="{code}""#)),
+            "{styles}"
+        );
+    }
+}
+
+#[test]
+fn the_properties_keep_the_fixed_dates() {
+    let mut package = docx_of(DocumentKind::Cv, Language::German).unwrap();
+
+    let properties = package.part("docProps/core.xml").unwrap();
+
+    assert_eq!(
+        properties.matches("1970-01-01T00:00:00Z").count(),
+        2,
+        "{properties}"
     );
 }
