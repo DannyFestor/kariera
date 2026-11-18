@@ -73,7 +73,7 @@ impl Options {
     }
 }
 
-fn value_of(
+pub(crate) fn value_of(
     option: &str,
     what: &str,
     arguments: &mut impl Iterator<Item = String>,

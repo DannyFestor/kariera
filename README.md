@@ -14,7 +14,7 @@ Not usable yet. The project is being set up.
 |---|---|
 | `kariera validate` | Checks every note against the schema and against the other notes (see below) |
 | `kariera new <log\|project\|engagement>` | Creates a note from the vault's templates, with what the arguments say filled in: `new log --engagement <name> --month <YYYY-MM>`, `new project --engagement <name> --title <title>`, `new engagement (--client <name> \| --employer <name>) --type <type> --start <YYYY-MM>`. Refuses to overwrite a note. |
-| `kariera build` | Builds every document in every language and format; `--doc` and `--lang` narrow it down |
+| `kariera build` | Builds every document in every language it is written in, as PDF for now; `--doc` and `--lang` narrow it down (see below) |
 | `kariera translations --stale` | Lists the notes and languages whose translation is empty or older than the note's English text |
 | `kariera translations --mark <note> --lang <ja\|de>` | Records that the translation matches the English text as it is now |
 
@@ -30,9 +30,28 @@ vault = "~/Notes/Career"
 |---|---|---|
 | `vault` | yes | The vault root: the folder that holds `Profile.md` and the note folders. An absolute path, or one starting with `~/` for the home directory. |
 
-Any other key is an error, so a misspelt setting is not silently ignored. Personal data for the 履歴書 does not go here: it lives in `~/.config/kariera/personal.yaml`.
+Any other key is an error, so a misspelt setting is not silently ignored. Personal data does not go here, and never into the vault: it lives in `~/.config/kariera/personal.yaml`.
 
-kariera reads the notes in `Organizations/`, `Engagements/`, `Contracts/`, `Projects/`, `Monthly Logs/`, `Skills/` and `Qualifications/` (with their subfolders) and `Profile.md` in the vault root. `kariera new` also reads `Templates/` (`log` uses `Templates/monthly-log.md`, `project` `project.md`, `engagement` `engagement.md`). `kariera validate` also reads the frontmatter of the other Markdown files, to find notes in the wrong place, and checks that the files Sources cite exist. It writes only two things: a new note from `kariera new`, and the `translated_from` value of one note, set by `kariera translations --mark`; the fingerprint it stores is defined in [ADR 0002](docs/adr/0002-translation-fingerprints.md).
+### `personal.yaml`
+
+The contact and personal details the documents print. The file and every key are optional; any other key is an error.
+
+```yaml
+email: robin@example.com
+phone: +81 90 0000 0000
+location: Sapporo, Japan
+birth_date: 1990-01-01
+nationality: deutsch
+photo: photo.jpg
+```
+
+| Key | Printed in |
+|---|---|
+| `email`, `phone`, `location` | The CV's header, English and German |
+| `birth_date` (`YYYY-MM-DD`), `nationality` | The German CV only, as German readers expect them |
+| `photo` | The German CV only. A PNG, JPEG, GIF, SVG or WebP file, relative to the folder of `personal.yaml`, absolute, or starting with `~/` |
+
+kariera reads the notes in `Organizations/`, `Engagements/`, `Contracts/`, `Projects/`, `Monthly Logs/`, `Skills/` and `Qualifications/` (with their subfolders) and `Profile.md` in the vault root. `kariera new` also reads `Templates/` (`log` uses `Templates/monthly-log.md`, `project` `project.md`, `engagement` `engagement.md`). `kariera validate` also reads the frontmatter of the other Markdown files, to find notes in the wrong place, and checks that the files Sources cite exist. It writes only three things: a new note from `kariera new`; the `translated_from` value of one note, set by `kariera translations --mark` (the fingerprint it stores is defined in [ADR 0002](docs/adr/0002-translation-fingerprints.md)); and the documents of `kariera build`, into `Generated/`, which it replaces on every build.
 
 ## `kariera validate`
 
@@ -57,10 +76,37 @@ Only the `hours` rule has warnings: `project_hours` that do not add up to `hours
 
 `make check-vault` runs it on the vault named in `~/.config/kariera/config.toml` (or `KARIERA_CONFIG`).
 
+## `kariera build`
+
+```sh
+kariera build                       # every document in every language it is written in
+kariera build --doc cv              # the CV in English and German
+kariera build --lang ja             # the 職務経歴書 and the Skill Sheet
+kariera build --doc cv --lang de    # the German CV only
+```
+
+Writes each document as PDF into the vault's `Generated/`, replacing the file of the last build, and prints each file with its page count:
+
+| Document | `--doc` | Languages | File |
+|---|---|---|---|
+| CV | `cv` | `en`, `de` | `Generated/cv-en.pdf`, `Generated/cv-de.pdf` |
+| 職務経歴書 | `shokumu-keirekisho` | `ja` | `Generated/shokumu-keirekisho-ja.pdf` |
+| Skill Sheet | `skill-sheet` | `ja` | `Generated/skill-sheet-ja.pdf` |
+
+The 履歴書 is not built yet: its layout is still open. DOCX and XLSX follow (#8, #9).
+
+- **Skills:** a skill table shows a Skill that at least one Project links and whose last use falls within the document's window: 3 years for the CV, 5 for the 職務経歴書 and the Skill Sheet. The last use is the later of its last Project month and its `last_used`. Its years are the months of its Projects, with months that two Projects share counted once; `last_used` never adds to them. Human languages are listed apart, not in the skill tables.
+- **Confidential Projects** print their `public_title`, and never an End Client.
+- **Organizations** print their `labels` for the document's language, else their `name`.
+- **Missing translations:** where a Japanese or German text is empty, the document prints the English one, and the build ends with a warning naming the note and the language. It still exits 0.
+
+The same notes, `personal.yaml` and date give the same PDF bytes. The date printed (作成日, 更新日) is today's date in UTC.
+
 ## Design
 
 - Written in Rust, as a workspace of small crates whose dependency rules are enforced by Cargo.
 - PDF rendering uses [Typst](https://typst.app) embedded as a library: one binary, no browser, no TeX installation.
+- The PDF fonts are embedded in the binary: Inter for Latin text and BIZ UDPGothic for Japanese, both under the SIL Open Font License 1.1 (`crates/render-typst/fonts/`).
 - DOCX via `docx-rs`, XLSX via `rust_xlsxwriter`.
 - The build is deterministic and offline: no LLM calls, no network.
 - Tests run against a fictional fixture vault in this repository, never against real personal data.

@@ -34,13 +34,13 @@ fn version_goes_to_stdout_and_exits_zero() {
 
 #[test]
 fn an_unknown_argument_goes_to_stderr_and_exits_two() {
-    let output = kariera(&["build"]).expect("kariera runs");
+    let output = kariera(&["publish"]).expect("kariera runs");
 
     assert_eq!(output.status.code(), Some(2));
     assert!(
         String::from_utf8(output.stderr)
             .expect("stderr is UTF-8")
-            .contains("\"build\"")
+            .contains("\"publish\"")
     );
     assert_eq!(
         String::from_utf8(output.stdout).expect("stdout is UTF-8"),

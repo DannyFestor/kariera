@@ -29,7 +29,18 @@ deny = [
   { crate = "kariera-render-docx", wrappers = ["kariera-cli"], reason = "only cli picks a renderer (ADR 0001)" },
   { crate = "kariera-render-xlsx", wrappers = ["kariera-cli"], reason = "only cli picks a renderer (ADR 0001)" },
   { crate = "saphyr-parser", wrappers = ["kariera-vault"], reason = "only vault reads notes (ADR 0001)" },
-  { crate = "unicode-normalization", wrappers = ["kariera-vault"], reason = "only vault reads note names and links (ADR 0001)" },
-  { crate = "toml", wrappers = ["kariera-vault"], reason = "only vault reads the config naming the vault (ADR 0001)" },
+  { crate = "unicode-normalization", wrappers = [
+    "kariera-vault",
+    "biblatex",
+    "typst-library",
+  ], reason = "only vault reads note names and links (ADR 0001); biblatex and typst-library use it inside Typst" },
+  { crate = "toml", wrappers = [
+    "kariera-vault",
+    "typst-eval",
+    "typst-library",
+    "typst-syntax",
+  ], reason = "only vault reads the config naming the vault (ADR 0001); the typst crates use it inside Typst" },
   { crate = "sha2", wrappers = ["kariera-vault"], reason = "only vault fingerprints note content (ADR 0002)" },
+  { crate = "typst", wrappers = ["kariera-render-typst"], reason = "only render-typst lays out PDFs (ADR 0001)" },
+  { crate = "typst-pdf", wrappers = ["kariera-render-typst"], reason = "only render-typst writes PDFs (ADR 0001)" },
 ]

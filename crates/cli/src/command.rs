@@ -1,3 +1,4 @@
+use crate::build::BuildCommand;
 use crate::translations::TranslationsCommand;
 use crate::validate::Format;
 use kariera_vault::NewNote;
@@ -8,6 +9,7 @@ use crate::new_note;
 pub(crate) enum Command {
     Help,
     Version,
+    Build(BuildCommand),
     Translations(TranslationsCommand),
     New(NewNote),
     Validate(Format),
@@ -28,6 +30,7 @@ impl Command {
         match argument.as_str() {
             "help" | "--help" | "-h" => Self::Help,
             "--version" | "-V" => Self::Version,
+            "build" => BuildCommand::parse(rest).map_or_else(Self::Misused, Self::Build),
             "translations" => {
                 TranslationsCommand::parse(rest).map_or_else(Self::Misused, Self::Translations)
             }
@@ -103,6 +106,6 @@ mod tests {
 
     #[test]
     fn any_other_argument_is_unknown() {
-        assert_eq!(parse(&["build"]), Command::Unknown("build".to_owned()));
+        assert_eq!(parse(&["publish"]), Command::Unknown("publish".to_owned()));
     }
 }

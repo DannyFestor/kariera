@@ -19,6 +19,7 @@ mod fields;
 mod fingerprint;
 mod names;
 mod notes;
+mod personal;
 mod problems;
 mod quoting;
 mod raw_note;
@@ -36,8 +37,9 @@ pub use creation::{CreateError, NewEngagement, NewLog, NewNote, NewProject, Orga
 pub use discovery::{monthly_log_folder, note_folder};
 pub use error::{LoadError, Location, NoteError, Problem};
 pub use names::nfc;
+pub use personal::{PersonalError, default_personal_path, load_personal};
 pub use quoting::requires_quotes;
 pub use translated_from::EditError;
 pub use translations::{MarkError, Translation};
-pub use vault::{Inspection, NoteFile, Stray, Vault};
+pub use vault::{Inspection, NoteFile, Stray, Vault, WriteError};
 pub use yaml::{Entry, Node, Style, Value};
