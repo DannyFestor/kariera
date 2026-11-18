@@ -1,0 +1,9 @@
+# Fictional personal details of Robin Beispiel, the owner of fixtures/vault. The real file lives in
+# ~/.config/kariera/personal.yaml on the owner's machines only.
+email: robin@example.com
+phone: +81 90 0000 0000
+location: Sapporo, Japan
+birth_date: 1990-01-01
+nationality: deutsch
+# A plain grey placeholder: the fixtures hold no picture of anyone.
+photo: photo.png

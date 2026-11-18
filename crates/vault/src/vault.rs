@@ -1,8 +1,10 @@
 use std::collections::BTreeMap;
 use std::fs;
+use std::io;
 use std::path::{Path, PathBuf};
 
 use kariera_domain::{Career, NoteName, NoteType};
+use thiserror::Error;
 
 use crate::body::Body;
 use crate::discovery::{note_paths, other_markdown_paths};
@@ -10,8 +12,18 @@ use crate::names::Names;
 use crate::notes::{self, NoteSource};
 use crate::raw_note::RawNote;
 use crate::value::scalar_text;
+use crate::write::overwrite_file;
 use crate::yaml::Node;
 use crate::{LoadError, Location, NoteError, Problem};
+
+const GENERATED_FOLDER: &str = "Generated";
+
+#[derive(Debug, Error)]
+#[error("cannot write {}: {source}", path.display())]
+pub struct WriteError {
+    pub path: PathBuf,
+    pub source: io::Error,
+}
 
 /// The whole vault, read and with every link resolved.
 #[derive(Debug)]
@@ -82,6 +94,17 @@ impl Vault {
             notes,
         };
         Ok(Inspection { vault, errors })
+    }
+
+    /// Writes a built document into `Generated/`, replacing the one of the same name: every file there can be
+    /// deleted and rebuilt (schema §1.1). Returns the path written.
+    pub fn write_generated(&self, file_name: &str, bytes: &[u8]) -> Result<PathBuf, WriteError> {
+        let path = self.root.join(GENERATED_FOLDER).join(file_name);
+        overwrite_file(&path, bytes).map_err(|source| WriteError {
+            path: path.clone(),
+            source,
+        })?;
+        Ok(path)
     }
 
     #[must_use]

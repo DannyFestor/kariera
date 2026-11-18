@@ -11,6 +11,7 @@ const USAGE: &str = "Usage: kariera [--help | --version]
        kariera new project --engagement <name> --title <title>
        kariera new engagement (--client <name> | --employer <name>) --type <type> --start <YYYY-MM>
        kariera validate [--json]
+       kariera build [--doc <cv|shokumu-keirekisho|skill-sheet>] [--lang <en|ja|de>]
        kariera translations --stale
        kariera translations --mark <note> --lang <ja|de>
 
@@ -18,6 +19,7 @@ Builds career documents from an Obsidian vault.
 
 new                    Creates a note from the vault's Templates, with what the arguments say filled in
 validate               Checks every note against the schema and the other notes; exits 1 on errors, --json is for programs
+build                  Writes every document in each of its languages as PDF into the vault's Generated/
 translations --stale   Lists the translations whose English text changed since they were marked
 translations --mark    Records that a note's translation matches its current English text";
 
@@ -42,6 +44,7 @@ impl Reply {
         match command {
             Command::Help => Self::success(USAGE.to_owned()),
             Command::Version => Self::success(version()),
+            Command::Build(build) => build.run(),
             Command::New(note) => new_note::reply(note),
             Command::Translations(translations) => translations.run(),
             Command::Validate(format) => validate::reply(*format),
@@ -166,10 +169,10 @@ mod tests {
 
     #[test]
     fn an_unknown_argument_is_reported_with_the_usage_and_fails() {
-        let reply = Reply::for_command(&Command::Unknown("build".to_owned()));
+        let reply = Reply::for_command(&Command::Unknown("publish".to_owned()));
 
         assert_eq!(reply.stream, Stream::Stderr);
-        assert!(reply.text.contains("\"build\""), "{}", reply.text);
+        assert!(reply.text.contains("\"publish\""), "{}", reply.text);
         assert!(reply.text.ends_with(USAGE), "{}", reply.text);
         assert_eq!(reply.exit_code, ExitCode::from(USAGE_ERROR));
     }
