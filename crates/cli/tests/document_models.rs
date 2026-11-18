@@ -4,21 +4,18 @@
 use std::path::Path;
 
 use kariera_documents::{Edition, Inputs, build};
-use kariera_domain::{Date, Personal, Photo};
-use kariera_vault::Vault;
+use kariera_domain::Date;
+use kariera_vault::{Vault, load_personal};
 
 #[test]
 fn every_document_of_the_fixture_vault() {
     let vault = Vault::load(&Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/vault"))
         .expect("the fixture vault loads");
-    let personal = Personal {
-        email: Some("robin@example.com".parse().unwrap()),
-        phone: Some("+81 90 0000 0000".parse().unwrap()),
-        location: Some("Sapporo, Japan".parse().unwrap()),
-        birth_date: Some("1990-01-01".parse().unwrap()),
-        nationality: Some("deutsch".parse().unwrap()),
-        photo: Some(Photo(vec![0; 16])),
-    };
+    let personal = load_personal(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../fixtures/personal/fictional-personal.yaml"),
+    )
+    .expect("the fixture personal.yaml reads");
     let inputs = Inputs {
         career: vault.career(),
         personal: &personal,

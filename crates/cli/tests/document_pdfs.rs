@@ -4,15 +4,19 @@
 use std::path::Path;
 
 use kariera_documents::{Edition, Inputs, build};
-use kariera_domain::{Date, Personal};
+use kariera_domain::Date;
 use kariera_render_typst::render;
-use kariera_vault::Vault;
+use kariera_vault::{Vault, load_personal};
 
 #[test]
 fn every_document_of_the_fixture_vault_renders_the_same_pdf_each_time() {
     let vault = Vault::load(&Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/vault"))
         .expect("the fixture vault loads");
-    let personal = Personal::default();
+    let personal = load_personal(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../fixtures/personal/fictional-personal.yaml"),
+    )
+    .expect("the fixture personal.yaml reads");
     let inputs = Inputs {
         career: vault.career(),
         personal: &personal,
