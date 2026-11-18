@@ -24,3 +24,4 @@ thiserror.workspace = true
 [dev-dependencies]
 insta.workspace = true
 kariera-documents.workspace = true
+kariera-render-typst.workspace = true
