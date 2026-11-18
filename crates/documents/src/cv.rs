@@ -4,11 +4,11 @@ use std::cmp::Reverse;
 
 use kariera_domain::{
     Engagement, Labelled, Language, Personal, Photo, Project, Qualification, QualificationCategory,
-    TeamSize,
 };
 use serde::Serialize;
 
 use crate::context::{Context, Named, url_text};
+use crate::labels::CvLabels;
 use crate::parts::{QualificationEntry, SkillGroup, SpokenLanguage};
 
 const SELECTED_PROJECTS: usize = 5;
@@ -18,13 +18,14 @@ const SKILL_WINDOW_YEARS: u32 = 3;
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Cv {
     pub language: &'static str,
+    pub labels: CvLabels,
     pub name: String,
     pub headline: String,
     pub contact: Contact,
     /// Only on the German CV, as German readers expect it.
     #[serde(skip)]
     pub photo: Option<Photo>,
-    pub availability: Option<Availability>,
+    pub availability: Option<String>,
     pub languages: Vec<SpokenLanguage>,
     /// Only on the German CV.
     pub personal_details: Option<PersonalDetails>,
@@ -47,12 +48,6 @@ pub struct Contact {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
-pub struct Availability {
-    pub from: String,
-    pub days_per_week: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct PersonalDetails {
     pub birth_date: Option<String>,
     pub nationality: Option<String>,
@@ -67,7 +62,7 @@ pub struct CvProject {
     pub client: String,
     pub end_client: Option<String>,
     pub industry: String,
-    pub team_size: Option<u32>,
+    pub team: Option<String>,
     /// The first paragraph of the Description.
     pub description: Option<String>,
     pub achievements: Vec<String>,
@@ -81,7 +76,8 @@ pub struct CareerEntry {
     pub role: String,
     pub organization: String,
     pub engagement_type: String,
-    pub projects: usize,
+    /// How many Projects, when more than one.
+    pub projects: Option<String>,
 }
 
 pub(crate) fn build(context: &Context<'_>) -> Cv {
@@ -90,11 +86,12 @@ pub(crate) fn build(context: &Context<'_>) -> Cv {
     let (education, certificates) = qualifications(context);
     Cv {
         language: context.language().code(),
+        labels: CvLabels::of(context.language()),
         name: profile.name.to_string(),
         headline: context.text(profile_name, &profile.headline),
         contact: contact(context),
         photo: context.personal.photo.clone().filter(|_| is_german),
-        availability: availability(context),
+        availability: context.availability(),
         languages: context.spoken_languages(),
         personal_details: personal_details(context, context.personal).filter(|_| is_german),
         summary: context.paragraphs(profile_name, &profile.summary),
@@ -117,15 +114,6 @@ fn contact(context: &Context<'_>) -> Contact {
         portfolio_url: profile.portfolio_url.as_ref().map(url_text),
         github_url: profile.github_url.as_ref().map(url_text),
     }
-}
-
-fn availability(context: &Context<'_>) -> Option<Availability> {
-    let (_, profile) = context.profile;
-    let from = profile.available_from?;
-    Some(Availability {
-        from: context.locale.date(from),
-        days_per_week: context.days_per_week(),
-    })
 }
 
 fn personal_details(context: &Context<'_>, personal: &Personal) -> Option<PersonalDetails> {
@@ -161,7 +149,9 @@ fn cv_project(context: &Context<'_>, named: Named<'_, Project>) -> CvProject {
         client: client_of(context, project),
         end_client: context.end_client(project),
         industry: context.text(name, &project.industry),
-        team_size: project.team_size.map(TeamSize::get),
+        team: project
+            .team_size
+            .map(|size| context.locale.team(size.get())),
         description: context
             .paragraphs(name, &project.description)
             .into_iter()
@@ -200,7 +190,9 @@ fn career_entry(context: &Context<'_>, (name, engagement): Named<'_, Engagement>
             .unwrap_or_else(|| engagement_type.clone()),
         organization: context.engagement_organization(engagement),
         engagement_type,
-        projects: context.projects_of(name).len(),
+        projects: Some(context.projects_of(name).len())
+            .filter(|&count| count > 1)
+            .map(|count| context.locale.projects(count)),
     }
 }
 

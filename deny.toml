@@ -111,6 +111,10 @@ allow = [
   { crate = "libc", reason = "errno, getrandom and rustix: C library bindings" },
   { crate = "windows-sys", reason = "errno, rustix and tempfile on Windows; cargo-deny checks every target" },
   { crate = "windows-link", reason = "windows-sys: links the Windows API" },
+  # The build date in the machine's time zone: std has no time zones, and reading the local offset without a crate
+  # needs unsafe code, which the workspace forbids.
+  { crate = "time", reason = "cli: the local date a document states (作成日); Typst also uses it for its datetime type" },
+  { crate = "num_threads", reason = "time: reads the local offset only while the process has one thread, where that is safe" },
   # Typst, embedded by render-typst to write the PDFs (README, issue #7), and the crates it needs.
   { crate = "adler2", reason = "typst: a simple clean-room implementation of the Adler-32 checksum" },
   { crate = "aho-corasick", reason = "typst: fast multiple substring searching" },
@@ -306,7 +310,6 @@ allow = [
   { crate = "synstructure", reason = "typst: helper methods and macros for custom derives" },
   { crate = "syntect", reason = "typst: library for high quality syntax highlighting and code intelligence using Sublime Text's grammars" },
   { crate = "thin-vec", reason = "typst: a Vec that takes up less space on the stack" },
-  { crate = "time", reason = "typst: date and time library. Fully interoperable with the standard library. Mostly compatible with #![no_std]" },
   { crate = "time-core", reason = "typst: this crate is an implementation detail and should not be relied upon directly" },
   { crate = "time-macros", reason = "typst: procedural macros for the time crate. This crate is an implementation detail and should not be relied upon…" },
   { crate = "tiny-skia", reason = "typst: a tiny Skia subset ported to Rust" },

@@ -72,16 +72,12 @@ fn build_one(vault: &Vault, inputs: &Inputs<'_>, edition: Edition) -> Result<Wri
     let built = build(edition, inputs).map_err(|error| error.to_string())?;
     let pdf = render(&built.document).map_err(|error| error.to_string())?;
     let path = vault
-        .write_generated(&file_name(edition), &pdf.bytes)
+        .write_generated(&format!("{}.pdf", built.document.file_stem()), &pdf.bytes)
         .map_err(|error| error.to_string())?;
     Ok(Written {
         line: format!("Wrote {} ({})", path.display(), pages(pdf.pages)),
         missing_translations: built.missing_translations,
     })
-}
-
-fn file_name(edition: Edition) -> String {
-    format!("{}-{}.pdf", edition.kind.slug(), edition.language.code())
 }
 
 fn pages(count: usize) -> String {

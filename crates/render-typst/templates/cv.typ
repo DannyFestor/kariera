@@ -1,44 +1,10 @@
-// The CV, layout variant C "Projects first" (issue #7, branch prototype/cv). The content comes from the documents
-// crate as JSON in sys.inputs.data, already in the CV's language; this file holds the headings and the layout.
+// The CV, layout variant C "Projects first" (issue #7, branch prototype/cv). The content, headings and labels come
+// from the documents crate as JSON in sys.inputs.data, already in the CV's language; this file holds the layout.
 
 #let cv = json(sys.inputs.data)
 #let lang = cv.language
 
-#let words = (
-  en: (
-    profile: "Profile",
-    strengths: "Strengths",
-    selected-projects: "Selected projects",
-    career: "Career",
-    projects: "projects",
-    skills: "Skills",
-    education: "Education",
-    qualifications: "Certificates and licences",
-    born: "Born",
-    available: "Available from",
-    days-per-week: "days per week",
-    team: "team of",
-    client: "Client",
-    end-client: "End client",
-  ),
-  de: (
-    profile: "Profil",
-    strengths: "Stärken",
-    selected-projects: "Ausgewählte Projekte",
-    career: "Werdegang",
-    projects: "Projekte",
-    skills: "IT-Kenntnisse",
-    education: "Ausbildung",
-    qualifications: "Zertifikate und Lizenzen",
-    born: "Geburtsdatum",
-    available: "Verfügbar ab",
-    days-per-week: "Tage pro Woche",
-    team: "Team aus",
-    client: "Kunde",
-    end-client: "Endkunde",
-  ),
-)
-#let t = words.at(lang)
+#let t = cv.labels
 
 #let ink = rgb("#18181b")
 #let band = rgb("#232a3b")
@@ -46,7 +12,7 @@
 #let chip-fill = rgb("#f1f1f4")
 #let muted = luma(105)
 
-#set document(title: cv.name + " – CV", author: cv.name)
+#set document(title: t.title + " – " + cv.name, author: cv.name)
 #set page(
   paper: "a4",
   margin: (x: 16mm, top: 14mm, bottom: 16mm),
@@ -75,15 +41,6 @@
 
 #let strip-https(url) = url.replace("https://", "")
 
-#let availability = if cv.availability != none {
-  let days = cv.availability.days_per_week
-  (
-    t.available
-      + " "
-      + cv.availability.from
-      + if days != none { ", " + days + " " + t.days-per-week }
-  )
-}
 
 // Header band, full width
 #block(
@@ -146,8 +103,8 @@
     set text(8pt)
     let details = cv.personal_details
     let items = (
-      if availability != none {
-        text(weight: "semibold", fill: accent, availability)
+      if cv.availability != none {
+        text(weight: "semibold", fill: accent, cv.availability)
       },
       cv
         .languages
@@ -193,9 +150,9 @@
     (
       project.role + if project.focus != none { " (" + project.focus + ")" },
       t.client + " " + project.client,
-      if project.end_client != none { t.end-client + " " + project.end_client },
+      if project.end_client != none { t.end_client + " " + project.end_client },
       project.industry,
-      if project.team_size != none { t.team + " " + str(project.team_size) },
+      project.team,
     )
       .filter(x => x != none)
       .join("  ·  ")
@@ -207,7 +164,7 @@
 })
 
 #if cv.projects.len() > 0 {
-  section-heading(t.selected-projects)
+  section-heading(t.selected_projects)
   for project in cv.projects { project-card(project) }
 }
 
@@ -227,9 +184,7 @@
         text(
           fill: muted,
           entry.engagement_type
-            + if entry.projects > 1 {
-              " · " + str(entry.projects) + " " + t.projects
-            },
+            + if entry.projects != none { " · " + entry.projects },
         ),
       ))
       .flatten(),
@@ -269,7 +224,7 @@
     for q in cv.education { qualification(q) }
   },
   if cv.certificates.len() > 0 {
-    section-heading(t.qualifications)
+    section-heading(t.certificates)
     for q in cv.certificates { qualification(q) }
   },
 )

@@ -87,11 +87,13 @@ kariera build --doc cv --lang de    # the German CV only
 
 Writes each document as PDF into the vault's `Generated/`, replacing the file of the last build, and prints each file with its page count:
 
-| Document | `--doc` | Languages | File |
+| Document | `--doc` | Languages | File, for a Profile `name` of Jane Example |
 |---|---|---|---|
-| CV | `cv` | `en`, `de` | `Generated/cv-en.pdf`, `Generated/cv-de.pdf` |
-| 職務経歴書 | `shokumu-keirekisho` | `ja` | `Generated/shokumu-keirekisho-ja.pdf` |
-| Skill Sheet | `skill-sheet` | `ja` | `Generated/skill-sheet-ja.pdf` |
+| CV | `cv` | `en`, `de` | `Generated/CV_Jane_Example.pdf`, `Generated/Lebenslauf_Jane_Example.pdf` |
+| 職務経歴書 | `shokumu-keirekisho` | `ja` | `Generated/職務経歴書_Jane_Example.pdf` |
+| Skill Sheet | `skill-sheet` | `ja` | `Generated/スキルシート_Jane_Example.pdf` |
+
+A file is named by the document's title in its language and the Profile `name`, with spaces as `_`.
 
 The 履歴書 is not built yet: its layout is still open. DOCX and XLSX follow (#8, #9).
 
@@ -100,7 +102,7 @@ The 履歴書 is not built yet: its layout is still open. DOCX and XLSX follow (
 - **Organizations** print their `labels` for the document's language, else their `name`.
 - **Missing translations:** where a Japanese or German text is empty, the document prints the English one, and the build ends with a warning naming the note and the language. It still exits 0.
 
-The same notes, `personal.yaml` and date give the same PDF bytes. The date printed (作成日, 更新日) is today's date in UTC.
+The same notes, `personal.yaml` and date give the same PDF bytes. The date printed (作成日, 更新日) is today's date in the machine's time zone.
 
 ## Design
 

@@ -6,6 +6,19 @@ Built {
     document: Cv(
         Cv {
             language: "en",
+            labels: CvLabels {
+                title: "CV",
+                profile: "Profile",
+                strengths: "Strengths",
+                selected_projects: "Selected projects",
+                career: "Career",
+                skills: "Skills",
+                education: "Education",
+                certificates: "Certificates and licences",
+                born: "Born",
+                client: "Client",
+                end_client: "End client",
+            },
             name: "Robin Beispiel",
             headline: "Full-stack developer in Japan",
             contact: Contact {
@@ -27,12 +40,7 @@ Built {
             },
             photo: None,
             availability: Some(
-                Availability {
-                    from: "1 Apr 2026",
-                    days_per_week: Some(
-                        "3–5",
-                    ),
-                },
+                "Available from 1 Apr 2026, 3–5 days per week",
             ),
             languages: [
                 SpokenLanguage {
@@ -65,7 +73,7 @@ Built {
                     client: "Globex",
                     end_client: None,
                     industry: "Retail",
-                    team_size: None,
+                    team: None,
                     description: Some(
                         "Builds the admin area for product and staff management.",
                     ),
@@ -86,8 +94,8 @@ Built {
                     client: "Globex",
                     end_client: None,
                     industry: "Retail",
-                    team_size: Some(
-                        8,
+                    team: Some(
+                        "team of 8",
                     ),
                     description: Some(
                         "Develops the product search of the web shop, from the ranking service on Google Cloud to the React front end.",
@@ -111,7 +119,7 @@ Built {
                     client: "Acme",
                     end_client: None,
                     industry: "Logistics",
-                    team_size: None,
+                    team: None,
                     description: Some(
                         "Built the invoicing backend of an accounting platform for a logistics company.",
                     ),
@@ -133,8 +141,8 @@ Built {
                         "Contoso",
                     ),
                     industry: "E-commerce",
-                    team_size: Some(
-                        5,
+                    team: Some(
+                        "team of 5",
                     ),
                     description: Some(
                         "Built the backend of an online toy shop in Go on PostgreSQL, from the product catalogue to order processing.",
@@ -157,8 +165,8 @@ Built {
                     client: "Müller Logistik",
                     end_client: None,
                     industry: "Logistics",
-                    team_size: Some(
-                        4,
+                    team: Some(
+                        "team of 4",
                     ),
                     description: Some(
                         "Developed the tracking system for parcels and pallets in C#.",
@@ -178,28 +186,32 @@ Built {
                     role: "Full-stack developer",
                     organization: "Globex",
                     engagement_type: "Freelance",
-                    projects: 2,
+                    projects: Some(
+                        "2 projects",
+                    ),
                 },
                 CareerEntry {
                     period: "Apr 2021 – Sep 2023",
                     role: "Backend developer",
                     organization: "Acme",
                     engagement_type: "Freelance",
-                    projects: 2,
+                    projects: Some(
+                        "2 projects",
+                    ),
                 },
                 CareerEntry {
                     period: "Apr 2019 – Mar 2021",
                     role: "Software developer",
                     organization: "Müller Logistik",
                     engagement_type: "Employment",
-                    projects: 1,
+                    projects: None,
                 },
                 CareerEntry {
                     period: "Jul 2018 – Sep 2018",
                     role: "Internship",
                     organization: "Initech",
                     engagement_type: "Internship",
-                    projects: 0,
+                    projects: None,
                 },
             ],
             skills: [

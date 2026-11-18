@@ -17,12 +17,6 @@ pub struct Date {
     day: u8,
 }
 
-const SECONDS_PER_DAY: u64 = 86_400;
-const UNIX_EPOCH_MONTH: Month = Month {
-    year: 1970,
-    month: 1,
-};
-
 impl Month {
     #[must_use]
     pub const fn year(self) -> u16 {
@@ -33,26 +27,6 @@ impl Month {
     #[must_use]
     pub const fn number(self) -> u8 {
         self.month
-    }
-
-    /// The month of a moment given as seconds since 1970-01-01 00:00 UTC; `None` after the last year a `Month` holds.
-    #[must_use]
-    pub fn of_unix_seconds(seconds: u64) -> Option<Self> {
-        Date::of_unix_seconds(seconds).map(Date::month)
-    }
-
-    fn following(self) -> Option<Self> {
-        if self.month == 12 {
-            Some(Self {
-                year: self.year.checked_add(1)?,
-                month: 1,
-            })
-        } else {
-            Some(Self {
-                year: self.year,
-                month: self.month + 1,
-            })
-        }
     }
 
     fn new(year: u16, month: u8) -> Option<Self> {
@@ -85,18 +59,10 @@ impl Date {
         self.day
     }
 
-    /// The UTC date of a moment given as seconds since 1970-01-01 00:00 UTC; `None` after the last year a `Month`
-    /// holds.
+    /// `None` for a month outside 1 to 12 or a day its month does not have.
     #[must_use]
-    pub fn of_unix_seconds(seconds: u64) -> Option<Self> {
-        let mut days_left = seconds / SECONDS_PER_DAY;
-        let mut month = UNIX_EPOCH_MONTH;
-        while days_left >= u64::from(month.days()) {
-            days_left -= u64::from(month.days());
-            month = month.following()?;
-        }
-        let day = u8::try_from(days_left).ok()?.checked_add(1)?;
-        Some(Self { month, day })
+    pub fn from_parts(year: u16, month: u8, day: u8) -> Option<Self> {
+        Month::new(year, month).and_then(|month| Self::new(month, day))
     }
 
     fn new(month: Month, day: u8) -> Option<Self> {
@@ -181,85 +147,8 @@ mod tests {
         assert_eq!(month("2024-05").year(), 2024);
     }
 
-    fn at(unix_seconds: u64) -> Month {
-        Month::of_unix_seconds(unix_seconds).unwrap()
-    }
-
-    #[test]
-    fn the_last_second_of_the_last_representable_year_is_in_its_december() {
-        let last = Month::of_unix_seconds(2_005_949_145_599);
-
-        assert_eq!(
-            last.map(|month| month.to_string()).as_deref(),
-            Some("65535-12")
-        );
-    }
-
-    #[test]
-    fn the_first_second_after_the_last_representable_year_has_no_month() {
-        assert_eq!(Month::of_unix_seconds(2_005_949_145_600), None);
-    }
-
-    #[test]
-    fn the_unix_epoch_is_in_january_1970() {
-        assert_eq!(at(0), month("1970-01"));
-    }
-
-    #[test]
-    fn the_last_second_of_a_month_is_still_in_it() {
-        assert_eq!(at(2_678_399), month("1970-01"));
-        assert_eq!(at(2_678_400), month("1970-02"));
-    }
-
-    #[test]
-    fn a_leap_february_has_29_days() {
-        assert_eq!(at(951_782_400), month("2000-02"));
-        assert_eq!(at(951_868_800), month("2000-03"));
-    }
-
-    #[test]
-    fn a_february_of_a_skipped_leap_year_has_28_days() {
-        assert_eq!(at(4_107_456_000), month("2100-02"));
-        assert_eq!(at(4_107_542_400), month("2100-03"));
-    }
-
-    #[test]
-    fn the_last_second_of_a_year_is_still_in_december() {
-        assert_eq!(at(946_684_799), month("1999-12"));
-        assert_eq!(at(946_684_800), month("2000-01"));
-    }
-
     fn date(text: &str) -> Date {
         text.parse().unwrap()
-    }
-
-    #[test]
-    fn the_unix_epoch_is_on_1_january_1970() {
-        assert_eq!(Date::of_unix_seconds(0), Some(date("1970-01-01")));
-    }
-
-    #[test]
-    fn the_last_second_of_a_day_is_still_on_it() {
-        assert_eq!(Date::of_unix_seconds(86_399), Some(date("1970-01-01")));
-        assert_eq!(Date::of_unix_seconds(86_400), Some(date("1970-01-02")));
-    }
-
-    #[test]
-    fn a_leap_day_is_a_date() {
-        assert_eq!(Date::of_unix_seconds(951_782_400), Some(date("2000-02-29")));
-    }
-
-    #[test]
-    fn a_moment_in_november_2026_is_on_its_day() {
-        assert_eq!(
-            Date::of_unix_seconds(1_794_960_000),
-            Some(date("2026-11-18"))
-        );
-    }
-
-    #[test]
-    fn a_date_after_the_last_representable_year_does_not_exist() {
-        assert_eq!(Date::of_unix_seconds(2_005_949_145_600), None);
     }
 
     #[test]
@@ -269,8 +158,10 @@ mod tests {
     }
 
     #[test]
-    fn a_day_in_the_middle_of_a_month_is_in_that_month() {
-        assert_eq!(at(1_794_960_000), month("2026-11"));
+    fn a_date_is_made_from_its_parts() {
+        assert_eq!(Date::from_parts(2024, 2, 29), Some(date("2024-02-29")));
+        assert_eq!(Date::from_parts(2025, 2, 29), None);
+        assert_eq!(Date::from_parts(2025, 13, 1), None);
     }
 
     #[test]

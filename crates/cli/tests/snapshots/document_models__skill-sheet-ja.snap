@@ -5,15 +5,37 @@ expression: built
 Built {
     document: SkillSheet(
         SkillSheet {
+            labels: SkillSheetLabels {
+                title: "スキルシート",
+                updated: "更新日",
+                headline: "得意分野",
+                business: "所属",
+                availability: "稼働",
+                url: "URL",
+                certificates: "資格",
+                education: "学歴",
+                strengths: "得意技術",
+                category: "分類",
+                skill: "スキル",
+                experience: "経験",
+                last_use: "最終使用",
+                self_pr: "自己PR",
+                number: "No.",
+                company: "会社",
+                industry: "業種",
+                contract: "契約",
+                role: "役割",
+                team: "体制",
+                description: "業務内容",
+                achievements: "実績",
+                unknown: "—",
+            },
             name: "Robin Beispiel",
             updated: "2026年11月",
             headline: "日本在住のフルスタック開発者",
             business: "Example Works",
-            available_from: Some(
-                "2026年4月1日",
-            ),
-            days_per_week: Some(
-                "3～5",
+            availability: Some(
+                "2026年4月1日から\u{3000}週3～5日",
             ),
             portfolio_url: Some(
                 "https://example.com",
@@ -48,7 +70,6 @@ Built {
                 "PostgreSQLを用いたバックエンド設計",
                 "日本語・ドイツ語・英語での業務",
             ],
-            skill_window_years: 5,
             skills: [
                 SkillGroup {
                     category: "プログラミング言語",
@@ -161,7 +182,7 @@ Built {
                     contract_type: "業務委託契約",
                     role: "Full-stack developer",
                     focus: None,
-                    team_size: None,
+                    team: None,
                     phases: [
                         PhaseMark {
                             label: "要件定義",
@@ -226,8 +247,8 @@ Built {
                     focus: Some(
                         "Search",
                     ),
-                    team_size: Some(
-                        8,
+                    team: Some(
+                        "8名",
                     ),
                     phases: [
                         PhaseMark {
@@ -305,7 +326,7 @@ Built {
                     contract_type: "業務委託契約",
                     role: "Backend developer",
                     focus: None,
-                    team_size: None,
+                    team: None,
                     phases: [
                         PhaseMark {
                             label: "要件定義",
@@ -366,8 +387,8 @@ Built {
                     focus: Some(
                         "バックエンド",
                     ),
-                    team_size: Some(
-                        5,
+                    team: Some(
+                        "5名",
                     ),
                     phases: [
                         PhaseMark {
@@ -435,8 +456,8 @@ Built {
                     contract_type: "雇用契約",
                     role: "ソフトウェア開発者",
                     focus: None,
-                    team_size: Some(
-                        4,
+                    team: Some(
+                        "4名",
                     ),
                     phases: [
                         PhaseMark {

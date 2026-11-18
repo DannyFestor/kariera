@@ -1,12 +1,11 @@
 //! The 職務経歴書, Japanese: layout variant B「サマリー先行・カード型」 (issue #7, branch
 //! `prototype/shokumu-keirekisho`).
 
-use kariera_domain::{
-    Engagement, Labelled, Project, Qualification, QualificationCategory, TeamSize,
-};
+use kariera_domain::{Engagement, Labelled, Project, Qualification, QualificationCategory};
 use serde::Serialize;
 
 use crate::context::{Context, Named, url_text};
+use crate::labels::ShokumuKeirekishoLabels;
 use crate::months::is_within_years;
 use crate::parts::{PhaseMark, QualificationEntry, SkillGroup, SpokenLanguage};
 
@@ -16,17 +15,20 @@ const DETAIL_YEARS: u32 = 2;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct ShokumuKeirekisho {
+    pub labels: ShokumuKeirekishoLabels,
     pub name: String,
     pub headline: String,
-    /// 作成日.
-    pub date: String,
+    /// 作成日, as the date it states: 「2026年11月18日現在」.
+    pub as_of: String,
     pub summary: Vec<String>,
     pub strengths: Vec<String>,
     pub qualifications: Vec<QualificationEntry>,
     pub languages: Vec<SpokenLanguage>,
-    pub skill_window_years: u32,
+    /// What the skill table shows, under its heading.
+    pub skills_note: String,
     pub skills: Vec<SkillGroup>,
-    pub detail_years: u32,
+    /// Which Projects get a full card, under the heading of the history.
+    pub history_note: String,
     pub engagements: Vec<EngagementHistory>,
     pub self_pr: Vec<String>,
     pub portfolio_url: Option<String>,
@@ -52,7 +54,7 @@ pub struct ProjectCard {
     pub industry: String,
     pub role: String,
     pub focus: Option<String>,
-    pub team_size: Option<u32>,
+    pub team: Option<String>,
     pub end_client: Option<String>,
     pub phases: Vec<PhaseMark>,
     pub skills: Vec<String>,
@@ -72,16 +74,21 @@ pub struct ProjectLine {
 pub(crate) fn build(context: &Context<'_>) -> ShokumuKeirekisho {
     let (profile_name, profile) = context.profile;
     ShokumuKeirekisho {
+        labels: ShokumuKeirekishoLabels::JAPANESE,
         name: profile.name.to_string(),
         headline: context.text(profile_name, &profile.headline),
-        date: context.locale.date(context.today),
+        as_of: format!("{}現在", context.locale.date(context.today)),
         summary: context.paragraphs(profile_name, &profile.summary),
         strengths: context.bullets(profile_name, &profile.strengths),
         qualifications: qualifications(context),
         languages: context.spoken_languages(),
-        skill_window_years: SKILL_WINDOW_YEARS,
+        skills_note: format!(
+            "直近{SKILL_WINDOW_YEARS}年以内に使用したスキル。バーは案件での使用期間の合計。"
+        ),
         skills: context.skill_groups(SKILL_WINDOW_YEARS),
-        detail_years: DETAIL_YEARS,
+        history_note: format!(
+            "直近{DETAIL_YEARS}年以内の案件は詳細を、それ以前の案件は概要を記載。"
+        ),
         engagements: context
             .engagements_newest_first()
             .into_iter()
@@ -167,7 +174,9 @@ fn card(context: &Context<'_>, named: Named<'_, Project>) -> ProjectCard {
         industry: context.text(name, &project.industry),
         role: context.text(name, &project.role),
         focus: context.optional_text(name, project.focus.as_ref()),
-        team_size: project.team_size.map(TeamSize::get),
+        team: project
+            .team_size
+            .map(|size| context.locale.team(size.get())),
         end_client: context.end_client(project),
         phases: context.phases(project),
         skills: context.skill_names(project),
