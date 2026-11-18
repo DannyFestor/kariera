@@ -1,0 +1,126 @@
+---
+source: crates/cli/tests/document_docx.rs
+expression: outline
+---
+[table]
+  [cell]
+  Robin Beispiel
+  Full-stack developer in Japan
+  [cell]
+  Sapporo, Japan
+  +81 90 0000 0000
+  robin@example.com
+  example.com
+  github.com/example
+
+Available from 1 Apr 2026, 3–5 days per week      ·      German (Native) · Japanese (Business level)
+Profile
+[table]
+  [cell]
+  Full-stack developer with seven years of experience in logistics and e-commerce, from backend services in Go to React front ends.
+  [cell]
+  Strengths
+  • Backend design with PostgreSQL
+  • Working in Japanese, German and English
+Selected projects
+Web shop admin area	since Jan 2025
+Full-stack developer  ·  Client Globex  ·  Retail
+Builds the admin area for product and staff management.
+TypeScript  ·  React  ·  Example Charts
+Web shop product search	since Oct 2023
+Full-stack developer (Search)  ·  Client Globex  ·  Retail  ·  team of 8
+Develops the product search of the web shop, from the ranking service on Google Cloud to the React front end.
+• Introduces typo-tolerant search
+TypeScript  ·  React  ·  Node.js  ·  Google Cloud  ·  Claude Code
+Accounting platform for a logistics company	Oct 2022 – Sep 2023
+Backend developer  ·  Client Acme  ·  Logistics
+Built the invoicing backend of an accounting platform for a logistics company.
+TypeScript  ·  PostgreSQL
+Contoso toy shop backend	Apr 2021 – Sep 2022
+Backend developer (Backend)  ·  Client Acme  ·  End client Contoso  ·  E-commerce  ·  team of 5
+Built the backend of an online toy shop in Go on PostgreSQL, from the product catalogue to order processing.
+• Designed the order and payment flow
+• Cut the catalogue page load time by half
+Go  ·  PostgreSQL  ·  Docker
+Shipment tracking system	Apr 2019 – Mar 2021
+Software developer  ·  Client Müller Logistik  ·  Logistics  ·  team of 4
+Developed the tracking system for parcels and pallets in C#.
+• Replaced the nightly batch import with live status updates
+C Sharp  ·  Scrum
+Career
+[table]
+  [cell]
+  since Oct 2023
+  [cell]
+  Full-stack developer
+  [cell]
+  Globex
+  [cell]
+  Freelance · 2 projects
+  [cell]
+  Apr 2021 – Sep 2023
+  [cell]
+  Backend developer
+  [cell]
+  Acme
+  [cell]
+  Freelance · 2 projects
+  [cell]
+  Apr 2019 – Mar 2021
+  [cell]
+  Software developer
+  [cell]
+  Müller Logistik
+  [cell]
+  Employment
+  [cell]
+  Jul 2018 – Sep 2018
+  [cell]
+  Internship
+  [cell]
+  Initech
+  [cell]
+  Internship
+Skills
+[table]
+  [cell]
+  Programming language
+  [cell]
+  TypeScript 4.2 y
+  [cell]
+  Framework
+  [cell]
+  React 3.2 y
+  [cell]
+  Library
+  [cell]
+  Example Charts 1.9 y
+  [cell]
+  Cloud
+  [cell]
+  Google Cloud 3.2 y
+  [cell]
+  Platform
+  [cell]
+  Node.js 3.2 y
+  [cell]
+  Tool
+  [cell]
+  Docker 1.5 y
+  [cell]
+  AI tool
+  [cell]
+  Claude Code 3.2 y
+[table]
+  [cell]
+  Education
+  BSc Computer Science
+  Example University · Mar 2018
+  [cell]
+  Certificates and licences
+  Example Cloud Associate
+  Feb 2024
+  Example Japanese Test B2, 185/200
+  Example Language Institute · Dec 2022
+  Class B Driving Licence
+  Example Licensing Office · Jun 2013

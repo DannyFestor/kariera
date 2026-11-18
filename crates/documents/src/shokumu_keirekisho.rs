@@ -83,7 +83,7 @@ pub(crate) fn build(context: &Context<'_>) -> ShokumuKeirekisho {
         qualifications: qualifications(context),
         languages: context.spoken_languages(),
         skills_note: format!(
-            "直近{SKILL_WINDOW_YEARS}年以内に使用したスキル。バーは案件での使用期間の合計。"
+            "直近{SKILL_WINDOW_YEARS}年以内に使用したスキル。期間は案件での使用期間の合計。"
         ),
         skills: context.skill_groups(SKILL_WINDOW_YEARS),
         history_note: format!(

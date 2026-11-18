@@ -1,11 +1,12 @@
 //! `kariera build`: writes every document in every language it is written in as PDF into the vault's `Generated/`,
-//! and the Skill Sheet as XLSX beside its PDF.
+//! the CV and the 職務経歴書 also as DOCX, and the Skill Sheet as XLSX, beside the PDF.
 
 use std::collections::BTreeSet;
 use std::path::PathBuf;
 
 use kariera_documents::{Document, DocumentKind, Edition, Inputs, MissingTranslation, build};
 use kariera_domain::Language;
+use kariera_render_docx::{render as render_docx, renders as has_docx_layout};
 use kariera_render_typst::render;
 use kariera_render_xlsx::render as render_xlsx;
 use kariera_vault::{Vault, default_personal_path, load_personal};
@@ -74,6 +75,9 @@ struct Written {
 fn build_one(vault: &Vault, inputs: &Inputs<'_>, edition: Edition) -> Result<Written, String> {
     let built = build(edition, inputs).map_err(|error| error.to_string())?;
     let mut lines = vec![write_pdf(vault, &built.document)?];
+    if has_docx_layout(edition.kind) {
+        lines.push(write_docx(vault, &built.document)?);
+    }
     lines.extend(write_xlsx(vault, &built.document)?);
     Ok(Written {
         lines,
@@ -85,6 +89,12 @@ fn write_pdf(vault: &Vault, document: &Document) -> Result<String, String> {
     let pdf = render(document).map_err(|error| error.to_string())?;
     let path = write_generated(vault, document, "pdf", &pdf.bytes)?;
     Ok(format!("Wrote {} ({})", path.display(), pages(pdf.pages)))
+}
+
+fn write_docx(vault: &Vault, document: &Document) -> Result<String, String> {
+    let docx = render_docx(document).map_err(|error| error.to_string())?;
+    let path = write_generated(vault, document, "docx", &docx)?;
+    Ok(format!("Wrote {}", path.display()))
 }
 
 /// Only the Skill Sheet is an XLSX: agencies edit it.
