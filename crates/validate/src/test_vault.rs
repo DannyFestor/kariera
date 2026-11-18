@@ -7,6 +7,8 @@ use crate::{Report, validate};
 
 #[path = "../../vault/tests/support/replace_in.rs"]
 mod replace_in_support;
+#[path = "../../vault/tests/support/scratch.rs"]
+mod scratch;
 #[path = "../../vault/tests/support/vault_copy.rs"]
 mod vault_copy;
 

@@ -6,18 +6,9 @@ pub(crate) fn fixture_vault() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../fixtures/vault")
 }
 
-/// A fresh copy of the fixture vault, for a test that breaks or writes to it. It lives in cargo's scratch directory
-/// for integration tests, under `target/`; a unit test has none, so its copy lives in the system's temporary
-/// directory, apart for each crate.
+/// A fresh copy of the fixture vault, for a test that breaks or writes to it.
 pub(crate) fn copy_of_fixture_vault(test: &str) -> io::Result<PathBuf> {
-    let scratch = option_env!("CARGO_TARGET_TMPDIR").map_or_else(
-        || std::env::temp_dir().join(concat!("kariera-", env!("CARGO_PKG_NAME"))),
-        PathBuf::from,
-    );
-    let copy = scratch.join(test);
-    if copy.exists() {
-        fs::remove_dir_all(&copy)?;
-    }
+    let copy = super::scratch::fresh_directory(test)?;
     copy_directory(&fixture_vault(), &copy)?;
     Ok(copy)
 }
