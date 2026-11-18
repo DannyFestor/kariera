@@ -44,10 +44,10 @@ fn build_writes_every_document_as_pdf_into_generated() {
     let stdout = String::from_utf8(output.stdout).unwrap();
     assert_eq!(output.status.code(), Some(0), "{stdout}");
     for file in [
-        "cv-en.pdf",
-        "cv-de.pdf",
-        "shokumu-keirekisho-ja.pdf",
-        "skill-sheet-ja.pdf",
+        "CV_Robin_Beispiel.pdf",
+        "Lebenslauf_Robin_Beispiel.pdf",
+        "職務経歴書_Robin_Beispiel.pdf",
+        "スキルシート_Robin_Beispiel.pdf",
     ] {
         let path = vault.join("Generated").join(file);
         assert!(
@@ -73,7 +73,7 @@ fn build_warns_about_each_note_that_printed_its_english() {
         1,
         "{stdout}"
     );
-    assert!(!stdout.contains("cv-"), "{stdout}");
+    assert!(!stdout.contains("CV_"), "{stdout}");
 }
 
 #[test]

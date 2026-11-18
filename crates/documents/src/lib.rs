@@ -8,6 +8,7 @@ mod context;
 mod cv;
 mod edition;
 mod experience;
+mod labels;
 mod locale;
 mod months;
 mod parts;
@@ -20,8 +21,9 @@ mod translator;
 use thiserror::Error;
 
 pub use context::Inputs;
-pub use cv::{Availability, CareerEntry, Contact, Cv, CvProject, PersonalDetails};
+pub use cv::{CareerEntry, Contact, Cv, CvProject, PersonalDetails};
 pub use edition::{DocumentKind, Edition};
+pub use labels::{CvLabels, ShokumuKeirekishoLabels, SkillSheetLabels};
 pub use parts::{PhaseMark, QualificationEntry, SkillEntry, SkillGroup, SpokenLanguage};
 pub use shokumu_keirekisho::{EngagementHistory, ProjectCard, ProjectLine, ShokumuKeirekisho};
 pub use skill_sheet::{SheetProject, SkillSheet, Technology};
@@ -34,6 +36,33 @@ pub enum Document {
     Cv(Cv),
     ShokumuKeirekisho(ShokumuKeirekisho),
     SkillSheet(SkillSheet),
+}
+
+impl Document {
+    /// The document's title in its language and the owner's name, such as `Lebenslauf_Jane_Example`; a renderer
+    /// adds its extension.
+    #[must_use]
+    pub fn file_stem(&self) -> String {
+        match self {
+            Self::Cv(cv) => file_stem(cv.labels.title, &cv.name),
+            Self::ShokumuKeirekisho(document) => file_stem(document.labels.title, &document.name),
+            Self::SkillSheet(sheet) => file_stem(sheet.labels.title, &sheet.name),
+        }
+    }
+}
+
+fn file_stem(title: &str, name: &str) -> String {
+    let name: String = name
+        .chars()
+        .map(|character| {
+            if character.is_whitespace() {
+                '_'
+            } else {
+                character
+            }
+        })
+        .collect();
+    format!("{title}_{name}")
 }
 
 /// A document, and the notes whose English it printed for want of a translation.
@@ -62,4 +91,21 @@ pub fn build(edition: Edition, inputs: &Inputs<'_>) -> Result<Built, DocumentErr
         document,
         missing_translations: context.into_missing(),
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::file_stem;
+
+    #[test]
+    fn a_file_stem_is_the_title_and_the_name_with_underscores_for_spaces() {
+        assert_eq!(
+            file_stem("Lebenslauf", "Jane Example"),
+            "Lebenslauf_Jane_Example"
+        );
+        assert_eq!(
+            file_stem("職務経歴書", "Jane　Example"),
+            "職務経歴書_Jane_Example"
+        );
+    }
 }

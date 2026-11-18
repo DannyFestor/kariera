@@ -186,12 +186,16 @@ impl<'input> Context<'input> {
             .collect()
     }
 
-    /// `days_per_week_min` to `days_per_week_max`.
-    pub(crate) fn days_per_week(&self) -> Option<String> {
+    /// From `available_from`, on `days_per_week_min` to `days_per_week_max` days.
+    pub(crate) fn availability(&self) -> Option<String> {
         let (_, profile) = self.profile;
-        let min = profile.days_per_week_min?;
-        let max = profile.days_per_week_max.unwrap_or(min);
-        Some(self.locale.range(min.get(), max.get()))
+        let days_per_week = profile.days_per_week_min.map(|min| {
+            let max = profile.days_per_week_max.unwrap_or(min);
+            self.locale.range(min.get(), max.get())
+        });
+        profile
+            .available_from
+            .map(|from| self.locale.availability(from, days_per_week.as_deref()))
     }
 
     pub(crate) fn period(&self, start: Month, end: Option<Month>) -> String {

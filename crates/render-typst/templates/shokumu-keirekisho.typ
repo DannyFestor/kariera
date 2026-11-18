@@ -1,19 +1,20 @@
 // The 職務経歴書, layout variant B「サマリー先行・カード型」 (issue #7, branch prototype/shokumu-keirekisho). The
-// content comes from the documents crate as JSON in sys.inputs.data, already in Japanese; this file holds the
-// headings and the layout.
+// content, headings and labels come from the documents crate as JSON in sys.inputs.data, already in Japanese; this
+// file holds the layout.
 
 #let doc = json(sys.inputs.data)
+#let t = doc.labels
 
 #let accent = rgb("#1f3a5f")
 #let muted = luma(110)
 
-#set document(title: "職務経歴書", author: doc.name)
+#set document(title: t.title, author: doc.name)
 #set page(
   paper: "a4",
   margin: (x: 16mm, top: 18mm, bottom: 18mm),
   header: context if counter(page).get().first() > 1 {
     set text(size: 7.5pt, fill: muted)
-    [職務経歴書　#doc.name #h(1fr) #doc.date 現在]
+    [#t.title　#doc.name #h(1fr) #doc.as_of]
   },
   footer: context align(right, text(
     size: 7.5pt,
@@ -38,43 +39,45 @@
 
 #let paragraphs(list) = list.join(parbreak())
 
+#let note(body) = block(sticky: true, text(size: 8pt, fill: muted, body))
+
 #grid(
   columns: (1fr, auto),
   align: (left + bottom, right + bottom),
   [
-    #text(size: 20pt, weight: "bold", fill: accent)[職務経歴書] \
+    #text(size: 20pt, weight: "bold", fill: accent, t.title) \
     #text(size: 12pt, weight: "bold", doc.name)#h(0.8em)#text(
       fill: muted,
       doc.headline,
     )
   ],
-  text(size: 8.5pt, fill: muted)[#doc.date 現在],
+  text(size: 8.5pt, fill: muted, doc.as_of),
 )
 
-#section[職務要約]
+#section(t.summary)
 #paragraphs(doc.summary)
 
 #grid(
   columns: (1fr, 1fr),
   column-gutter: 8mm,
   [
-    #section[得意分野]
+    #section(t.strengths)
     #list(..doc.strengths)
   ],
   [
-    #section[資格・語学]
+    #section(t.qualifications)
     #for qualification in doc.qualifications [
       #text(fill: muted, qualification.date) #h(0.5em) #qualification.title \
     ]
     #for language in doc.languages [
-      #text(fill: muted)[語学] #h(0.5em)
+      #text(fill: muted, t.language) #h(0.5em)
       #language.name#if language.level != none [（#language.level）] \
     ]
   ],
 )
 
 #if doc.skills.len() > 0 {
-  section[テクニカルスキル]
+  section(t.skills)
   let longest = calc.max(
     ..doc
       .skills
@@ -98,10 +101,7 @@
     bar(skill.months),
     text(size: 7.5pt, skill.experience),
   )
-  text(
-    size: 8pt,
-    fill: muted,
-  )[直近#doc.skill_window_years 年以内に使用したスキル。バーは案件での使用期間の合計。]
+  note(doc.skills_note)
   let category-block(group) = block(breakable: false)[
     #subheading(group.category)
     #table(
@@ -121,11 +121,8 @@
   ))
 }
 
-#section[職務経歴]
-#block(sticky: true, text(
-  size: 8pt,
-  fill: muted,
-)[直近#doc.detail_years 年以内の案件は詳細を、それ以前の案件は概要を記載。])
+#section(t.history)
+#note(doc.history_note)
 
 #let phase-mark(phase) = if phase.done {
   text(fill: accent, weight: "bold")[●#phase.label]
@@ -134,18 +131,16 @@
 #let facts(project) = {
   let rows = (
     (
-      [役割],
+      t.role,
       [#project.role#if project.focus != none [（#project.focus）]],
     ),
   )
-  if project.team_size != none {
-    rows.push(([体制], [#project.team_size 名]))
-  }
+  if project.team != none { rows.push((t.team, project.team)) }
   if project.end_client != none {
-    rows.push(([エンドクライアント], project.end_client))
+    rows.push((t.end_client, project.end_client))
   }
-  rows.push(([担当工程], project.phases.map(phase-mark).join(h(0.8em))))
-  rows.push(([環境], project.skills.join(" / ")))
+  rows.push((t.phases, project.phases.map(phase-mark).join(h(0.8em))))
+  rows.push((t.environment, project.skills.join(" / ")))
   grid(
     columns: (29mm, 1fr),
     row-gutter: 5pt,
@@ -175,7 +170,7 @@
   #v(0.2em)
   #paragraphs(project.description)
   #if project.achievements.len() > 0 [
-    #block(above: 0.7em, below: 0.4em, subheading[実績])
+    #block(above: 0.7em, below: 0.4em, subheading(t.achievements))
     #list(..project.achievements)
   ]
 ]
@@ -205,11 +200,13 @@
   #text(size: 10.5pt, weight: "bold", engagement.organization)
   #h(0.6em) #text(fill: muted, engagement.period)
   #h(1fr) #engagement.engagement_type
-  #if engagement.role != none [ \ #text(size: 8.5pt)[役職：#engagement.role]]
+  #if engagement.role != none [ \ #text(
+    size: 8.5pt,
+  )[#t.position：#engagement.role]]
   #if engagement.business.len() > 0 [ \ #text(
     size: 8.5pt,
     fill: muted,
-  )[事業内容：#engagement.business.join(" ")]]
+  )[#t.business：#engagement.business.join(" ")]]
 ]
 
 #for engagement in doc.engagements {
@@ -219,7 +216,7 @@
 }
 
 #if doc.self_pr.len() > 0 {
-  section[自己PR]
+  section(t.self_pr)
   paragraphs(doc.self_pr)
 }
 
@@ -228,9 +225,9 @@
   text(size: 8.5pt)[
     #if (
       doc.portfolio_url != none
-    ) [ポートフォリオ：#link(doc.portfolio_url)#h(1.5em)]
-    #if doc.github_url != none [GitHub：#link(doc.github_url)]
+    ) [#t.portfolio：#link(doc.portfolio_url)#h(1.5em)]
+    #if doc.github_url != none [#t.github：#link(doc.github_url)]
   ]
 }
 
-#align(right)[以上]
+#align(right, t.closing)

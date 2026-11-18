@@ -1,11 +1,10 @@
 //! The Skill Sheet, Japanese: layout C, one block per Project (issue #9, branch `prototype/skill-sheet`).
 
-use kariera_domain::{
-    Contract, Labelled, Link, Project, QualificationCategory, SkillCategory, TeamSize,
-};
+use kariera_domain::{Contract, Labelled, Link, Project, QualificationCategory, SkillCategory};
 use serde::Serialize;
 
 use crate::context::{Context, Named, url_text};
+use crate::labels::SkillSheetLabels;
 use crate::months::MonthSpan;
 use crate::parts::{PhaseMark, QualificationEntry, SkillGroup, by_category};
 
@@ -13,20 +12,19 @@ const SKILL_WINDOW_YEARS: u32 = 5;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct SkillSheet {
+    pub labels: SkillSheetLabels,
     pub name: String,
     /// 更新日: the build month.
     pub updated: String,
     pub headline: String,
     /// 所属: the owner's business.
     pub business: String,
-    pub available_from: Option<String>,
-    pub days_per_week: Option<String>,
+    pub availability: Option<String>,
     pub portfolio_url: Option<String>,
     pub github_url: Option<String>,
     pub certificates: Vec<QualificationEntry>,
     pub education: Vec<QualificationEntry>,
     pub strengths: Vec<String>,
-    pub skill_window_years: u32,
     pub skills: Vec<SkillGroup>,
     /// The Summary followed by the Self-PR.
     pub self_pr: Vec<String>,
@@ -46,7 +44,7 @@ pub struct SheetProject {
     pub contract_type: String,
     pub role: String,
     pub focus: Option<String>,
-    pub team_size: Option<u32>,
+    pub team: Option<String>,
     pub phases: Vec<PhaseMark>,
     pub technology: Vec<Technology>,
     pub description: Vec<String>,
@@ -65,12 +63,12 @@ pub(crate) fn build(context: &Context<'_>) -> SkillSheet {
     let mut self_pr = context.paragraphs(profile_name, &profile.summary);
     self_pr.extend(context.paragraphs(profile_name, &profile.self_pr));
     SkillSheet {
+        labels: SkillSheetLabels::JAPANESE,
         name: profile.name.to_string(),
         updated: context.locale.month(context.today.month()),
         headline: context.text(profile_name, &profile.headline),
         business: context.organization(&profile.business),
-        available_from: profile.available_from.map(|date| context.locale.date(date)),
-        days_per_week: context.days_per_week(),
+        availability: context.availability(),
         portfolio_url: profile.portfolio_url.as_ref().map(url_text),
         github_url: profile.github_url.as_ref().map(url_text),
         certificates: qualifications(context, |category| {
@@ -83,7 +81,6 @@ pub(crate) fn build(context: &Context<'_>) -> SkillSheet {
             category == QualificationCategory::Degree
         }),
         strengths: context.bullets(profile_name, &profile.strengths),
-        skill_window_years: SKILL_WINDOW_YEARS,
         skills: context.skill_groups(SKILL_WINDOW_YEARS),
         self_pr,
         projects: context
@@ -126,7 +123,9 @@ fn sheet_project(context: &Context<'_>, number: usize, named: Named<'_, Project>
         }),
         role: context.text(name, &project.role),
         focus: context.optional_text(name, project.focus.as_ref()),
-        team_size: project.team_size.map(TeamSize::get),
+        team: project
+            .team_size
+            .map(|size| context.locale.team(size.get())),
         phases: context.phases(project),
         technology: technology(context, project),
         description: context.paragraphs(name, &project.description),
