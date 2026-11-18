@@ -14,6 +14,7 @@ license = "MIT"
 # Every third-party crate is named once here, so all workspace crates share one version. Each needs an entry with its
 # reason in the [bans] allow list of deny.toml (AGENTS.md).
 [workspace.dependencies]
+kariera-documents = { path = "crates/documents" }
 kariera-domain = { path = "crates/domain" }
 kariera-validate = { path = "crates/validate" }
 kariera-vault = { path = "crates/vault" }

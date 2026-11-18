@@ -29,16 +29,16 @@ impl Month {
         self.year
     }
 
+    /// 1 for January.
+    #[must_use]
+    pub const fn number(self) -> u8 {
+        self.month
+    }
+
     /// The month of a moment given as seconds since 1970-01-01 00:00 UTC; `None` after the last year a `Month` holds.
     #[must_use]
     pub fn of_unix_seconds(seconds: u64) -> Option<Self> {
-        let mut days_left = seconds / SECONDS_PER_DAY;
-        let mut month = UNIX_EPOCH_MONTH;
-        while days_left >= u64::from(month.days()) {
-            days_left -= u64::from(month.days());
-            month = month.following()?;
-        }
-        Some(month)
+        Date::of_unix_seconds(seconds).map(Date::month)
     }
 
     fn following(self) -> Option<Self> {
@@ -78,6 +78,25 @@ impl Date {
     #[must_use]
     pub const fn month(self) -> Month {
         self.month
+    }
+
+    #[must_use]
+    pub const fn day(self) -> u8 {
+        self.day
+    }
+
+    /// The UTC date of a moment given as seconds since 1970-01-01 00:00 UTC; `None` after the last year a `Month`
+    /// holds.
+    #[must_use]
+    pub fn of_unix_seconds(seconds: u64) -> Option<Self> {
+        let mut days_left = seconds / SECONDS_PER_DAY;
+        let mut month = UNIX_EPOCH_MONTH;
+        while days_left >= u64::from(month.days()) {
+            days_left -= u64::from(month.days());
+            month = month.following()?;
+        }
+        let day = u8::try_from(days_left).ok()?.checked_add(1)?;
+        Some(Self { month, day })
     }
 
     fn new(month: Month, day: u8) -> Option<Self> {
@@ -208,6 +227,45 @@ mod tests {
     fn the_last_second_of_a_year_is_still_in_december() {
         assert_eq!(at(946_684_799), month("1999-12"));
         assert_eq!(at(946_684_800), month("2000-01"));
+    }
+
+    fn date(text: &str) -> Date {
+        text.parse().unwrap()
+    }
+
+    #[test]
+    fn the_unix_epoch_is_on_1_january_1970() {
+        assert_eq!(Date::of_unix_seconds(0), Some(date("1970-01-01")));
+    }
+
+    #[test]
+    fn the_last_second_of_a_day_is_still_on_it() {
+        assert_eq!(Date::of_unix_seconds(86_399), Some(date("1970-01-01")));
+        assert_eq!(Date::of_unix_seconds(86_400), Some(date("1970-01-02")));
+    }
+
+    #[test]
+    fn a_leap_day_is_a_date() {
+        assert_eq!(Date::of_unix_seconds(951_782_400), Some(date("2000-02-29")));
+    }
+
+    #[test]
+    fn a_moment_in_november_2026_is_on_its_day() {
+        assert_eq!(
+            Date::of_unix_seconds(1_794_960_000),
+            Some(date("2026-11-18"))
+        );
+    }
+
+    #[test]
+    fn a_date_after_the_last_representable_year_does_not_exist() {
+        assert_eq!(Date::of_unix_seconds(2_005_949_145_600), None);
+    }
+
+    #[test]
+    fn a_month_and_a_date_tell_their_parts() {
+        assert_eq!(month("2024-05").number(), 5);
+        assert_eq!(date("2026-03-04").day(), 4);
     }
 
     #[test]
