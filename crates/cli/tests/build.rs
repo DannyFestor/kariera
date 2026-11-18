@@ -5,6 +5,8 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
+#[path = "../../vault/tests/support/scratch.rs"]
+mod scratch;
 #[path = "../../vault/tests/support/vault_copy.rs"]
 mod vault_copy;
 
