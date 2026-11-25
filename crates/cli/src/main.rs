@@ -3,6 +3,7 @@
 mod build;
 mod clock;
 mod command;
+mod export;
 mod json;
 mod new_note;
 mod reply;

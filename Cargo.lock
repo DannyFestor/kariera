@@ -1207,6 +1207,8 @@ dependencies = [
  "kariera-render-xlsx",
  "kariera-validate",
  "kariera-vault",
+ "regex",
+ "serde_json",
  "thiserror",
  "time",
  "zip 9.7.0",

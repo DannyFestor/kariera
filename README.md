@@ -6,7 +6,7 @@ The vault is the single source of truth. Every note is Markdown with YAML frontm
 
 ## Status
 
-Usable. `kariera build` writes the CV (English, German), the 職務経歴書, the 履歴書 and the Skill Sheet, and public PDFs of the CV and the 職務経歴書 for a website.
+Usable. `kariera build` writes the CV (English, German), the 職務経歴書, the 履歴書 and the Skill Sheet, and public PDFs of the CV and the 職務経歴書 for a website. `kariera export --json` prints the public career data for the same website.
 
 ## Install
 
@@ -24,6 +24,7 @@ Then write `~/.config/kariera/config.toml` (see [Configuration](#configuration))
 | `kariera validate` | Checks every note against the schema and against the other notes (see below) |
 | `kariera new <log\|project\|engagement>` | Creates a note from the vault's templates, with what the arguments say filled in: `new log --engagement <name> --month <YYYY-MM>`, `new project --engagement <name> --title <title>`, `new engagement (--client <name> \| --employer <name>) --type <type> --start <YYYY-MM>`. Refuses to overwrite a note. |
 | `kariera build` | Builds every document in every language it is written in, as PDF, as DOCX where there is a layout (the CV and the 職務経歴書) and as XLSX (the Skill Sheet); the 履歴書 is a PDF only. Also builds public PDFs of the CV and the 職務経歴書. `--doc` and `--lang` narrow it down (see below) |
+| `kariera export --json` | Prints the public career data as JSON for the owner's website: reviewed notes only, in English (see below) |
 | `kariera translations --stale` | Lists the notes and languages whose translation is empty or older than the note's English text |
 | `kariera translations --mark <note> --lang <ja\|de>` | Records that the translation matches the English text as it is now |
 
@@ -102,7 +103,7 @@ Monthly Logs/2025/2025-07 Globex Log.md:7: warning [hours] field `project_hours`
 
 `--json` prints one object: `errors`, `warnings`, `notes_checked`, `complete` and `findings`, each finding with `path`, `line` (or `null`), `severity` (`error` or `warning`), `rule`, `location` (`kind` and `name`) and `message`. The `rule` names what the finding is about: `schema`, `folder`, `file-name`, `duplicate-name`, `field-order`, `yaml-style`, `period`, `link-role`, `contract`, `rate`, `hours`, `alias`, `body`, `source`, `confidentiality`, `forbidden-content`, `profile`.
 
-Every note is first read on its own (fields, values, links, body sections; rule `schema`). The other rules run over the notes that read: file names and folders (also Markdown elsewhere in the vault whose frontmatter has a `type`), field order and YAML style, periods, link roles, contracts and rates, `hours` against `project_hours`, Sources (the cited file must exist, compared in Unicode NFC), body content, the confidentiality of Projects, pull request URLs, and the Profile. When some notes could not be read, `complete` is `false`: the rules that need every note (a Contract listed by exactly one Engagement, exactly one Profile) did not run.
+Every note is first read on its own (fields, values, links, body sections; rule `schema`). The other rules run over the notes that read: file names and folders (also Markdown elsewhere in the vault whose frontmatter has a `type`), field order and YAML style, periods, link roles, contracts and rates, `hours` against `project_hours`, Sources (the cited file must exist, compared in Unicode NFC), body content, the confidentiality of Projects (no prose but the End Client's own note may name a confidential Project's title, or its End Client's `name`, aliases or labels), pull request URLs, and the Profile. When some notes could not be read, `complete` is `false`: the rules that need every note (a Contract listed by exactly one Engagement, exactly one Profile) did not run.
 
 Only the `hours` rule has warnings: `project_hours` that do not add up to `hours` without a Source `note` starting with `Hours mismatch:`, and a Monthly Log that cites no invoice, timesheet or work report.
 
@@ -140,6 +141,31 @@ The DOCX files are made to be edited: headings, lists and tables are Word's own,
 - **Missing translations:** where a Japanese or German text is empty, the document prints the English one, and the build ends with a warning naming the note and the language. It still exits 0.
 
 The same notes, `personal.yaml` and date give the same PDF, DOCX and XLSX bytes, the public PDFs included. The date printed (作成日, 更新日) is today's date in the machine's time zone.
+
+## `kariera export --json`
+
+```sh
+kariera export --json > career.json
+```
+
+Prints one JSON document on stdout: the public career data for the owner's website, which commits the file and validates it against a copy of the schema. The JSON Schema in [`schemas/career-export.schema.json`](schemas/career-export.schema.json) is the contract; `schema_version` changes whenever the shape does.
+
+| Key | Holds |
+|---|---|
+| `schema_version` | `1` |
+| `profile` | `name`, `headline` and `summary` (paragraphs) |
+| `engagements` | `note` (the note name), `organization` (the `name` of the client or employer), `engagement_type`, `role`, `start`, `end` and `summary` |
+| `projects` | `note`, `engagement` (the note name of an exported Engagement), `title`, `start`, `end`, `role`, `focus`, `team_size`, `industry`, `skills` (Skill names), `description` (paragraphs) and `achievements` |
+| `qualifications` | `name`, `category`, `issuer` (the school's `name` or the issuer text), `start`, `date`, `level` and `score` |
+| `languages` | The `human-language` Skills, with `name` and `level` |
+
+- **Reviewed notes only:** the Profile, Engagements, Projects, Qualifications and languages with `reviewed: true`. A Project of an Engagement that is left out is left out too, so every `engagement` names an exported one. An unreviewed Profile is an error. The names a reviewed note links to (its organization, school or Skills) are printed whether or not their own notes are reviewed.
+- **English only,** and every key always there: a missing value is `null`. Months are written `YYYY-MM`; `end` is `null` while an Engagement or Project runs.
+- **Never in it:** Contracts, rates, hours, Monthly Logs, Sources and their paths; anything of `personal.yaml`, its `public` map included; the Profile's availability; any `end_client`; `translated_from`, `reviewed` and every `ja` and `de` text. A confidential Project prints its `public_title`.
+- **Confidentiality guard:** the export fails, and prints nothing on stdout, when any of its texts, note names included, contains the `title` of a confidential Project in any language, or the `name`, an alias or a label of its End Client. It is the text check of `kariera validate`'s `confidentiality` rule, applied to the export, compared the same way: in Unicode NFC and ignoring case. Each hit is reported on stderr with the text that gives it away.
+- **Deterministic:** the same vault gives the same bytes, whatever the date. Engagements and Projects are newest `start` first and Qualifications newest `date` first, each then by note name; keys keep the order above; the output ends with a newline.
+
+Exit code 1, and nothing on stdout, when the vault has an error that `kariera validate` reports, or on a guard hit; 0 otherwise.
 
 ## Design
 

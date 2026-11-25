@@ -3,13 +3,14 @@ use crate::translations::TranslationsCommand;
 use crate::validate::Format;
 use kariera_vault::NewNote;
 
-use crate::new_note;
+use crate::{export, new_note};
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) enum Command {
     Help,
     Version,
     Build(BuildCommand),
+    Export,
     Translations(TranslationsCommand),
     New(NewNote),
     Validate(Format),
@@ -31,6 +32,7 @@ impl Command {
             "help" | "--help" | "-h" => Self::Help,
             "--version" | "-V" => Self::Version,
             "build" => BuildCommand::parse(rest).map_or_else(Self::Misused, Self::Build),
+            "export" => export::parse(rest).map_or_else(Self::Misused, |()| Self::Export),
             "translations" => {
                 TranslationsCommand::parse(rest).map_or_else(Self::Misused, Self::Translations)
             }
@@ -101,6 +103,15 @@ mod tests {
         assert_eq!(
             parse(&["validate", "--xml"]),
             Command::Misused("unknown argument \"--xml\"".to_owned())
+        );
+    }
+
+    #[test]
+    fn export_takes_json_and_nothing_else() {
+        assert_eq!(parse(&["export", "--json"]), Command::Export);
+        assert_eq!(
+            parse(&["export"]),
+            Command::Misused("export needs --json".to_owned())
         );
     }
 

@@ -1,8 +1,9 @@
 //! Small domain values for the unit tests, with every field a test does not care about left empty.
 
 use kariera_domain::{
-    Career, Engagement, EngagementType, Link, Month, Paragraphs, Project, Skill, SkillCategory,
-    Text, Translated, Translations,
+    Career, Engagement, EngagementType, Link, Month, Organization, OrganizationKind, Paragraphs,
+    Profile, Project, Qualification, QualificationCategory, Skill, SkillCategory, Text, Translated,
+    Translations,
 };
 
 pub(crate) fn month(text: &str) -> Month {
@@ -94,4 +95,58 @@ pub(crate) fn career(projects: Vec<Project>, skills: Vec<Skill>) -> Career {
             .insert(skill.name.as_str().parse().unwrap(), skill);
     }
     career
+}
+
+pub(crate) fn link<T>(name: &str) -> Link<T> {
+    Link::new(name.parse().unwrap())
+}
+
+pub(crate) fn organization(name: &str) -> Organization {
+    Organization {
+        name: text(name),
+        aliases: Vec::new(),
+        kind: vec![OrganizationKind::Client],
+        location: None,
+        website: None,
+        labels: Translations::none(),
+        translated_from: Translations::none(),
+        sources: Vec::new(),
+        reviewed: false,
+        description: english(Paragraphs(String::new())),
+    }
+}
+
+pub(crate) fn profile(name: &str) -> Profile {
+    Profile {
+        name: text(name),
+        headline: english(text("Developer")),
+        business: link("Example Works"),
+        available_from: None,
+        days_per_week_min: None,
+        days_per_week_max: None,
+        portfolio_url: None,
+        github_url: None,
+        translated_from: Translations::none(),
+        sources: Vec::new(),
+        reviewed: false,
+        summary: english(Paragraphs(String::new())),
+        strengths: english(Vec::new()),
+        self_pr: english(Paragraphs(String::new())),
+    }
+}
+
+pub(crate) fn qualification(name: &str, date: &str) -> Qualification {
+    Qualification {
+        name: text(name),
+        labels: Translations::none(),
+        category: QualificationCategory::Certificate,
+        issuer: None,
+        start: None,
+        date: month(date),
+        level: None,
+        score: None,
+        translated_from: Translations::none(),
+        sources: Vec::new(),
+        reviewed: false,
+    }
 }
