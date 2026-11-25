@@ -57,7 +57,7 @@ pub struct Address {
 
 pub(crate) fn build(context: &Context<'_>) -> Rirekisho {
     let (profile_name, profile) = context.profile;
-    let personal = context.personal;
+    let personal = &*context.personal;
     let locale = context.locale;
     let mut appeal = context.paragraphs(profile_name, &profile.self_pr);
     appeal.extend(languages_line(&context.spoken_languages()));

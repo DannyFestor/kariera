@@ -38,7 +38,7 @@ pub use link::{Link, NoteName};
 pub use monthly_log::MonthlyLog;
 pub use number::{DaysPerWeek, Hours, TeamSize, WholeNumber, Yen};
 pub use organization::{Organization, OrganizationKind};
-pub use personal::{Personal, Photo};
+pub use personal::{Personal, Photo, PublicDetails};
 pub use profile::Profile;
 pub use project::{Phase, Project};
 pub use prose::{Bullets, Paragraphs};

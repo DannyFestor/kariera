@@ -93,7 +93,7 @@ pub(crate) fn build(context: &Context<'_>) -> Cv {
         photo: context.personal.photo.clone().filter(|_| is_german),
         availability: context.availability(),
         languages: context.spoken_languages(),
-        personal_details: personal_details(context, context.personal).filter(|_| is_german),
+        personal_details: personal_details(context, &context.personal).filter(|_| is_german),
         summary: context.paragraphs(profile_name, &profile.summary),
         strengths: context.bullets(profile_name, &profile.strengths),
         projects: selected_projects(context),
@@ -106,7 +106,7 @@ pub(crate) fn build(context: &Context<'_>) -> Cv {
 
 fn contact(context: &Context<'_>) -> Contact {
     let (_, profile) = context.profile;
-    let personal = context.personal;
+    let personal = &*context.personal;
     Contact {
         location: personal.location.as_ref().map(ToString::to_string),
         phone: personal.phone.as_ref().map(ToString::to_string),

@@ -1,10 +1,13 @@
 //! `kariera build`: writes every document in every language it is written in as PDF into the vault's `Generated/`,
 //! the CV and the 職務経歴書 also as DOCX, and the Skill Sheet as XLSX, beside the PDF. The 履歴書 is a PDF only.
+//! The public CV and 職務経歴書 go into `Generated/public/` as PDF only.
 
 use std::collections::BTreeSet;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
-use kariera_documents::{Document, DocumentKind, Edition, Inputs, MissingTranslation, build};
+use kariera_documents::{
+    Audience, Document, DocumentKind, Edition, Inputs, MissingTranslation, build,
+};
 use kariera_domain::Language;
 use kariera_render_docx::{render as render_docx, renders as has_docx_layout};
 use kariera_render_typst::render;
@@ -15,6 +18,9 @@ use crate::clock::today;
 use crate::reply::Reply;
 use crate::translations::value_of;
 use crate::vault_access::open_vault;
+
+/// Inside `Generated/`, for posting on the owner's website.
+const PUBLIC_FOLDER: &str = "public";
 
 #[derive(Debug, PartialEq, Eq)]
 pub(crate) struct BuildCommand {
@@ -74,48 +80,76 @@ struct Written {
 
 fn build_one(vault: &Vault, inputs: &Inputs<'_>, edition: Edition) -> Result<Written, String> {
     let built = build(edition, inputs).map_err(|error| error.to_string())?;
-    let mut lines = vec![write_pdf(vault, &built.document)?];
-    if has_docx_layout(edition.kind) {
-        lines.push(write_docx(vault, &built.document)?);
+    let destination = Destination::of(vault, edition.audience);
+    let mut lines = vec![write_pdf(&destination, &built.document)?];
+    if edition.audience == Audience::Private {
+        lines.extend(write_editable(&destination, edition.kind, &built.document)?);
     }
-    lines.extend(write_xlsx(vault, &built.document)?);
     Ok(Written {
         lines,
         missing_translations: built.missing_translations,
     })
 }
 
-fn write_pdf(vault: &Vault, document: &Document) -> Result<String, String> {
+/// The folder in `Generated/` that an audience's documents go to.
+struct Destination<'vault> {
+    vault: &'vault Vault,
+    folder: &'static Path,
+}
+
+impl<'vault> Destination<'vault> {
+    fn of(vault: &'vault Vault, audience: Audience) -> Self {
+        let folder = match audience {
+            Audience::Private => Path::new(""),
+            Audience::Public => Path::new(PUBLIC_FOLDER),
+        };
+        Self { vault, folder }
+    }
+
+    fn write(&self, document: &Document, extension: &str, bytes: &[u8]) -> Result<PathBuf, String> {
+        let file_name = format!("{}.{extension}", document.file_stem());
+        self.vault
+            .write_generated(&self.folder.join(file_name), bytes)
+            .map_err(|error| error.to_string())
+    }
+}
+
+fn write_pdf(destination: &Destination<'_>, document: &Document) -> Result<String, String> {
     let pdf = render(document).map_err(|error| error.to_string())?;
-    let path = write_generated(vault, document, "pdf", &pdf.bytes)?;
+    let path = destination.write(document, "pdf", &pdf.bytes)?;
     Ok(format!("Wrote {} ({})", path.display(), pages(pdf.pages)))
 }
 
-fn write_docx(vault: &Vault, document: &Document) -> Result<String, String> {
+/// Agencies edit the CV and the 職務経歴書 as DOCX and the Skill Sheet as XLSX; a public document is only read.
+fn write_editable(
+    destination: &Destination<'_>,
+    kind: DocumentKind,
+    document: &Document,
+) -> Result<Vec<String>, String> {
+    let mut lines = Vec::new();
+    if has_docx_layout(kind) {
+        lines.push(write_docx(destination, document)?);
+    }
+    lines.extend(write_xlsx(destination, document)?);
+    Ok(lines)
+}
+
+fn write_docx(destination: &Destination<'_>, document: &Document) -> Result<String, String> {
     let docx = render_docx(document).map_err(|error| error.to_string())?;
-    let path = write_generated(vault, document, "docx", &docx)?;
+    let path = destination.write(document, "docx", &docx)?;
     Ok(format!("Wrote {}", path.display()))
 }
 
-/// Only the Skill Sheet is an XLSX: agencies edit it.
-fn write_xlsx(vault: &Vault, document: &Document) -> Result<Option<String>, String> {
+fn write_xlsx(
+    destination: &Destination<'_>,
+    document: &Document,
+) -> Result<Option<String>, String> {
     let Document::SkillSheet(sheet) = document else {
         return Ok(None);
     };
     let xlsx = render_xlsx(sheet).map_err(|error| error.to_string())?;
-    let path = write_generated(vault, document, "xlsx", &xlsx)?;
+    let path = destination.write(document, "xlsx", &xlsx)?;
     Ok(Some(format!("Wrote {}", path.display())))
-}
-
-fn write_generated(
-    vault: &Vault,
-    document: &Document,
-    extension: &str,
-    bytes: &[u8],
-) -> Result<PathBuf, String> {
-    vault
-        .write_generated(&format!("{}.{extension}", document.file_stem()), bytes)
-        .map_err(|error| error.to_string())
 }
 
 fn pages(count: usize) -> String {
@@ -185,7 +219,7 @@ fn joined(items: &[&str], conjunction: &str) -> String {
 
 #[cfg(test)]
 mod tests {
-    use kariera_documents::DocumentKind;
+    use kariera_documents::{Audience, DocumentKind};
     use kariera_domain::Language;
 
     use super::BuildCommand;
@@ -199,7 +233,13 @@ mod tests {
             .unwrap()
             .editions
             .iter()
-            .map(|edition| format!("{}-{}", edition.kind.slug(), edition.language.code()))
+            .map(|edition| {
+                let name = format!("{}-{}", edition.kind.slug(), edition.language.code());
+                match edition.audience {
+                    Audience::Private => name,
+                    Audience::Public => format!("public {name}"),
+                }
+            })
             .collect()
     }
 
@@ -212,23 +252,37 @@ mod tests {
                 "cv-de",
                 "shokumu-keirekisho-ja",
                 "rirekisho-ja",
-                "skill-sheet-ja"
+                "skill-sheet-ja",
+                "public cv-en",
+                "public cv-de",
+                "public shokumu-keirekisho-ja",
             ]
         );
     }
 
     #[test]
     fn doc_narrows_to_one_document() {
-        assert_eq!(editions(&["--doc", "cv"]), ["cv-en", "cv-de"]);
+        assert_eq!(
+            editions(&["--doc", "cv"]),
+            ["cv-en", "cv-de", "public cv-en", "public cv-de"]
+        );
     }
 
     #[test]
     fn lang_narrows_to_one_language() {
         assert_eq!(
             editions(&["--lang", "ja"]),
-            ["shokumu-keirekisho-ja", "rirekisho-ja", "skill-sheet-ja"]
+            [
+                "shokumu-keirekisho-ja",
+                "rirekisho-ja",
+                "skill-sheet-ja",
+                "public shokumu-keirekisho-ja"
+            ]
         );
-        assert_eq!(editions(&["--lang", "de", "--doc", "cv"]), ["cv-de"]);
+        assert_eq!(
+            editions(&["--lang", "de", "--doc", "cv"]),
+            ["cv-de", "public cv-de"]
+        );
         assert_eq!(editions(&["--doc", "rirekisho"]), ["rirekisho-ja"]);
     }
 

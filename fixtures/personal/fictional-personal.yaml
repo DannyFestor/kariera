@@ -18,3 +18,7 @@ address_kana: ほっかいどう さっぽろし きたく きた0じょう に�
 residence_status: 技術・人文知識・国際業務
 work_restriction: 在留資格に基づく就労活動のみ可
 residence_expiry: 2028-03-31
+# What a public document prints, and nothing else of this file.
+public:
+  email: hello@example.com
+  location: Japan

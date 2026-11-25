@@ -1,5 +1,6 @@
 //! What every document reads from the career, in the document's language.
 
+use std::borrow::Cow;
 use std::cmp::Reverse;
 
 use kariera_domain::{
@@ -8,6 +9,7 @@ use kariera_domain::{
     SkillCategory, Text, Translated, Translations, Url,
 };
 
+use crate::edition::Edition;
 use crate::experience::Experience;
 use crate::locale::Locale;
 use crate::parts::{
@@ -30,7 +32,8 @@ pub(crate) type Named<'career, T> = (&'career NoteName, &'career T);
 #[derive(Debug)]
 pub(crate) struct Context<'input> {
     pub(crate) career: &'input Career,
-    pub(crate) personal: &'input Personal,
+    /// What the edition's audience may print.
+    pub(crate) personal: Cow<'input, Personal>,
     pub(crate) today: Date,
     pub(crate) locale: Locale,
     pub(crate) profile: Named<'input, Profile>,
@@ -40,16 +43,16 @@ pub(crate) struct Context<'input> {
 
 impl<'input> Context<'input> {
     /// `None` when the career has no Profile.
-    pub(crate) fn new(inputs: &Inputs<'input>, language: Language) -> Option<Self> {
+    pub(crate) fn new(inputs: &Inputs<'input>, edition: Edition) -> Option<Self> {
         let profile = inputs.career.profiles.iter().next()?;
         Some(Self {
             career: inputs.career,
-            personal: inputs.personal,
+            personal: edition.audience.personal(inputs.personal),
             today: inputs.today,
-            locale: Locale(language),
+            locale: Locale(edition.language),
             profile,
             experience: Experience::of(inputs.career, inputs.today.month()),
-            translator: Translator::new(language),
+            translator: Translator::new(edition.language),
         })
     }
 

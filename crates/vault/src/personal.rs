@@ -5,13 +5,14 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 
-use kariera_domain::{Personal, Photo, Text};
+use kariera_domain::{Personal, Photo, PublicDetails, Text};
 use thiserror::Error;
 
 use crate::cursor::Cursor;
+use crate::fields::read_map;
 use crate::names::Names;
 use crate::value::FromNode;
-use crate::yaml::{self, Entry, Value};
+use crate::yaml::{self, Entry, Node, Value};
 use crate::{Location, Problem};
 
 #[derive(Debug, Error)]
@@ -135,6 +136,7 @@ impl PersonalFile {
             "work_restriction" => personal.work_restriction = value(entry)?,
             "residence_expiry" => personal.residence_expiry = value(entry)?,
             "residence_note" => personal.residence_note = value(entry)?,
+            "public" => personal.public = value(entry)?.unwrap_or_default(),
             other => {
                 return Err(Invalid {
                     line: entry.value.line,
@@ -143,6 +145,20 @@ impl PersonalFile {
             }
         }
         Ok(())
+    }
+}
+
+/// No key but these two, so nothing else can reach a public document.
+impl FromNode for PublicDetails {
+    fn from_node(node: &Node, cursor: &Cursor<'_>) -> Result<Self, Vec<Problem>> {
+        read_map(node, cursor, |fields| {
+            let email = fields.optional("email");
+            let location = fields.optional("location");
+            Ok(Self {
+                email: email?,
+                location: location?,
+            })
+        })
     }
 }
 
@@ -192,7 +208,7 @@ fn photo_path(
 mod tests {
     use std::path::{Path, PathBuf};
 
-    use kariera_domain::{Personal, Text, Translated};
+    use kariera_domain::{Personal, PublicDetails, Text, Translated};
 
     use super::{PersonalError, PersonalFile};
 
@@ -240,6 +256,7 @@ mod tests {
                 work_restriction: Some(text("就労制限なし")),
                 residence_expiry: Some("2028-03-31".parse().unwrap()),
                 residence_note: Some(text("更新申請中")),
+                public: PublicDetails::default(),
             }
         );
         assert_eq!(
@@ -270,6 +287,37 @@ mod tests {
         assert_eq!(file.personal, Personal::default());
         assert_eq!(file.photo, None);
         assert_eq!(parse("").unwrap().personal, Personal::default());
+    }
+
+    #[test]
+    fn the_public_map_is_read_apart_from_the_private_details() {
+        let file = parse(
+            "email: robin@example.com\npublic:\n  email: hello@example.com\n  location: Japan\n",
+        )
+        .unwrap();
+
+        assert_eq!(
+            file.personal,
+            Personal {
+                email: Some(text("robin@example.com")),
+                public: PublicDetails {
+                    email: Some(text("hello@example.com")),
+                    location: Some(text("Japan")),
+                },
+                ..Personal::default()
+            }
+        );
+    }
+
+    #[test]
+    fn a_public_map_holds_only_the_email_and_the_location() {
+        let error =
+            parse("public:\n  email: hello@example.com\n  phone: +81 90 0000 0000\n").unwrap_err();
+
+        assert_eq!(
+            error.to_string(),
+            format!("{PATH}:3: `public.phone` is not a field the schema allows here")
+        );
     }
 
     #[test]

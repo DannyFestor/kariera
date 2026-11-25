@@ -61,6 +61,67 @@ fn build_writes_every_document_as_pdf_into_generated() {
     }
 }
 
+fn file_names(folder: &Path) -> io::Result<Vec<String>> {
+    let mut names = fs::read_dir(folder)?
+        .map(|entry| Ok(entry?.file_name().to_string_lossy().into_owned()))
+        .collect::<io::Result<Vec<String>>>()?;
+    names.sort();
+    Ok(names)
+}
+
+#[test]
+fn build_writes_the_public_cv_and_shokumu_keirekisho_as_pdf_only_into_generated_public() {
+    let (home, vault) = home_with_vault_and_personal("cli_build_public").unwrap();
+
+    let output = kariera_at(&home, &["build"]).unwrap();
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert_eq!(output.status.code(), Some(0), "{stdout}");
+    let public = vault.join("Generated/public");
+    let files = [
+        "CV_Robin_Beispiel.pdf",
+        "Lebenslauf_Robin_Beispiel.pdf",
+        "職務経歴書_Robin_Beispiel.pdf",
+    ];
+    for file in files {
+        let path = public.join(file);
+        assert!(
+            stdout.contains(&format!("Wrote {} (", path.display())),
+            "{stdout}"
+        );
+        assert!(fs::read(&path).unwrap().starts_with(b"%PDF-"), "{file}");
+    }
+    let mut expected = files.map(str::to_owned).to_vec();
+    expected.sort();
+    assert_eq!(file_names(&public).unwrap(), expected);
+}
+
+#[test]
+fn doc_and_lang_narrow_the_public_documents_too() {
+    let (home, vault) = home_with_vault_and_personal("cli_build_public_narrowed").unwrap();
+
+    let output = kariera_at(&home, &["build", "--doc", "cv", "--lang", "de"]).unwrap();
+
+    assert_eq!(output.status.code(), Some(0));
+    assert_eq!(
+        file_names(&vault.join("Generated/public")).unwrap(),
+        ["Lebenslauf_Robin_Beispiel.pdf"]
+    );
+}
+
+#[test]
+fn a_second_build_writes_the_same_public_pdf_bytes() {
+    let (home, vault) = home_with_vault_and_personal("cli_build_public_twice").unwrap();
+    let pdf = vault.join("Generated/public/Lebenslauf_Robin_Beispiel.pdf");
+    kariera_at(&home, &["build"]).unwrap();
+    let first = fs::read(&pdf).unwrap();
+
+    fs::remove_file(&pdf).unwrap();
+    kariera_at(&home, &["build"]).unwrap();
+
+    assert!(fs::read(&pdf).unwrap() == first);
+}
+
 #[test]
 fn build_writes_the_skill_sheet_as_xlsx_beside_its_pdf() {
     let (home, vault) = home_with_vault_and_personal("cli_build_skill_sheet_xlsx").unwrap();
@@ -137,11 +198,10 @@ fn build_doc_rirekisho_writes_only_the_rirekisho_and_only_as_pdf() {
         "{stdout}"
     );
     assert!(fs::read(&pdf).unwrap().starts_with(b"%PDF-"));
-    let generated: Vec<_> = fs::read_dir(vault.join("Generated"))
-        .unwrap()
-        .map(|entry| entry.unwrap().file_name())
-        .collect();
-    assert_eq!(generated, [pdf.file_name().unwrap()]);
+    assert_eq!(
+        file_names(&vault.join("Generated")).unwrap(),
+        ["履歴書_Robin_Beispiel.pdf"]
+    );
 }
 
 #[test]
