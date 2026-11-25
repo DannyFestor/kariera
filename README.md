@@ -6,9 +6,18 @@ The vault is the single source of truth. Every note is Markdown with YAML frontm
 
 ## Status
 
-Not usable yet. The project is being set up.
+Usable. `kariera build` writes the CV (English, German), the 職務経歴書 and the Skill Sheet. The 履歴書 is not built yet.
 
-## Planned commands
+## Install
+
+```sh
+make setup     # once: the pinned toolchain and tools
+make install   # the kariera binary, into cargo's bin directory
+```
+
+Then write `~/.config/kariera/config.toml` (see [Configuration](#configuration)).
+
+## Commands
 
 | Command | Does |
 |---|---|
@@ -127,9 +136,3 @@ make help    # every target
 ```
 
 New to Rust? Start with [`docs/rust-primer.md`](docs/rust-primer.md). AI agents follow [`AGENTS.md`](AGENTS.md).
-
-## Setup still to do
-
-The toolchain, lint, hook and test setup is done. Remaining:
-
-1. Run `/setup-matt-pocock-skills` in this repository.
