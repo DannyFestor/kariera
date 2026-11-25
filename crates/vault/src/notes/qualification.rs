@@ -1,4 +1,4 @@
-use kariera_domain::Qualification;
+use kariera_domain::{Issuer, Qualification, QualificationCategory};
 
 use crate::fields::Fields;
 use crate::problems::Reported;
@@ -12,7 +12,7 @@ pub(super) fn read(
     let name = fields.required("name");
     let labels = fields.translations("labels");
     let category = fields.required("category");
-    let issuer = fields.optional("issuer");
+    let issuer = issuer(fields, category);
     let start = fields.optional("start");
     let date = fields.required("date");
     let level = fields.optional("level");
@@ -33,4 +33,25 @@ pub(super) fn read(
         sources: sources?,
         reviewed: reviewed?,
     })
+}
+
+/// A link to a school for a degree, Text for every other category; not checked when the category could not be read.
+fn issuer(
+    fields: &mut Fields<'_>,
+    category: Result<QualificationCategory, Reported>,
+) -> Result<Option<Issuer>, Reported> {
+    match category {
+        Ok(QualificationCategory::Degree) => fields
+            .optional("issuer")
+            .map(|school| school.map(Issuer::School)),
+        Ok(
+            QualificationCategory::Certificate
+            | QualificationCategory::Licence
+            | QualificationCategory::TestResult,
+        ) => fields.optional("issuer").map(|body| body.map(Issuer::Body)),
+        Err(Reported) => {
+            fields.skip("issuer");
+            Err(Reported)
+        }
+    }
 }

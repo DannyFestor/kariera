@@ -1,5 +1,5 @@
 //! `kariera build`: writes every document in every language it is written in as PDF into the vault's `Generated/`,
-//! the CV and the 職務経歴書 also as DOCX, and the Skill Sheet as XLSX, beside the PDF.
+//! the CV and the 職務経歴書 also as DOCX, and the Skill Sheet as XLSX, beside the PDF. The 履歴書 is a PDF only.
 
 use std::collections::BTreeSet;
 use std::path::PathBuf;
@@ -207,7 +207,13 @@ mod tests {
     fn without_options_every_document_is_built_in_each_of_its_languages() {
         assert_eq!(
             editions(&[]),
-            ["cv-en", "cv-de", "shokumu-keirekisho-ja", "skill-sheet-ja"]
+            [
+                "cv-en",
+                "cv-de",
+                "shokumu-keirekisho-ja",
+                "rirekisho-ja",
+                "skill-sheet-ja"
+            ]
         );
     }
 
@@ -220,9 +226,10 @@ mod tests {
     fn lang_narrows_to_one_language() {
         assert_eq!(
             editions(&["--lang", "ja"]),
-            ["shokumu-keirekisho-ja", "skill-sheet-ja"]
+            ["shokumu-keirekisho-ja", "rirekisho-ja", "skill-sheet-ja"]
         );
         assert_eq!(editions(&["--lang", "de", "--doc", "cv"]), ["cv-de"]);
+        assert_eq!(editions(&["--doc", "rirekisho"]), ["rirekisho-ja"]);
     }
 
     #[test]
@@ -241,13 +248,13 @@ mod tests {
     fn unknown_values_and_arguments_are_refused() {
         let cases: [(&[&str], &str); 5] = [
             (
-                &["--doc", "rirekisho"],
-                "--doc must be cv, shokumu-keirekisho or skill-sheet",
+                &["--doc", "resume"],
+                "--doc must be cv, shokumu-keirekisho, rirekisho or skill-sheet",
             ),
             (&["--lang", "fr"], "--lang must be en, ja or de"),
             (
                 &["--doc"],
-                "--doc needs cv, shokumu-keirekisho or skill-sheet",
+                "--doc needs cv, shokumu-keirekisho, rirekisho or skill-sheet",
             ),
             (&["--lang"], "--lang needs en, ja or de"),
             (&["--pdf"], "unknown argument \"--pdf\""),

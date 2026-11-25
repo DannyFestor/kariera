@@ -42,7 +42,7 @@ pub use personal::{Personal, Photo};
 pub use profile::Profile;
 pub use project::{Phase, Project};
 pub use prose::{Bullets, Paragraphs};
-pub use qualification::{Qualification, QualificationCategory};
+pub use qualification::{Issuer, Qualification, QualificationCategory};
 pub use skill::{Skill, SkillCategory};
 pub use source::{Source, SourceKind, SourcePath};
 pub use text::{Text, Url};

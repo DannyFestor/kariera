@@ -90,6 +90,12 @@ fn job(document: &Document) -> Job<'_> {
             data: serde_json::to_vec(shokumu_keirekisho),
             photo: None,
         },
+        Document::Rirekisho(rirekisho) => Job {
+            name: "履歴書",
+            template: include_str!("../templates/rirekisho.typ"),
+            data: serde_json::to_vec(rirekisho),
+            photo: rirekisho.photo.as_ref().map(|photo| photo.0.as_slice()),
+        },
         Document::SkillSheet(skill_sheet) => Job {
             name: "Skill Sheet",
             template: include_str!("../templates/skill-sheet.typ"),

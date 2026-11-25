@@ -1,10 +1,11 @@
 use kariera_domain::Language;
 
-/// The documents kariera builds. The 履歴書 is not among them yet: its layout is still open.
+/// The documents kariera builds.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum DocumentKind {
     Cv,
     ShokumuKeirekisho,
+    Rirekisho,
     SkillSheet,
 }
 
@@ -16,13 +17,19 @@ pub struct Edition {
 }
 
 impl DocumentKind {
-    pub const ALL: [Self; 3] = [Self::Cv, Self::ShokumuKeirekisho, Self::SkillSheet];
+    pub const ALL: [Self; 4] = [
+        Self::Cv,
+        Self::ShokumuKeirekisho,
+        Self::Rirekisho,
+        Self::SkillSheet,
+    ];
 
     #[must_use]
     pub const fn slug(self) -> &'static str {
         match self {
             Self::Cv => "cv",
             Self::ShokumuKeirekisho => "shokumu-keirekisho",
+            Self::Rirekisho => "rirekisho",
             Self::SkillSheet => "skill-sheet",
         }
     }
@@ -33,7 +40,7 @@ impl DocumentKind {
     pub const fn languages(self) -> &'static [Language] {
         match self {
             Self::Cv => &[Language::English, Language::German],
-            Self::ShokumuKeirekisho | Self::SkillSheet => &[Language::Japanese],
+            Self::ShokumuKeirekisho | Self::Rirekisho | Self::SkillSheet => &[Language::Japanese],
         }
     }
 
@@ -77,6 +84,7 @@ mod tests {
                 ("cv", "en"),
                 ("cv", "de"),
                 ("shokumu-keirekisho", "ja"),
+                ("rirekisho", "ja"),
                 ("skill-sheet", "ja")
             ]
         );
@@ -88,7 +96,11 @@ mod tests {
             DocumentKind::from_slug("skill-sheet"),
             Some(DocumentKind::SkillSheet)
         );
-        assert_eq!(DocumentKind::from_slug("rirekisho"), None);
+        assert_eq!(
+            DocumentKind::from_slug("rirekisho"),
+            Some(DocumentKind::Rirekisho)
+        );
+        assert_eq!(DocumentKind::from_slug("rirekisyo"), None);
         assert!(DocumentKind::Cv.languages().contains(&Language::German));
     }
 }

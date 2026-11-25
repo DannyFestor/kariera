@@ -6,7 +6,7 @@ The vault is the single source of truth. Every note is Markdown with YAML frontm
 
 ## Status
 
-Usable. `kariera build` writes the CV (English, German), the 職務経歴書 and the Skill Sheet. The 履歴書 is not built yet.
+Usable. `kariera build` writes the CV (English, German), the 職務経歴書, the 履歴書 and the Skill Sheet.
 
 ## Install
 
@@ -23,7 +23,7 @@ Then write `~/.config/kariera/config.toml` (see [Configuration](#configuration))
 |---|---|
 | `kariera validate` | Checks every note against the schema and against the other notes (see below) |
 | `kariera new <log\|project\|engagement>` | Creates a note from the vault's templates, with what the arguments say filled in: `new log --engagement <name> --month <YYYY-MM>`, `new project --engagement <name> --title <title>`, `new engagement (--client <name> \| --employer <name>) --type <type> --start <YYYY-MM>`. Refuses to overwrite a note. |
-| `kariera build` | Builds every document in every language it is written in, as PDF, as DOCX where there is a layout (the CV and the 職務経歴書) and as XLSX (the Skill Sheet); `--doc` and `--lang` narrow it down (see below) |
+| `kariera build` | Builds every document in every language it is written in, as PDF, as DOCX where there is a layout (the CV and the 職務経歴書) and as XLSX (the Skill Sheet); the 履歴書 is a PDF only. `--doc` and `--lang` narrow it down (see below) |
 | `kariera translations --stale` | Lists the notes and languages whose translation is empty or older than the note's English text |
 | `kariera translations --mark <note> --lang <ja\|de>` | Records that the translation matches the English text as it is now |
 
@@ -50,15 +50,32 @@ email: robin@example.com
 phone: +81 90 0000 0000
 location: Sapporo, Japan
 birth_date: 1990-01-01
-nationality: deutsch
+nationality:
+  en: German
+  ja: ドイツ
+  de: deutsch
 photo: photo.jpg
+name_kana: ロビン　ベイシュピール
+gender: 男
+postal_code: 001-0000
+address: 北海道札幌市北区北0条西0丁目0-0
+address_kana: ほっかいどう さっぽろし きたく きた0じょう にし0ちょうめ
+residence_status: 技術・人文知識・国際業務
+work_restriction: 在留資格に基づく就労活動のみ可
+residence_expiry: 2028-03-31
+residence_note: 在留期間更新申請中
 ```
 
 | Key | Printed in |
 |---|---|
-| `email`, `phone`, `location` | The CV's header, English and German |
-| `birth_date` (`YYYY-MM-DD`), `nationality` | The German CV only, as German readers expect them |
-| `photo` | The German CV only. A PNG, JPEG, GIF, SVG or WebP file, relative to the folder of `personal.yaml`, absolute, or starting with `~/` |
+| `email`, `phone` | The CV's header, English and German, and the 履歴書 (現住所) |
+| `location` | The CV's header, English and German |
+| `birth_date` (`YYYY-MM-DD`) | The German CV, as German readers expect it, and the 履歴書 with the age on the build date |
+| `nationality` | The German CV and the 履歴書. A map of `en`, `ja` and `de`, with `en` required: each document prints its language's entry, else `en` |
+| `photo` | The German CV and the 履歴書. A PNG, JPEG, GIF, SVG or WebP file, relative to the folder of `personal.yaml`, absolute, or starting with `~/` |
+| `name_kana`, `gender` | The 履歴書: ふりがな of the name, in katakana, and 性別 |
+| `postal_code`, `address`, `address_kana` | The 履歴書: 現住所 with 〒, and its ふりがな |
+| `residence_status`, `work_restriction`, `residence_expiry` (`YYYY-MM-DD`), `residence_note` | The 履歴書, for a foreign applicant: 在留資格 with the work restriction in brackets, 在留期限, and a note such as an application in progress. The 国籍 and 在留資格 rows are left out when `nationality`, `residence_status`, `residence_expiry` and `residence_note` are all missing |
 
 kariera reads the notes in `Organizations/`, `Engagements/`, `Contracts/`, `Projects/`, `Monthly Logs/`, `Skills/` and `Qualifications/` (with their subfolders) and `Profile.md` in the vault root. `kariera new` also reads `Templates/` (`log` uses `Templates/monthly-log.md`, `project` `project.md`, `engagement` `engagement.md`). `kariera validate` also reads the frontmatter of the other Markdown files, to find notes in the wrong place, and checks that the files Sources cite exist. It writes only three things: a new note from `kariera new`; the `translated_from` value of one note, set by `kariera translations --mark` (the fingerprint it stores is defined in [ADR 0002](docs/adr/0002-translation-fingerprints.md)); and the documents of `kariera build`, into `Generated/`, which it replaces on every build.
 
@@ -90,7 +107,8 @@ Only the `hours` rule has warnings: `project_hours` that do not add up to `hours
 ```sh
 kariera build                       # every document in every language it is written in
 kariera build --doc cv              # the CV in English and German
-kariera build --lang ja             # the 職務経歴書 and the Skill Sheet
+kariera build --lang ja             # the 職務経歴書, the 履歴書 and the Skill Sheet
+kariera build --doc rirekisho       # the 履歴書
 kariera build --doc cv --lang de    # the German CV only
 ```
 
@@ -100,16 +118,16 @@ Writes each document as PDF into the vault's `Generated/`, replacing the file of
 |---|---|---|---|
 | CV | `cv` | `en`, `de` | `Generated/CV_Jane_Example.pdf`, `Generated/Lebenslauf_Jane_Example.pdf` |
 | 職務経歴書 | `shokumu-keirekisho` | `ja` | `Generated/職務経歴書_Jane_Example.pdf` |
+| 履歴書 | `rirekisho` | `ja` | `Generated/履歴書_Jane_Example.pdf` |
 | Skill Sheet | `skill-sheet` | `ja` | `Generated/スキルシート_Jane_Example.pdf` and `Generated/スキルシート_Jane_Example.xlsx` |
 
 A file is named by the document's title in its language and the Profile `name`, with spaces as `_`.
-
-The 履歴書 is not built yet: its layout is still open.
 
 The DOCX files are made to be edited: headings, lists and tables are Word's own, and no text is an image. They name their fonts and do not embed them: Calibri for Latin text on the CV (it ships with Office), where the PDF uses Inter, and BIZ UDPGothic for Japanese (it ships with Windows 10 1809 and later; where it is missing, Word substitutes another font). The author is the Profile `name` and the document language is `en`, `de` or `ja`. The 職務経歴書 shows the time a Skill was used as text, where the PDF also draws a bar. Like the PDFs, the same notes, `personal.yaml` and date give the same bytes.
 
 - **Skills:** a skill table shows a Skill that at least one Project links and whose last use falls within the document's window: 3 years for the CV, 5 for the 職務経歴書 and the Skill Sheet. The last use is the later of its last Project month and its `last_used`. Its years are the months of its Projects, with months that two Projects share counted once; `last_used` never adds to them. Human languages are listed apart, not in the skill tables.
 - **Confidential Projects** print their `public_title`, and never an End Client.
+- **The 履歴書** is the ruled two-page form of the 2021 厚生労働省履歴書様式例, with every year in 西暦. 学歴 lists the degree Qualifications (入学 at `start`, 卒業 at `date`) by the school their `issuer` links, 職歴 the Engagements with wording by `engagement_type` and the Agencies of a freelance Engagement, and 免許・資格 every other Qualification. The 志望の動機 box prints the Profile's Self-PR and the human languages, and 本人希望記入欄 its `available_from` and days per week. A value missing from `personal.yaml` leaves its cell empty; the form keeps every label and line.
 - **Organizations** print their `labels` for the document's language, else their `name`.
 - **The Skill Sheet XLSX** is real cells, with no image: the same sections and order as the PDF, on a grid of twelve columns, set in BIZ UDPゴシック (an XLSX cannot embed fonts, so the font must be on the machine that opens it; it ships with Windows). It prints on A4 portrait with page numbers, and a page break before each Project block that would not fit keeps the block on one page. Excel does not fit a row to its text when it opens a generated file, so each row's height is estimated from its text and column width; if a row looks too tall or too short in your Excel, resize it by hand. The scale is the sheet's own (no "fit to one page wide"), because Excel ignores manual page breaks under that option.
 - **Missing translations:** where a Japanese or German text is empty, the document prints the English one, and the build ends with a warning naming the note and the language. It still exits 0.

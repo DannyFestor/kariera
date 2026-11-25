@@ -1,0 +1,168 @@
+---
+source: crates/cli/tests/document_models.rs
+expression: built
+---
+Built {
+    document: Rirekisho(
+        Rirekisho {
+            labels: RirekishoLabels {
+                title: "履歴書",
+                furigana: "ふりがな",
+                name: "氏\u{3000}名",
+                gender: "※性別",
+                nationality: "国籍",
+                residence_status: "在留資格",
+                residence_expiry: "在留期限",
+                address: "現住所",
+                contact: "連絡先",
+                same_as_address: "同上",
+                postal_mark: "〒",
+                phone: "電話",
+                email: "E-mail",
+                year: "年",
+                month: "月",
+                history: "学歴・職歴（各別にまとめて書く）",
+                education: "学\u{3000}歴",
+                career: "職\u{3000}歴",
+                until_now: "現在に至る",
+                closing: "以上",
+                licences: "免許・資格",
+                appeal: "志望の動機、特技、好きな学科、アピールポイントなど",
+                wishes: "本人希望記入欄（特に給料・職種・勤務時間・勤務地・その他についての希望などがあれば記入）",
+                photo_note: [
+                    "写真をはる位置",
+                    "",
+                    "写真をはる必要が",
+                    "ある場合",
+                    "1. 縦 36～40mm",
+                    "\u{3000} 横 24～30mm",
+                    "2. 本人単身胸から上",
+                ],
+            },
+            name: "Robin Beispiel",
+            name_kana: Some(
+                "ロビン\u{3000}ベイシュピール",
+            ),
+            as_of: "2026年11月18日現在",
+            gender: Some(
+                "男",
+            ),
+            birth_date: Some(
+                "1990年1月1日生",
+            ),
+            age: Some(
+                "満36歳",
+            ),
+            residence: Some(
+                Residence {
+                    nationality: Some(
+                        "ドイツ",
+                    ),
+                    status: Some(
+                        "技術・人文知識・国際業務（在留資格に基づく就労活動のみ可）",
+                    ),
+                    expiry: Some(
+                        "2028年3月31日",
+                    ),
+                    note: None,
+                },
+            ),
+            address: Address {
+                postal_code: Some(
+                    "001-0000",
+                ),
+                text: Some(
+                    "北海道札幌市北区北0条西0丁目0-0 サンプルマンション101",
+                ),
+                kana: Some(
+                    "ほっかいどう さっぽろし きたく きた0じょう にし0ちょうめ",
+                ),
+            },
+            phone: Some(
+                "+81 90 0000 0000",
+            ),
+            email: Some(
+                "robin@example.com",
+            ),
+            photo: Some(
+                Photo(122 bytes),
+            ),
+            education: [
+                HistoryLine {
+                    year: "2014",
+                    month: "10",
+                    text: "エグザンプル大学（ドイツ） 入学",
+                },
+                HistoryLine {
+                    year: "2018",
+                    month: "3",
+                    text: "エグザンプル大学（ドイツ） 卒業（情報科学 学士）",
+                },
+            ],
+            career: [
+                HistoryLine {
+                    year: "2018",
+                    month: "7",
+                    text: "Initech インターンシップ",
+                },
+                HistoryLine {
+                    year: "2018",
+                    month: "9",
+                    text: "Initech インターンシップ修了",
+                },
+                HistoryLine {
+                    year: "2019",
+                    month: "4",
+                    text: "Müller Logistik 入社（ソフトウェア開発者）",
+                },
+                HistoryLine {
+                    year: "2021",
+                    month: "3",
+                    text: "Müller Logistik 退社",
+                },
+                HistoryLine {
+                    year: "2021",
+                    month: "4",
+                    text: "株式会社アクメ と業務委託契約（フリーランス、バックエンド開発者）",
+                },
+                HistoryLine {
+                    year: "2023",
+                    month: "9",
+                    text: "株式会社アクメ 契約満了",
+                },
+                HistoryLine {
+                    year: "2023",
+                    month: "10",
+                    text: "Globex と業務委託契約（フリーランス、Fabrikam経由、フルスタック開発者）",
+                },
+            ],
+            licences: [
+                HistoryLine {
+                    year: "2013",
+                    month: "6",
+                    text: "Class B Driving Licence 取得",
+                },
+                HistoryLine {
+                    year: "2022",
+                    month: "12",
+                    text: "日本語試験B2 185/200 取得",
+                },
+                HistoryLine {
+                    year: "2024",
+                    month: "2",
+                    text: "Example Cloud Associate 取得",
+                },
+            ],
+            appeal: [
+                "機能の要望からリリースまで一貫して担当する。",
+                "語学：ドイツ語（ネイティブ）、日本語（ビジネスレベル）",
+            ],
+            wishes: [
+                "勤務開始可能日：2026年4月1日",
+                "希望勤務日数：週3～5日",
+                "その他は貴社の規定に従います。",
+            ],
+        },
+    ),
+    missing_translations: [],
+}

@@ -4,13 +4,15 @@
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
-use std::str::FromStr;
 
-use kariera_domain::{Personal, Photo, Text, ValueError};
+use kariera_domain::{Personal, Photo, Text};
 use thiserror::Error;
 
-use crate::value::scalar_text;
+use crate::cursor::Cursor;
+use crate::names::Names;
+use crate::value::FromNode;
 use crate::yaml::{self, Entry, Value};
+use crate::{Location, Problem};
 
 #[derive(Debug, Error)]
 pub enum PersonalError {
@@ -124,6 +126,15 @@ impl PersonalFile {
             "birth_date" => personal.birth_date = value(entry)?,
             "nationality" => personal.nationality = value(entry)?,
             "photo" => *photo = value(entry)?,
+            "name_kana" => personal.name_kana = value(entry)?,
+            "gender" => personal.gender = value(entry)?,
+            "postal_code" => personal.postal_code = value(entry)?,
+            "address" => personal.address = value(entry)?,
+            "address_kana" => personal.address_kana = value(entry)?,
+            "residence_status" => personal.residence_status = value(entry)?,
+            "work_restriction" => personal.work_restriction = value(entry)?,
+            "residence_expiry" => personal.residence_expiry = value(entry)?,
+            "residence_note" => personal.residence_note = value(entry)?,
             other => {
                 return Err(Invalid {
                     line: entry.value.line,
@@ -135,18 +146,32 @@ impl PersonalFile {
     }
 }
 
-fn value<T: FromStr<Err = ValueError>>(entry: &Entry) -> Result<Option<T>, Invalid> {
-    if entry.value.is_empty() {
+/// Read as a note field of the same type is, with no notes to link to.
+fn value<T: FromNode>(entry: &Entry) -> Result<Option<T>, Invalid> {
+    if T::is_empty(&entry.value) {
         return Ok(None);
     }
-    let problem = |message: String| Invalid {
-        line: entry.value.line,
-        message: format!("`{}` {message}", entry.key),
-    };
-    let text = scalar_text(&entry.value).map_err(problem)?;
-    text.parse()
+    let names = Names::default();
+    let cursor = Cursor::root(&names).key(&entry.key);
+    T::from_node(&entry.value, &cursor)
         .map(Some)
-        .map_err(|error: ValueError| problem(error.to_string()))
+        .map_err(|problems| first_invalid(problems, entry))
+}
+
+fn first_invalid(problems: Vec<Problem>, entry: &Entry) -> Invalid {
+    let problem = problems.into_iter().next();
+    let line = problem
+        .as_ref()
+        .and_then(|problem| problem.line)
+        .unwrap_or(entry.value.line);
+    let message = problem.map_or_else(
+        || format!("`{}` cannot be read", entry.key),
+        |problem| match problem.location {
+            Location::Field(path) => format!("`{path}` {}", problem.message),
+            Location::Note | Location::Frontmatter | Location::Section(_) => problem.message,
+        },
+    );
+    Invalid { line, message }
 }
 
 /// Relative to the folder of `personal.yaml`, or to the home directory when it starts with `~/`; an absolute path
@@ -167,11 +192,15 @@ fn photo_path(
 mod tests {
     use std::path::{Path, PathBuf};
 
-    use kariera_domain::Personal;
+    use kariera_domain::{Personal, Text, Translated};
 
     use super::{PersonalError, PersonalFile};
 
     const PATH: &str = "/home/robin/.config/kariera/personal.yaml";
+
+    fn text(value: &str) -> Text {
+        value.parse().unwrap()
+    }
 
     fn parse(text: &str) -> Result<PersonalFile, PersonalError> {
         PersonalFile::parse(text, Path::new(PATH), || Ok(PathBuf::from("/home/robin")))
@@ -181,24 +210,56 @@ mod tests {
     fn every_field_is_read() {
         let file = parse(
             "email: robin@example.com\nphone: +81 90 0000 0000\nlocation: Sapporo, Japan\n\
-             birth_date: 1990-01-01\nnationality: deutsch\nphoto: photo.jpg\n",
+             birth_date: 1990-01-01\nnationality:\n  en: German\n  ja: ドイツ\n  de: deutsch\n\
+             photo: photo.jpg\nname_kana: ロビン　ベイシュピール\ngender: 男\npostal_code: 001-0000\n\
+             address: 北海道札幌市北区北0条西0丁目\naddress_kana: ほっかいどう さっぽろし\n\
+             residence_status: 技術・人文知識・国際業務\nwork_restriction: 就労制限なし\n\
+             residence_expiry: 2028-03-31\nresidence_note: 更新申請中\n",
         )
         .unwrap();
 
         assert_eq!(
             file.personal,
             Personal {
-                email: Some("robin@example.com".parse().unwrap()),
-                phone: Some("+81 90 0000 0000".parse().unwrap()),
-                location: Some("Sapporo, Japan".parse().unwrap()),
+                email: Some(text("robin@example.com")),
+                phone: Some(text("+81 90 0000 0000")),
+                location: Some(text("Sapporo, Japan")),
                 birth_date: Some("1990-01-01".parse().unwrap()),
-                nationality: Some("deutsch".parse().unwrap()),
+                nationality: Some(Translated {
+                    en: text("German"),
+                    ja: Some(text("ドイツ")),
+                    de: Some(text("deutsch")),
+                }),
                 photo: None,
+                name_kana: Some(text("ロビン　ベイシュピール")),
+                gender: Some(text("男")),
+                postal_code: Some(text("001-0000")),
+                address: Some(text("北海道札幌市北区北0条西0丁目")),
+                address_kana: Some(text("ほっかいどう さっぽろし")),
+                residence_status: Some(text("技術・人文知識・国際業務")),
+                work_restriction: Some(text("就労制限なし")),
+                residence_expiry: Some("2028-03-31".parse().unwrap()),
+                residence_note: Some(text("更新申請中")),
             }
         );
         assert_eq!(
             file.photo,
             Some(PathBuf::from("/home/robin/.config/kariera/photo.jpg"))
+        );
+    }
+
+    #[test]
+    fn a_nationality_is_a_map_of_languages_with_english_required() {
+        let single = parse("nationality: deutsch\n").unwrap_err();
+        let without_english = parse("nationality:\n  ja: ドイツ\n").unwrap_err();
+
+        assert_eq!(
+            single.to_string(),
+            format!("{PATH}:1: `nationality` must be a map of fields")
+        );
+        assert_eq!(
+            without_english.to_string(),
+            format!("{PATH}:2: `nationality.en` is required")
         );
     }
 

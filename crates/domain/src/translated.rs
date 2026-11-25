@@ -27,6 +27,12 @@ impl<T> Translated<T> {
             Language::German => self.de.as_ref(),
         }
     }
+
+    /// For a value outside the vault, such as the nationality of `personal.yaml`: no translation is reported missing.
+    #[must_use]
+    pub fn get_or_english(&self, language: Language) -> &T {
+        self.get(language).unwrap_or(&self.en)
+    }
 }
 
 impl<T> Translations<T> {
@@ -74,6 +80,18 @@ mod tests {
         };
 
         assert_eq!(role.get(Language::German), None);
+    }
+
+    #[test]
+    fn an_untranslated_language_falls_back_to_english_on_request() {
+        let nationality = Translated {
+            en: "German",
+            ja: Some("ドイツ"),
+            de: None,
+        };
+
+        assert_eq!(*nationality.get_or_english(Language::Japanese), "ドイツ");
+        assert_eq!(*nationality.get_or_english(Language::German), "German");
     }
 
     #[test]
