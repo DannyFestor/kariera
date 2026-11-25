@@ -53,6 +53,15 @@ pub(super) fn career(context: &Context<'_>) -> Vec<HistoryLine> {
     chronological(lines)
 }
 
+/// Whether the history ends with 現在に至る: only while an Engagement is still running (owner's decision on #34).
+pub(super) fn any_ongoing<'career>(
+    engagements: impl IntoIterator<Item = &'career Engagement>,
+) -> bool {
+    engagements
+        .into_iter()
+        .any(|engagement| engagement.end.is_none())
+}
+
 fn engagement_lines(
     context: &Context<'_>,
     (name, engagement): Named<'_, Engagement>,
@@ -175,7 +184,18 @@ fn chronological(lines: impl Iterator<Item = (Month, String)>) -> Vec<HistoryLin
 mod tests {
     use kariera_domain::{EngagementType, QualificationCategory};
 
-    use super::{at_school, end_text, licence_wording, start_text};
+    use super::{any_ongoing, at_school, end_text, licence_wording, start_text};
+    use crate::test_career::engagement;
+
+    #[test]
+    fn an_engagement_without_an_end_is_ongoing() {
+        let ended = engagement("2019-04", Some("2021-03"));
+        let running = engagement("2021-04", None);
+
+        assert!(any_ongoing([&ended, &running]));
+        assert!(!any_ongoing([&ended]));
+        assert!(!any_ongoing([]));
+    }
 
     #[test]
     fn each_engagement_type_starts_with_its_own_wording() {

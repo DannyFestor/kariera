@@ -33,6 +33,8 @@ pub struct Rirekisho {
     pub photo: Option<Photo>,
     pub education: Vec<HistoryLine>,
     pub career: Vec<HistoryLine>,
+    /// Whether an Engagement is still running, so the history ends with 現在に至る before 以上.
+    pub ongoing: bool,
     pub licences: Vec<HistoryLine>,
     /// The Self-PR, then the human languages.
     pub appeal: Vec<String>,
@@ -84,6 +86,7 @@ pub(crate) fn build(context: &Context<'_>) -> Rirekisho {
         photo: personal.photo.clone(),
         education: history::education(context),
         career: history::career(context),
+        ongoing: history::any_ongoing(context.career.engagements.values()),
         licences: history::licences(context),
         appeal,
         wishes: wishes(

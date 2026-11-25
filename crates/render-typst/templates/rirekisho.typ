@@ -126,7 +126,7 @@
   undated([]),
   undated(align(center, t.career)),
   ..dated(doc.career),
-  undated(t.until_now),
+  ..if doc.ongoing { (undated(t.until_now),) } else { () },
   undated(align(right, t.closing)),
 )
 

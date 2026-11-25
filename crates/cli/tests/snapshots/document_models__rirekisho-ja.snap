@@ -136,6 +136,7 @@ Built {
                     text: "Globex と業務委託契約（フリーランス、Fabrikam経由、フルスタック開発者）",
                 },
             ],
+            ongoing: true,
             licences: [
                 HistoryLine {
                     year: "2013",
