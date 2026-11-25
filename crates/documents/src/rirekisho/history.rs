@@ -1,6 +1,8 @@
 //! The lines of the 学歴・職歴 and 免許・資格 tables, each dated by its month (owner's wording on issue #22).
 
-use kariera_domain::{Engagement, EngagementType, Month, Qualification, QualificationCategory};
+use kariera_domain::{
+    Engagement, EngagementType, Link, Month, Organization, Qualification, QualificationCategory,
+};
 use serde::Serialize;
 
 use crate::context::{Context, Named};
@@ -43,7 +45,7 @@ fn at_school(school: Option<&str>, event: &str) -> String {
     school.map_or_else(|| event.to_owned(), |school| format!("{school} {event}"))
 }
 
-/// Engagements, by the month of each line; an ongoing one has no end line.
+/// Engagements, by the month of each line; an ongoing one has no end line, nor has the Profile's own business.
 pub(super) fn career(context: &Context<'_>) -> Vec<HistoryLine> {
     let mut engagements = context.engagements_newest_first();
     engagements.reverse();
@@ -64,10 +66,18 @@ fn engagement_lines(
         engagement.start,
         start_text(engagement.engagement_type, &organization, role, &agencies),
     );
-    let ended = engagement
-        .end
+    let (_, profile) = context.profile;
+    let ended = end_on_record(engagement, &profile.business)
         .map(|end| (end, end_text(engagement.engagement_type, &organization)));
     std::iter::once(started).chain(ended).collect()
+}
+
+/// The Profile's own business still runs after its Engagement ends (the owner still invoices under it), so 「廃業」
+/// would be false: owner's decision of 2026-11-25.
+fn end_on_record(engagement: &Engagement, business: &Link<Organization>) -> Option<Month> {
+    let runs_the_profiles_business = engagement.engagement_type == EngagementType::OwnBusiness
+        && engagement.client.as_ref() == Some(business);
+    engagement.end.filter(|_| !runs_the_profiles_business)
 }
 
 fn start_text(
@@ -173,9 +183,10 @@ fn chronological(lines: impl Iterator<Item = (Month, String)>) -> Vec<HistoryLin
 
 #[cfg(test)]
 mod tests {
-    use kariera_domain::{EngagementType, QualificationCategory};
+    use kariera_domain::{EngagementType, Link, QualificationCategory};
 
-    use super::{at_school, end_text, licence_wording, start_text};
+    use super::{at_school, end_on_record, end_text, licence_wording, start_text};
+    use crate::test_career::{engagement, month};
 
     #[test]
     fn each_engagement_type_starts_with_its_own_wording() {
@@ -243,6 +254,34 @@ mod tests {
         for (engagement_type, expected) in cases {
             assert_eq!(end_text(engagement_type, "Acme"), expected);
         }
+    }
+
+    #[test]
+    fn the_profiles_own_business_has_no_end_line_because_it_still_runs() {
+        let business = Link::new("Example Works".parse().unwrap());
+        let projects_ended = engagement(
+            EngagementType::OwnBusiness,
+            "Example Works",
+            Some("2024-03"),
+        );
+
+        assert_eq!(end_on_record(&projects_ended, &business), None);
+    }
+
+    #[test]
+    fn another_own_business_ends_on_record() {
+        let business = Link::new("Example Works".parse().unwrap());
+        let closed = engagement(EngagementType::OwnBusiness, "Northwind", Some("2024-03"));
+
+        assert_eq!(end_on_record(&closed, &business), Some(month("2024-03")));
+    }
+
+    #[test]
+    fn an_engagement_for_the_business_that_is_not_own_business_ends_on_record() {
+        let business = Link::new("Example Works".parse().unwrap());
+        let contract = engagement(EngagementType::Freelance, "Example Works", Some("2024-03"));
+
+        assert_eq!(end_on_record(&contract, &business), Some(month("2024-03")));
     }
 
     #[test]

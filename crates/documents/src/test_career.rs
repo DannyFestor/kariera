@@ -49,6 +49,26 @@ pub(crate) fn project(start: &str, end: Option<&str>, skills: &[&str]) -> Projec
     }
 }
 
+pub(crate) fn engagement(
+    engagement_type: EngagementType,
+    client: &str,
+    end: Option<&str>,
+) -> Engagement {
+    Engagement {
+        client: Some(Link::new(client.parse().unwrap())),
+        employer: None,
+        engagement_type,
+        role: None,
+        start: month("2020-01"),
+        end: end.map(month),
+        contracts: Vec::new(),
+        translated_from: Translations::none(),
+        sources: Vec::new(),
+        reviewed: false,
+        summary: english(Paragraphs(String::new())),
+    }
+}
+
 pub(crate) fn skill(name: &str, category: SkillCategory, last_used: Option<&str>) -> Skill {
     Skill {
         name: text(name),
@@ -79,22 +99,6 @@ pub(crate) fn career(projects: Vec<Project>, skills: Vec<Skill>) -> Career {
 
 pub(crate) fn link<T>(name: &str) -> Link<T> {
     Link::new(name.parse().unwrap())
-}
-
-pub(crate) fn engagement(client: &str, start: &str, end: Option<&str>) -> Engagement {
-    Engagement {
-        client: Some(link(client)),
-        employer: None,
-        engagement_type: EngagementType::Freelance,
-        role: None,
-        start: month(start),
-        end: end.map(month),
-        contracts: Vec::new(),
-        translated_from: Translations::none(),
-        sources: Vec::new(),
-        reviewed: false,
-        summary: english(Paragraphs(String::new())),
-    }
 }
 
 pub(crate) fn organization(name: &str) -> Organization {

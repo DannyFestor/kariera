@@ -182,7 +182,7 @@ fn qualifications(wording: &Wording<'_>) -> Vec<ExportedQualification> {
 
 #[cfg(test)]
 mod tests {
-    use kariera_domain::{Career, Issuer, Paragraphs, Translated};
+    use kariera_domain::{Career, EngagementType, Issuer, Paragraphs, Translated};
 
     use super::{CareerExport, ExportError, export};
     use crate::test_career::{
@@ -203,7 +203,8 @@ mod tests {
     }
 
     fn add_engagement(career: &mut Career, name: &str, start: &str, reviewed: bool) {
-        let mut added = engagement("Acme", start, None);
+        let mut added = engagement(EngagementType::Freelance, "Acme", None);
+        added.start = month(start);
         added.reviewed = reviewed;
         career.engagements.insert(name.parse().unwrap(), added);
     }
