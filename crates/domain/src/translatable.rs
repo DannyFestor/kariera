@@ -175,9 +175,9 @@ impl Translatable for Profile {
 mod tests {
     use super::{EnglishText, Translatable};
     use crate::{
-        Career, Engagement, EngagementType, Link, Month, NoteType, Organization, Paragraphs,
-        Profile, Project, Qualification, QualificationCategory, Skill, SkillCategory, Text,
-        Translated, Translations,
+        Career, Engagement, EngagementType, Issuer, Link, Month, NoteType, Organization,
+        Paragraphs, Profile, Project, Qualification, QualificationCategory, Skill, SkillCategory,
+        Text, Translated, Translations,
     };
 
     fn text(value: &str) -> Text {
@@ -300,7 +300,7 @@ mod tests {
             name: text("Cloud Associate"),
             labels: Translations::none(),
             category: QualificationCategory::Certificate,
-            issuer: Some(text("Example Cloud")),
+            issuer: Some(Issuer::Body(text("Example Cloud"))),
             start: None,
             date: month(),
             level: Some(text("Associate")),

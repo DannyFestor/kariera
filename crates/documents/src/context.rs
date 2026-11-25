@@ -3,8 +3,8 @@
 use std::cmp::Reverse;
 
 use kariera_domain::{
-    Bullets, Career, Date, Engagement, FixedList, Labelled, Language, Link, Month, NoteName,
-    Organization, Paragraphs, Personal, Phase, Profile, Project, Qualification, Skill,
+    Bullets, Career, Date, Engagement, FixedList, Issuer, Labelled, Language, Link, Month,
+    NoteName, Organization, Paragraphs, Personal, Phase, Profile, Project, Qualification, Skill,
     SkillCategory, Text, Translated, Translations, Url,
 };
 
@@ -110,6 +110,33 @@ impl<'input> Context<'input> {
             .map_or_else(String::new, |link| self.organization(link))
     }
 
+    /// The counterparties of the Engagement's Contracts other than its Client, which are Agencies (schema §2.3), each
+    /// once.
+    pub(crate) fn agencies(&self, engagement: &Engagement) -> Vec<String> {
+        let mut agencies: Vec<String> = Vec::new();
+        let counterparties = engagement
+            .contracts
+            .iter()
+            .filter_map(|link| self.career.get(link))
+            .map(|contract| &contract.counterparty)
+            .filter(|&counterparty| engagement.client.as_ref() != Some(counterparty));
+        for counterparty in counterparties {
+            let agency = self.organization(counterparty);
+            if !agencies.contains(&agency) {
+                agencies.push(agency);
+            }
+        }
+        agencies
+    }
+
+    /// A school by its label, like any Organization; an issuing body as it is written.
+    pub(crate) fn issuer(&self, issuer: &Issuer) -> String {
+        match issuer {
+            Issuer::School(link) => self.organization(link),
+            Issuer::Body(body) => body.to_string(),
+        }
+    }
+
     /// A confidential Project prints only its public title (schema §1.9).
     pub(crate) fn project_title(&self, (name, project): Named<'_, Project>) -> String {
         let title = project
@@ -186,16 +213,22 @@ impl<'input> Context<'input> {
             .collect()
     }
 
-    /// From `available_from`, on `days_per_week_min` to `days_per_week_max` days.
+    /// From `available_from`, on `days_per_week` days.
     pub(crate) fn availability(&self) -> Option<String> {
         let (_, profile) = self.profile;
-        let days_per_week = profile.days_per_week_min.map(|min| {
-            let max = profile.days_per_week_max.unwrap_or(min);
-            self.locale.range(min.get(), max.get())
-        });
+        let days_per_week = self.days_per_week();
         profile
             .available_from
             .map(|from| self.locale.availability(from, days_per_week.as_deref()))
+    }
+
+    /// `days_per_week_min` to `days_per_week_max`, as a range of the language.
+    pub(crate) fn days_per_week(&self) -> Option<String> {
+        let (_, profile) = self.profile;
+        profile.days_per_week_min.map(|min| {
+            let max = profile.days_per_week_max.unwrap_or(min);
+            self.locale.range(min.get(), max.get())
+        })
     }
 
     pub(crate) fn period(&self, start: Month, end: Option<Month>) -> String {
@@ -238,7 +271,10 @@ impl<'input> Context<'input> {
         let score = qualification.score.as_ref().map(ToString::to_string);
         QualificationEntry {
             title: compose(label, level, score),
-            issuer: qualification.issuer.as_ref().map(ToString::to_string),
+            issuer: qualification
+                .issuer
+                .as_ref()
+                .map(|issuer| self.issuer(issuer)),
             date: self.locale.month(qualification.date),
         }
     }

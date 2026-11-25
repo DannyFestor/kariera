@@ -5,6 +5,8 @@ aliases:
   - Universität Beispielstadt
 kind:
   - school
+labels:
+  ja: エグザンプル大学（ドイツ）
 reviewed: false
 ---
 

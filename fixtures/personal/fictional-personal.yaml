@@ -4,6 +4,17 @@ email: robin@example.com
 phone: +81 90 0000 0000
 location: Sapporo, Japan
 birth_date: 1990-01-01
-nationality: deutsch
+nationality:
+  en: German
+  ja: ドイツ
+  de: deutsch
 # A plain grey placeholder: the fixtures hold no picture of anyone.
 photo: photo.png
+name_kana: ロビン　ベイシュピール
+gender: 男
+postal_code: 001-0000
+address: 北海道札幌市北区北0条西0丁目0-0 サンプルマンション101
+address_kana: ほっかいどう さっぽろし きたく きた0じょう にし0ちょうめ
+residence_status: 技術・人文知識・国際業務
+work_restriction: 在留資格に基づく就労活動のみ可
+residence_expiry: 2028-03-31

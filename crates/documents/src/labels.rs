@@ -104,6 +104,74 @@ impl ShokumuKeirekishoLabels {
     };
 }
 
+/// The words of the 2021 厚生労働省履歴書様式例, which variant A of the 履歴書 prototype follows (issue #22).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+pub struct RirekishoLabels {
+    pub title: &'static str,
+    pub furigana: &'static str,
+    pub name: &'static str,
+    pub gender: &'static str,
+    pub nationality: &'static str,
+    pub residence_status: &'static str,
+    pub residence_expiry: &'static str,
+    pub address: &'static str,
+    pub contact: &'static str,
+    /// What 連絡先 says: the applicant is reached at the 現住所.
+    pub same_as_address: &'static str,
+    pub postal_mark: &'static str,
+    pub phone: &'static str,
+    pub email: &'static str,
+    pub year: &'static str,
+    pub month: &'static str,
+    pub history: &'static str,
+    pub education: &'static str,
+    pub career: &'static str,
+    pub until_now: &'static str,
+    pub closing: &'static str,
+    pub licences: &'static str,
+    pub appeal: &'static str,
+    pub wishes: &'static str,
+    /// The form's note in the empty photo box, one line each.
+    pub photo_note: &'static [&'static str],
+}
+
+impl RirekishoLabels {
+    pub(crate) const JAPANESE: Self = Self {
+        title: "履歴書",
+        furigana: "ふりがな",
+        name: "氏　名",
+        gender: "※性別",
+        nationality: "国籍",
+        residence_status: "在留資格",
+        residence_expiry: "在留期限",
+        address: "現住所",
+        contact: "連絡先",
+        same_as_address: "同上",
+        postal_mark: "〒",
+        phone: "電話",
+        email: "E-mail",
+        year: "年",
+        month: "月",
+        history: "学歴・職歴（各別にまとめて書く）",
+        education: "学　歴",
+        career: "職　歴",
+        until_now: "現在に至る",
+        closing: "以上",
+        licences: "免許・資格",
+        appeal: "志望の動機、特技、好きな学科、アピールポイントなど",
+        wishes: "本人希望記入欄（特に給料・職種・勤務時間・勤務地・その他についての希望などがあれば記入）",
+        photo_note: &[
+            "写真をはる位置",
+            "",
+            "写真をはる必要が",
+            "ある場合",
+            "1. 縦 36～40mm",
+            "　 横 24～30mm",
+            "2. 本人単身胸から上",
+        ],
+    };
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
 pub struct SkillSheetLabels {
     pub title: &'static str,

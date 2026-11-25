@@ -119,7 +119,10 @@ fn contact(context: &Context<'_>) -> Contact {
 fn personal_details(context: &Context<'_>, personal: &Personal) -> Option<PersonalDetails> {
     let details = PersonalDetails {
         birth_date: personal.birth_date.map(|date| context.locale.date(date)),
-        nationality: personal.nationality.as_ref().map(ToString::to_string),
+        nationality: personal
+            .nationality
+            .as_ref()
+            .map(|nationality| nationality.get_or_english(context.language()).to_string()),
     };
     (details.birth_date.is_some() || details.nationality.is_some()).then_some(details)
 }

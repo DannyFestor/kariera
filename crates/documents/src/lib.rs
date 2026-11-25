@@ -12,6 +12,7 @@ mod labels;
 mod locale;
 mod months;
 mod parts;
+mod rirekisho;
 mod shokumu_keirekisho;
 mod skill_sheet;
 #[cfg(test)]
@@ -23,8 +24,9 @@ use thiserror::Error;
 pub use context::Inputs;
 pub use cv::{CareerEntry, Contact, Cv, CvProject, PersonalDetails};
 pub use edition::{DocumentKind, Edition};
-pub use labels::{CvLabels, ShokumuKeirekishoLabels, SkillSheetLabels};
+pub use labels::{CvLabels, RirekishoLabels, ShokumuKeirekishoLabels, SkillSheetLabels};
 pub use parts::{PhaseMark, QualificationEntry, SkillEntry, SkillGroup, SpokenLanguage};
+pub use rirekisho::{Address, HistoryLine, Residence, Rirekisho};
 pub use shokumu_keirekisho::{EngagementHistory, ProjectCard, ProjectLine, ShokumuKeirekisho};
 pub use skill_sheet::{SheetProject, SkillSheet, Technology};
 pub use translator::MissingTranslation;
@@ -35,6 +37,7 @@ use context::Context;
 pub enum Document {
     Cv(Cv),
     ShokumuKeirekisho(ShokumuKeirekisho),
+    Rirekisho(Rirekisho),
     SkillSheet(SkillSheet),
 }
 
@@ -46,6 +49,7 @@ impl Document {
         match self {
             Self::Cv(cv) => file_stem(cv.labels.title, &cv.name),
             Self::ShokumuKeirekisho(document) => file_stem(document.labels.title, &document.name),
+            Self::Rirekisho(document) => file_stem(document.labels.title, &document.name),
             Self::SkillSheet(sheet) => file_stem(sheet.labels.title, &sheet.name),
         }
     }
@@ -85,6 +89,7 @@ pub fn build(edition: Edition, inputs: &Inputs<'_>) -> Result<Built, DocumentErr
         DocumentKind::ShokumuKeirekisho => {
             Document::ShokumuKeirekisho(shokumu_keirekisho::build(&context))
         }
+        DocumentKind::Rirekisho => Document::Rirekisho(rirekisho::build(&context)),
         DocumentKind::SkillSheet => Document::SkillSheet(skill_sheet::build(&context)),
     };
     Ok(Built {

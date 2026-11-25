@@ -49,6 +49,7 @@ fn build_writes_every_document_as_pdf_into_generated() {
         "CV_Robin_Beispiel.pdf",
         "Lebenslauf_Robin_Beispiel.pdf",
         "職務経歴書_Robin_Beispiel.pdf",
+        "履歴書_Robin_Beispiel.pdf",
         "スキルシート_Robin_Beispiel.pdf",
     ] {
         let path = vault.join("Generated").join(file);
@@ -120,6 +121,27 @@ fn a_second_build_writes_the_same_docx_bytes_whatever_was_built_before_it() {
     kariera_at(&home, &["build", "--doc", "cv", "--lang", "de"]).unwrap();
 
     assert!(fs::read(&docx).unwrap() == after_everything);
+}
+
+#[test]
+fn build_doc_rirekisho_writes_only_the_rirekisho_and_only_as_pdf() {
+    let (home, vault) = home_with_vault_and_personal("cli_build_rirekisho").unwrap();
+
+    let output = kariera_at(&home, &["build", "--doc", "rirekisho"]).unwrap();
+
+    let stdout = String::from_utf8(output.stdout).unwrap();
+    assert_eq!(output.status.code(), Some(0), "{stdout}");
+    let pdf = vault.join("Generated/履歴書_Robin_Beispiel.pdf");
+    assert!(
+        stdout.starts_with(&format!("Wrote {} (2 pages)", pdf.display())),
+        "{stdout}"
+    );
+    assert!(fs::read(&pdf).unwrap().starts_with(b"%PDF-"));
+    let generated: Vec<_> = fs::read_dir(vault.join("Generated"))
+        .unwrap()
+        .map(|entry| entry.unwrap().file_name())
+        .collect();
+    assert_eq!(generated, [pdf.file_name().unwrap()]);
 }
 
 #[test]

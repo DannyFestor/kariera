@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use kariera_domain::{FixedList, Link, NoteType, Organization};
+use kariera_domain::{FixedList, Issuer, Link, NoteType, Organization};
 use kariera_vault::{Inspection, LoadError, Location, NoteError, Problem, Stray, Value, Vault};
 
 #[path = "support/scratch.rs"]
@@ -115,6 +115,51 @@ fn a_link_written_in_nfd_resolves_to_the_nfc_name() {
         &Link::<Organization>::new("Müller Logistik".parse().unwrap())
     );
     assert!(vault.career().get(employer).is_some());
+}
+
+#[test]
+fn a_degree_links_its_school_and_any_other_qualification_names_its_issuer() {
+    let vault = Vault::load(&fixture_vault()).expect("the fixture vault loads");
+    let issuer = |name: &str| {
+        vault
+            .career()
+            .qualifications
+            .get(&name.parse().unwrap())
+            .and_then(|qualification| qualification.issuer.clone())
+    };
+
+    assert_eq!(
+        issuer("BSc Computer Science"),
+        Some(Issuer::School(Link::new(
+            "Example University".parse().unwrap()
+        )))
+    );
+    assert_eq!(
+        issuer("Class B Driving Licence"),
+        Some(Issuer::Body("Example Licensing Office".parse().unwrap()))
+    );
+}
+
+#[test]
+fn a_degree_whose_issuer_is_not_a_link_is_refused() {
+    let vault = copy_of_fixture_vault("degree_issuer_text").unwrap();
+    replace_in(
+        &vault,
+        "Qualifications/BSc Computer Science.md",
+        "issuer: \"[[Example University]]\"",
+        "issuer: Example University",
+    )
+    .unwrap();
+
+    assert_eq!(
+        errors_of(&vault).unwrap(),
+        [error(
+            "Qualifications/BSc Computer Science.md",
+            field("issuer"),
+            8,
+            "must be a link such as \"[[Note name]]\", not \"Example University\""
+        )]
+    );
 }
 
 #[test]

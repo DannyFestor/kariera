@@ -28,7 +28,7 @@ pub(crate) fn fixture_skill_sheet() -> SkillSheet {
         .expect("the Skill Sheet is an edition");
     match build(edition, &inputs).unwrap().document {
         Document::SkillSheet(sheet) => sheet,
-        other @ (Document::Cv(_) | Document::ShokumuKeirekisho(_)) => {
+        other @ (Document::Cv(_) | Document::ShokumuKeirekisho(_) | Document::Rirekisho(_)) => {
             panic!("expected the Skill Sheet, got {other:?}")
         }
     }

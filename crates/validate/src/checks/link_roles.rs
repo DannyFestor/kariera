@@ -1,8 +1,8 @@
 //! Schema §3 (link roles): a link to an Organization needs an Organization of the right kind.
 
 use kariera_domain::{
-    Contract, Engagement, EngagementType, FixedList, Link, Organization, OrganizationKind, Profile,
-    Project,
+    Contract, Engagement, EngagementType, FixedList, Issuer, Link, Organization, OrganizationKind,
+    Profile, Project, Qualification,
 };
 
 use crate::context::{Context, Found, client_link};
@@ -30,6 +30,11 @@ pub(super) fn check(context: &Context<'_>) -> Vec<Finding> {
         context
             .notes::<Profile>()
             .filter_map(|p| profile(context, &p)),
+    );
+    findings.extend(
+        context
+            .notes::<Qualification>()
+            .filter_map(|q| qualification(context, &q)),
     );
     findings
 }
@@ -155,6 +160,22 @@ fn profile(context: &Context<'_>, profile: &Found<'_, Profile>) -> Option<Findin
         accepted: &[OrganizationKind::MyBusiness],
     };
     link_role(context, profile.file, &profile.note.business, &role)
+}
+
+/// Only a degree links its issuer (schema §2.7).
+fn qualification(
+    context: &Context<'_>,
+    qualification: &Found<'_, Qualification>,
+) -> Option<Finding> {
+    let Some(Issuer::School(school)) = &qualification.note.issuer else {
+        return None;
+    };
+    let role = Role {
+        field: "issuer",
+        name: "school",
+        accepted: &[OrganizationKind::School],
+    };
+    link_role(context, qualification.file, school, &role)
 }
 
 fn link_role(
@@ -304,6 +325,23 @@ mod tests {
             vault.lines(),
             [
                 "Contracts/2023-10 Globex via Fabrikam Contract.md:3: error [link-role] field `counterparty` links [[Fabrikam]], whose kind is school, but the counterparty must have the kind client, employer or agency"
+            ]
+        );
+    }
+
+    #[test]
+    fn the_issuer_of_a_degree_is_a_school() {
+        let vault = TestVault::new("roles_school");
+        vault.replace(
+            "Organizations/Example University.md",
+            "  - school",
+            "  - employer",
+        );
+
+        assert_eq!(
+            vault.lines(),
+            [
+                "Qualifications/BSc Computer Science.md:8: error [link-role] field `issuer` links [[Example University]], whose kind is employer, but the school must have the kind school"
             ]
         );
     }

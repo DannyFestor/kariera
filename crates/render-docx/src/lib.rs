@@ -26,8 +26,8 @@ use package::Properties;
 
 #[derive(Debug, Error)]
 pub enum RenderError {
-    #[error("the Skill Sheet is an XLSX document and has no DOCX layout")]
-    NoLayout,
+    #[error("the {0} has no DOCX layout")]
+    NoLayout(&'static str),
     #[error("cannot read the photo (PNG, JPEG, GIF and WebP are supported in DOCX): {0}")]
     Photo(image::ImageError),
     #[error("cannot write the DOCX file: {0}")]
@@ -39,7 +39,7 @@ pub enum RenderError {
 pub const fn renders(kind: DocumentKind) -> bool {
     match kind {
         DocumentKind::Cv | DocumentKind::ShokumuKeirekisho => true,
-        DocumentKind::SkillSheet => false,
+        DocumentKind::Rirekisho | DocumentKind::SkillSheet => false,
     }
 }
 
@@ -61,6 +61,7 @@ pub fn render(document: &Document) -> Result<Vec<u8>, RenderError> {
                 language: Language::Japanese.code(),
             },
         ),
-        Document::SkillSheet(_) => Err(RenderError::NoLayout),
+        Document::Rirekisho(_) => Err(RenderError::NoLayout("履歴書")),
+        Document::SkillSheet(_) => Err(RenderError::NoLayout("Skill Sheet")),
     }
 }

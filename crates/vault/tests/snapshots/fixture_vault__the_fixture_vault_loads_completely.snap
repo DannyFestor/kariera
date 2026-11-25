@@ -87,7 +87,9 @@ Career {
             location: None,
             website: None,
             labels: Translations {
-                ja: None,
+                ja: Some(
+                    "エグザンプル大学（ドイツ）",
+                ),
                 de: None,
             },
             translated_from: Translations {
@@ -1548,7 +1550,9 @@ Career {
             },
             category: Degree,
             issuer: Some(
-                "Example University",
+                School(
+                    [[Example University]],
+                ),
             ),
             start: Some(
                 2014-10,
@@ -1589,7 +1593,9 @@ Career {
             },
             category: Licence,
             issuer: Some(
-                "Example Licensing Office",
+                Body(
+                    "Example Licensing Office",
+                ),
             ),
             start: None,
             date: 2013-06,
@@ -1647,7 +1653,9 @@ Career {
             },
             category: TestResult,
             issuer: Some(
-                "Example Language Institute",
+                Body(
+                    "Example Language Institute",
+                ),
             ),
             start: None,
             date: 2022-12,

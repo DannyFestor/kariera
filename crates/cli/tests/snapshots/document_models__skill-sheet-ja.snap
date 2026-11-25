@@ -62,7 +62,7 @@ Built {
                 QualificationEntry {
                     title: "情報科学 学士",
                     issuer: Some(
-                        "Example University",
+                        "エグザンプル大学（ドイツ）",
                     ),
                     date: "2018年3月",
                 },

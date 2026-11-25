@@ -11,7 +11,7 @@ const USAGE: &str = "Usage: kariera [--help | --version]
        kariera new project --engagement <name> --title <title>
        kariera new engagement (--client <name> | --employer <name>) --type <type> --start <YYYY-MM>
        kariera validate [--json]
-       kariera build [--doc <cv|shokumu-keirekisho|skill-sheet>] [--lang <en|ja|de>]
+       kariera build [--doc <cv|shokumu-keirekisho|rirekisho|skill-sheet>] [--lang <en|ja|de>]
        kariera translations --stale
        kariera translations --mark <note> --lang <ja|de>
 

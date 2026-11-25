@@ -16,6 +16,7 @@ kariera reads only the Markdown files in the note folders and `Profile.md`, so t
 - Names from schema §1.1: `C Sharp` with the alias `C#`, and `Müller Logistik` with an umlaut.
 - A Skill alias equal to one of its `labels` (`Example Charts`, schema §2.6), and an Organization alias equal to its `labels.ja` (`Acme`, schema §2.1).
 - A Skill with `last_used`, the owner's use outside any Project (`Docker`, schema §2.6).
+- A degree whose `issuer` links a school Organization with a `labels.ja` (`BSc Computer Science` and `Example University`, schema §2.7), and Qualifications of the other categories whose `issuer` is Text.
 
 ## Written on purpose
 

@@ -5,7 +5,7 @@ labels:
   ja: 情報科学 学士
   de: Bachelor Informatik
 category: degree
-issuer: Example University
+issuer: "[[Example University]]"
 start: 2014-10
 date: 2018-03
 level: Bachelor of Science
