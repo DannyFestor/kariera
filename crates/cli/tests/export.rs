@@ -146,6 +146,29 @@ fn a_confidential_project_exports_its_public_title_and_no_end_client() {
 }
 
 #[test]
+fn a_confidential_project_whose_title_is_its_public_title_exports() {
+    let (home, vault) = home_with_vault_and_personal("cli_export_title_is_public").unwrap();
+    mark_reviewed(&vault, ACME).unwrap();
+    mark_reviewed(&vault, LEDGER).unwrap();
+    replace_in(
+        &vault,
+        LEDGER,
+        "en: Northwind freight ledger",
+        "en: Accounting platform for a logistics company",
+    )
+    .unwrap();
+
+    let output = export(&home).unwrap();
+
+    assert_eq!(output.status.code(), Some(0), "{}", stderr(&output));
+    assert!(
+        stdout(&output).contains("\"title\": \"Accounting platform for a logistics company\""),
+        "{}",
+        stdout(&output)
+    );
+}
+
+#[test]
 fn an_end_client_named_in_a_note_name_fails_the_export_and_prints_nothing() {
     let (home, vault) = home_with_vault_and_personal("cli_export_guard").unwrap();
     mark_reviewed(&vault, ACME).unwrap();

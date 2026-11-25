@@ -3,7 +3,7 @@
 
 use std::fmt;
 
-use kariera_domain::{Career, NoteName, Organization, Project, Text};
+use kariera_domain::{Career, Language, NoteName, Organization, Project, Text};
 use kariera_vault::{NoteFile, nfc};
 
 use crate::body_lines::body_lines;
@@ -82,13 +82,8 @@ fn secrets_of(career: &Career, name: &NoteName, project: &Project) -> Vec<Secret
         .end_client
         .as_ref()
         .map(|link| link.target().clone());
-    let titles = [
-        Some(&project.title.en),
-        project.title.ja.as_ref(),
-        project.title.de.as_ref(),
-    ];
-    let title_secrets = titles.into_iter().flatten().map(|title| Secret {
-        needle: lowercase(title.as_str()),
+    let title_secrets = secret_titles(project).map(|needle| Secret {
+        needle,
         gives_away: format!("the title of the confidential Project [[{name}]]"),
         exempt: exempt.clone(),
     });
@@ -104,6 +99,19 @@ fn secrets_of(career: &Career, name: &NoteName, project: &Project) -> Vec<Secret
             exempt: exempt.clone(),
         });
     title_secrets.chain(end_client_secrets).collect()
+}
+
+/// A title that equals the `public_title` in its language is public wording, so only the others are secret.
+fn secret_titles(project: &Project) -> impl Iterator<Item = String> {
+    Language::ALL.into_iter().filter_map(|language| {
+        let title = lowercase(project.title.get(language)?.as_str());
+        let public_title = project
+            .public_title
+            .as_ref()
+            .and_then(|public_title| public_title.get(language))
+            .map(|public_title| lowercase(public_title.as_str()));
+        (public_title.as_ref() != Some(&title)).then_some(title)
+    })
 }
 
 /// Its name in every language: `name`, `aliases` and `labels`.
@@ -327,6 +335,77 @@ mod tests {
         vault.replace(ENGAGEMENT, SUMMARY, "Built backends for Nordwind Spedition");
 
         assert_eq!(vault.report().errors(), 1);
+    }
+
+    const LEDGER: &str = "Projects/Acme - Ledger.md";
+
+    fn title_the_ledger_with_its_public_title(vault: &TestVault) {
+        vault.replace(
+            LEDGER,
+            "en: Northwind freight ledger",
+            "en: ACCOUNTING platform for a logistics company",
+        );
+        vault.replace(
+            LEDGER,
+            "ja: ノースウィンド運輸 運賃台帳",
+            "ja: 物流会社向け会計プラットフォーム",
+        );
+    }
+
+    #[test]
+    fn a_title_equal_to_the_public_title_may_be_written() {
+        let vault = TestVault::new("confidential_title_is_public");
+        title_the_ledger_with_its_public_title(&vault);
+        vault.replace(
+            ENGAGEMENT,
+            SUMMARY,
+            "Built an accounting platform for a logistics company: 物流会社向け会計プラットフォーム",
+        );
+
+        assert_eq!(vault.lines(), Vec::<String>::new());
+    }
+
+    #[test]
+    fn a_title_differing_from_the_public_title_in_its_language_is_still_secret() {
+        let vault = TestVault::new("confidential_title_differs_in_one_language");
+        vault.replace(
+            LEDGER,
+            "en: Northwind freight ledger",
+            "en: Accounting platform for a logistics company",
+        );
+        vault.replace(LEDGER, "ja: ノースウィンド運輸 運賃台帳", "ja: 運賃台帳");
+        vault.replace(ENGAGEMENT, SUMMARY, "運賃台帳を構築した");
+
+        assert_eq!(vault.report().errors(), 1);
+    }
+
+    #[test]
+    fn the_end_client_stays_secret_when_the_title_equals_the_public_title() {
+        let vault = TestVault::new("confidential_title_is_public_end_client");
+        title_the_ledger_with_its_public_title(&vault);
+        vault.replace(ENGAGEMENT, SUMMARY, "Built backends for Northwind");
+
+        assert_eq!(
+            vault.lines(),
+            [format!(
+                "Engagements/2021-04 Acme.md:23: error [confidentiality] section `## Summary` {}",
+                end_client_of("Acme - Ledger")
+            )]
+        );
+    }
+
+    #[test]
+    fn published_text_with_a_title_equal_to_the_public_title_discloses_nothing() {
+        let vault = TestVault::new("disclosure_title_is_public");
+        title_the_ledger_with_its_public_title(&vault);
+
+        assert_eq!(
+            given_away(
+                &career_of(&vault),
+                "Accounting platform for a logistics company"
+            ),
+            Vec::<String>::new()
+        );
     }
 
     fn career_of(vault: &TestVault) -> Career {
