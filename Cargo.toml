@@ -26,6 +26,8 @@ kariera-vault = { path = "crates/vault" }
 docx-rs = { version = "0.4.22", default-features = false }
 image = { version = "0.25.10", default-features = false, features = ["gif", "jpeg", "png", "webp"] }
 insta = { version = "1.49.0", default-features = false }
+# Dev only: the cli tests check the export's months against the `pattern` of its JSON Schema; Typst already builds on it.
+regex = "1.13.1"
 # Writes the Skill Sheet as XLSX (render-xlsx, issue #9); the tests read it back with the zip crate it builds on.
 rust_xlsxwriter = "0.102.0"
 saphyr-parser = "0.3.4"

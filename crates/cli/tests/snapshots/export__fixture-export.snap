@@ -1,0 +1,67 @@
+---
+source: crates/cli/tests/export.rs
+expression: stdout(&output)
+---
+{
+  "schema_version": 1,
+  "profile": {
+    "name": "Robin Beispiel",
+    "headline": "Full-stack developer in Japan",
+    "summary": [
+      "Full-stack developer with seven years of experience in logistics and e-commerce, from backend services in Go to React front ends."
+    ]
+  },
+  "engagements": [
+    {
+      "note": "2019-04 Müller Logistik",
+      "organization": "Müller Logistik",
+      "engagement_type": "employment",
+      "role": "Software developer",
+      "start": "2019-04",
+      "end": "2021-03",
+      "summary": [
+        "Developed the shipment tracking system of the in-house software department."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "note": "Müller Logistik - Tracking",
+      "engagement": "2019-04 Müller Logistik",
+      "title": "Shipment tracking system",
+      "start": "2019-04",
+      "end": "2021-03",
+      "role": "Software developer",
+      "focus": null,
+      "team_size": 4,
+      "industry": "Logistics",
+      "skills": [
+        "C Sharp",
+        "Scrum"
+      ],
+      "description": [
+        "Developed the tracking system for parcels and pallets in C#."
+      ],
+      "achievements": [
+        "Replaced the nightly batch import with live status updates"
+      ]
+    }
+  ],
+  "qualifications": [
+    {
+      "name": "BSc Computer Science",
+      "category": "degree",
+      "issuer": "Example University",
+      "start": "2014-10",
+      "date": "2018-03",
+      "level": "Bachelor of Science",
+      "score": null
+    }
+  ],
+  "languages": [
+    {
+      "name": "Japanese",
+      "level": "Business level"
+    }
+  ]
+}

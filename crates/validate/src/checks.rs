@@ -2,7 +2,7 @@
 
 mod aliases;
 mod body;
-mod confidentiality;
+pub(crate) mod confidentiality;
 mod contract_rules;
 mod duplicate_names;
 mod file_names;

@@ -23,9 +23,11 @@ kariera-render-typst.workspace = true
 kariera-render-xlsx.workspace = true
 kariera-validate.workspace = true
 kariera-vault.workspace = true
+serde_json.workspace = true
 thiserror.workspace = true
 time.workspace = true
 
 [dev-dependencies]
 insta.workspace = true
+regex.workspace = true
 zip.workspace = true

@@ -76,7 +76,7 @@ fn summary(report: &Report) -> String {
     )
 }
 
-fn counted(count: usize, noun: &str) -> String {
+pub(crate) fn counted(count: usize, noun: &str) -> String {
     let plural = if count == 1 { "" } else { "s" };
     format!("{count} {noun}{plural}")
 }

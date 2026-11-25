@@ -1,20 +1,19 @@
-//! Schema §1.9: no note but the End Client's own mentions a confidential Project or its End Client in prose.
+//! Schema §1.9: no note but the End Client's own mentions a confidential Project or its End Client in prose, and
+//! nothing kariera publishes mentions them at all.
 
-use kariera_domain::{Organization, Project};
+use std::fmt;
+
+use kariera_domain::{Career, NoteName, Organization, Project, Text};
 use kariera_vault::{NoteFile, nfc};
 
 use crate::body_lines::body_lines;
-use crate::context::{Context, Found};
+use crate::context::Context;
 use crate::field_path::FieldPath;
 use crate::finding::{At, Finding, Rule};
 use crate::sourced::{SourceOf, all_sources};
 
 pub(super) fn check(context: &Context<'_>) -> Vec<Finding> {
-    let secrets: Vec<Secret> = context
-        .notes::<Project>()
-        .filter(|project| project.note.confidential)
-        .flat_map(|project| secrets_of(context, &project))
-        .collect();
+    let secrets = secrets(context.career());
     let sources = all_sources(context);
     let mut findings = Vec::new();
     for file in context.files() {
@@ -26,53 +25,96 @@ pub(super) fn check(context: &Context<'_>) -> Vec<Finding> {
     findings
 }
 
+/// A text kariera would publish that gives a confidential Project away.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Disclosure {
+    pub text: String,
+    pub gives_away: String,
+}
+
+impl fmt::Display for Disclosure {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{:?} gives away {}", self.text, self.gives_away)
+    }
+}
+
+/// Every published text that names a confidential Project's title or End Client. Unlike prose in the vault, no
+/// text is exempt: the End Client's own note is never published.
+pub fn disclosures<'text>(
+    career: &Career,
+    texts: impl IntoIterator<Item = &'text str>,
+) -> Vec<Disclosure> {
+    let secrets = secrets(career);
+    texts
+        .into_iter()
+        .flat_map(|text| {
+            let compared = lowercase(text);
+            secrets
+                .iter()
+                .filter(move |secret| compared.contains(&secret.needle))
+                .map(move |secret| Disclosure {
+                    text: text.to_owned(),
+                    gives_away: secret.gives_away.clone(),
+                })
+        })
+        .collect()
+}
+
 /// A word that must not appear in prose, and what it gives away.
 struct Secret {
     needle: String,
     gives_away: String,
     /// The End Client's own Organization note may name it.
-    exempt: Option<kariera_domain::NoteName>,
+    exempt: Option<NoteName>,
 }
 
-fn secrets_of(context: &Context<'_>, project: &Found<'_, Project>) -> Vec<Secret> {
+fn secrets(career: &Career) -> Vec<Secret> {
+    career
+        .projects
+        .iter()
+        .filter(|(_, project)| project.confidential)
+        .flat_map(|(name, project)| secrets_of(career, name, project))
+        .collect()
+}
+
+fn secrets_of(career: &Career, name: &NoteName, project: &Project) -> Vec<Secret> {
     let exempt = project
-        .note
         .end_client
         .as_ref()
         .map(|link| link.target().clone());
     let titles = [
-        Some(&project.note.title.en),
-        project.note.title.ja.as_ref(),
-        project.note.title.de.as_ref(),
+        Some(&project.title.en),
+        project.title.ja.as_ref(),
+        project.title.de.as_ref(),
     ];
     let title_secrets = titles.into_iter().flatten().map(|title| Secret {
         needle: lowercase(title.as_str()),
-        gives_away: format!("the title of the confidential Project [[{}]]", project.name),
+        gives_away: format!("the title of the confidential Project [[{name}]]"),
         exempt: exempt.clone(),
     });
     let end_client_secrets = project
-        .note
         .end_client
         .as_ref()
-        .and_then(|link| context.get(link))
+        .and_then(|link| career.get(link))
         .into_iter()
-        .flat_map(|organization| names_of(&organization))
-        .map(|name| Secret {
-            needle: lowercase(&name),
-            gives_away: format!(
-                "the End Client of the confidential Project [[{}]]",
-                project.name
-            ),
+        .flat_map(names_of)
+        .map(|end_client_name| Secret {
+            needle: lowercase(end_client_name.as_str()),
+            gives_away: format!("the End Client of the confidential Project [[{name}]]"),
             exempt: exempt.clone(),
         });
     title_secrets.chain(end_client_secrets).collect()
 }
 
-fn names_of(organization: &Found<'_, Organization>) -> Vec<String> {
-    let aliases = organization.note.aliases.iter().map(ToString::to_string);
-    std::iter::once(organization.note.name.to_string())
-        .chain(aliases)
-        .collect()
+/// Its name in every language: `name`, `aliases` and `labels`.
+fn names_of(organization: &Organization) -> impl Iterator<Item = &Text> {
+    let labels = [
+        organization.labels.ja.as_ref(),
+        organization.labels.de.as_ref(),
+    ];
+    std::iter::once(&organization.name)
+        .chain(&organization.aliases)
+        .chain(labels.into_iter().flatten())
 }
 
 fn lowercase(text: &str) -> String {
@@ -130,6 +172,10 @@ fn applicable<'a>(secrets: &'a [Secret], file: &'a NoteFile) -> impl Iterator<It
 
 #[cfg(test)]
 mod tests {
+    use kariera_domain::Career;
+    use kariera_vault::Vault;
+
+    use super::disclosures;
     use crate::test_vault::TestVault;
 
     const ENGAGEMENT: &str = "Engagements/2021-04 Acme.md";
@@ -268,5 +314,99 @@ mod tests {
         vault.replace(ENGAGEMENT, SUMMARY, "Built backends for Northwind");
 
         assert_eq!(vault.lines(), Vec::<String>::new());
+    }
+
+    #[test]
+    fn a_label_of_the_end_client_is_not_named_either() {
+        let vault = TestVault::new("confidential_label");
+        vault.replace(
+            "Organizations/Northwind.md",
+            "  - end-client\n",
+            "  - end-client\nlabels:\n  de: Nordwind Spedition\n",
+        );
+        vault.replace(ENGAGEMENT, SUMMARY, "Built backends for Nordwind Spedition");
+
+        assert_eq!(vault.report().errors(), 1);
+    }
+
+    fn career_of(vault: &TestVault) -> Career {
+        Vault::load(vault.root()).unwrap().career().clone()
+    }
+
+    fn given_away(career: &Career, text: &str) -> Vec<String> {
+        disclosures(career, [text])
+            .into_iter()
+            .map(|disclosure| disclosure.to_string())
+            .collect()
+    }
+
+    #[test]
+    fn published_text_with_a_confidential_title_discloses_it_ignoring_case() {
+        let vault = TestVault::new("disclosure_title");
+
+        assert_eq!(
+            given_away(&career_of(&vault), "Acme - NORTHWIND FREIGHT LEDGER"),
+            [
+                "\"Acme - NORTHWIND FREIGHT LEDGER\" gives away the title of the confidential Project [[Acme - Ledger]]",
+                "\"Acme - NORTHWIND FREIGHT LEDGER\" gives away the End Client of the confidential Project [[Acme - Ledger]]",
+            ]
+        );
+    }
+
+    #[test]
+    fn published_text_with_the_title_in_another_language_discloses_it() {
+        let vault = TestVault::new("disclosure_title_japanese");
+
+        assert_eq!(
+            given_away(&career_of(&vault), "運賃台帳").len(),
+            0,
+            "only the whole title counts"
+        );
+        assert!(
+            given_away(&career_of(&vault), "ノースウィンド運輸 運賃台帳")
+                .iter()
+                .any(|line| line.contains("the title of the confidential Project")),
+        );
+    }
+
+    #[test]
+    fn published_text_with_a_name_alias_or_label_of_the_end_client_discloses_it() {
+        let vault = TestVault::new("disclosure_end_client");
+        vault.replace(
+            "Organizations/Northwind.md",
+            "  - end-client\n",
+            "  - end-client\nlabels:\n  de: Nordwind Spedition\n",
+        );
+        let career = career_of(&vault);
+
+        for text in [
+            "Built for Northwind",
+            "ノースウィンド運輸",
+            "Nordwind Spedition",
+        ] {
+            assert_eq!(
+                given_away(&career, text),
+                [format!(
+                    "{text:?} gives away the End Client of the confidential Project [[Acme - Ledger]]"
+                )]
+            );
+        }
+    }
+
+    #[test]
+    fn published_text_with_the_public_wording_discloses_nothing() {
+        let vault = TestVault::new("disclosure_none");
+        let career = career_of(&vault);
+
+        let found = disclosures(
+            &career,
+            [
+                "Acme - Ledger",
+                "Accounting platform for a logistics company",
+                "Contoso toy shop backend",
+            ],
+        );
+
+        assert_eq!(found, []);
     }
 }

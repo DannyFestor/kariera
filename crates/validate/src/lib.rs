@@ -22,6 +22,7 @@ use std::path::Path;
 use kariera_domain::Month;
 use kariera_vault::{Inspection, LoadError, Vault};
 
+pub use checks::confidentiality::{Disclosure, disclosures};
 pub use finding::{Finding, Rule, Severity};
 pub use report::Report;
 

@@ -9,6 +9,7 @@ mod context;
 mod cv;
 mod edition;
 mod experience;
+mod export;
 mod labels;
 mod locale;
 mod months;
@@ -19,6 +20,7 @@ mod skill_sheet;
 #[cfg(test)]
 mod test_career;
 mod translator;
+mod wording;
 
 use thiserror::Error;
 
@@ -26,6 +28,10 @@ pub use audience::Audience;
 pub use context::Inputs;
 pub use cv::{CareerEntry, Contact, Cv, CvProject, PersonalDetails};
 pub use edition::{DocumentKind, Edition};
+pub use export::{
+    CareerExport, EXPORT_SCHEMA_VERSION, ExportError, ExportedEngagement, ExportedProfile,
+    ExportedProject, ExportedQualification, export,
+};
 pub use labels::{CvLabels, RirekishoLabels, ShokumuKeirekishoLabels, SkillSheetLabels};
 pub use parts::{PhaseMark, QualificationEntry, SkillEntry, SkillGroup, SpokenLanguage};
 pub use rirekisho::{Address, HistoryLine, Residence, Rirekisho};

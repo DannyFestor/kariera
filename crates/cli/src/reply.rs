@@ -3,6 +3,7 @@
 use std::process::ExitCode;
 
 use crate::command::Command;
+use crate::export;
 use crate::new_note;
 use crate::validate;
 
@@ -12,6 +13,7 @@ const USAGE: &str = "Usage: kariera [--help | --version]
        kariera new engagement (--client <name> | --employer <name>) --type <type> --start <YYYY-MM>
        kariera validate [--json]
        kariera build [--doc <cv|shokumu-keirekisho|rirekisho|skill-sheet>] [--lang <en|ja|de>]
+       kariera export --json
        kariera translations --stale
        kariera translations --mark <note> --lang <ja|de>
 
@@ -20,6 +22,7 @@ Builds career documents from an Obsidian vault.
 new                    Creates a note from the vault's Templates, with what the arguments say filled in
 validate               Checks every note against the schema and the other notes; exits 1 on errors, --json is for programs
 build                  Writes every document in each of its languages as PDF into the vault's Generated/
+export --json          Prints the public career data for a website: reviewed notes only, in English
 translations --stale   Lists the translations whose English text changed since they were marked
 translations --mark    Records that a note's translation matches its current English text";
 
@@ -45,6 +48,7 @@ impl Reply {
             Command::Help => Self::success(USAGE.to_owned()),
             Command::Version => Self::success(version()),
             Command::Build(build) => build.run(),
+            Command::Export => export::reply(),
             Command::New(note) => new_note::reply(note),
             Command::Translations(translations) => translations.run(),
             Command::Validate(format) => validate::reply(*format),
