@@ -1,7 +1,8 @@
 //! Small domain values for the unit tests, with every field a test does not care about left empty.
 
 use kariera_domain::{
-    Career, Link, Month, Paragraphs, Project, Skill, SkillCategory, Text, Translated, Translations,
+    Career, Engagement, EngagementType, Link, Month, Paragraphs, Project, Skill, SkillCategory,
+    Text, Translated, Translations,
 };
 
 pub(crate) fn month(text: &str) -> Month {
@@ -44,6 +45,26 @@ pub(crate) fn project(start: &str, end: Option<&str>, skills: &[&str]) -> Projec
         reviewed: false,
         description: english(Paragraphs(String::new())),
         achievements: english(Vec::new()),
+    }
+}
+
+pub(crate) fn engagement(
+    engagement_type: EngagementType,
+    client: &str,
+    end: Option<&str>,
+) -> Engagement {
+    Engagement {
+        client: Some(Link::new(client.parse().unwrap())),
+        employer: None,
+        engagement_type,
+        role: None,
+        start: month("2020-01"),
+        end: end.map(month),
+        contracts: Vec::new(),
+        translated_from: Translations::none(),
+        sources: Vec::new(),
+        reviewed: false,
+        summary: english(Paragraphs(String::new())),
     }
 }
 
