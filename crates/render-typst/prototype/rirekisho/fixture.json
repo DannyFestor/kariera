@@ -1,0 +1,65 @@
+{
+  "title": "履歴書",
+  "as_of": "2026年11月25日現在",
+  "name": "Robin Beispiel",
+  "name_kana": "ロビン　ベイシュピール",
+  "birth_date": "1990年1月1日生",
+  "age": "満36歳",
+  "gender": "男",
+  "nationality": "ドイツ",
+  "residence_status": "技術・人文知識・国際業務",
+  "residence_expiry": "2028年3月31日",
+  "work_restriction": "在留資格に基づく就労活動のみ可",
+  "residence_note": null,
+  "address": {
+    "postal_code": "001-0000",
+    "kana": "ほっかいどう さっぽろし きたく きた0じょう にし0ちょうめ",
+    "text": "北海道札幌市北区北0条西0丁目0-0 サンプルマンション101"
+  },
+  "phone": "090-0000-0000",
+  "email": "robin@example.com",
+  "contact": null,
+  "education": [
+    { "year": "2014", "month": "10", "text": "エグザンプル大学（ドイツ） 入学" },
+    { "year": "2018", "month": "3", "text": "エグザンプル大学（ドイツ） 卒業（情報科学 学士）" }
+  ],
+  "career": [
+    { "year": "2018", "month": "7", "text": "Initech インターンシップ" },
+    { "year": "2018", "month": "9", "text": "Initech インターンシップ修了" },
+    { "year": "2019", "month": "4", "text": "Müller Logistik 入社（ソフトウェア開発者）" },
+    { "year": "2021", "month": "3", "text": "Müller Logistik 退社" },
+    { "year": "2021", "month": "4", "text": "Acme と業務委託契約（フリーランス、バックエンド開発者）" },
+    { "year": "2023", "month": "9", "text": "Acme 契約満了" },
+    { "year": "2023", "month": "10", "text": "Globex と業務委託契約（フリーランス、Fabrikam経由、フルスタック開発者）" }
+  ],
+  "career_ranges": [
+    { "period": "2023年10月～現在", "organization": "Globex", "kind": "フリーランス（Fabrikam経由）", "role": "フルスタック開発者" },
+    { "period": "2021年4月～2023年9月", "organization": "Acme", "kind": "フリーランス", "role": "バックエンド開発者" },
+    { "period": "2019年4月～2021年3月", "organization": "Müller Logistik", "kind": "直接雇用", "role": "ソフトウェア開発者" },
+    { "period": "2018年7月～2018年9月", "organization": "Initech", "kind": "インターンシップ", "role": null }
+  ],
+  "licences": [
+    { "year": "2013", "month": "6", "text": "Class B Driving Licence 取得" },
+    { "year": "2022", "month": "12", "text": "日本語試験B2 185/200 取得" },
+    { "year": "2024", "month": "2", "text": "Example Cloud Associate 取得" }
+  ],
+  "languages": [
+    { "name": "ドイツ語", "level": "ネイティブ" },
+    { "name": "日本語", "level": "ビジネスレベル" },
+    { "name": "英語", "level": "ビジネスレベル" }
+  ],
+  "motivation": [
+    "機能の要望からリリースまで一貫して担当する。"
+  ],
+  "strengths": [
+    "PostgreSQLを用いたバックエンド設計",
+    "日本語・ドイツ語・英語での業務"
+  ],
+  "wishes": [
+    "勤務開始可能日：2026年4月1日",
+    "希望勤務日数：週3～5日",
+    "その他は貴社の規定に従います。"
+  ],
+  "portfolio_url": "https://example.com",
+  "github_url": "https://github.com/example"
+}
