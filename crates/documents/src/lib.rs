@@ -4,6 +4,7 @@
 //! it shows, every text in the language with the English where a translation is missing, and dates and lengths of
 //! time as the language writes them. Headings and layout belong to the renderers.
 
+mod audience;
 mod context;
 mod cv;
 mod edition;
@@ -21,6 +22,7 @@ mod translator;
 
 use thiserror::Error;
 
+pub use audience::Audience;
 pub use context::Inputs;
 pub use cv::{CareerEntry, Contact, Cv, CvProject, PersonalDetails};
 pub use edition::{DocumentKind, Edition};
@@ -83,7 +85,7 @@ pub enum DocumentError {
 }
 
 pub fn build(edition: Edition, inputs: &Inputs<'_>) -> Result<Built, DocumentError> {
-    let context = Context::new(inputs, edition.language).ok_or(DocumentError::NoProfile)?;
+    let context = Context::new(inputs, edition).ok_or(DocumentError::NoProfile)?;
     let document = match edition.kind {
         DocumentKind::Cv => Document::Cv(cv::build(&context)),
         DocumentKind::ShokumuKeirekisho => {

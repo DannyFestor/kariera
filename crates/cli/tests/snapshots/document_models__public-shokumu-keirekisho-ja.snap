@@ -1,0 +1,371 @@
+---
+source: crates/cli/tests/document_models.rs
+expression: built
+---
+Built {
+    document: ShokumuKeirekisho(
+        ShokumuKeirekisho {
+            labels: ShokumuKeirekishoLabels {
+                title: "職務経歴書",
+                summary: "職務要約",
+                strengths: "得意分野",
+                qualifications: "資格・語学",
+                language: "語学",
+                skills: "テクニカルスキル",
+                history: "職務経歴",
+                position: "役職",
+                business: "事業内容",
+                role: "役割",
+                team: "体制",
+                end_client: "エンドクライアント",
+                phases: "担当工程",
+                environment: "環境",
+                achievements: "実績",
+                self_pr: "自己PR",
+                portfolio: "ポートフォリオ",
+                github: "GitHub",
+                closing: "以上",
+            },
+            name: "Robin Beispiel",
+            headline: "日本在住のフルスタック開発者",
+            as_of: "2026年11月18日現在",
+            summary: [
+                "物流とECの分野で7年の経験を持つフルスタック開発者。GoのバックエンドからReactのフロントエンドまで担当する。",
+            ],
+            strengths: [
+                "PostgreSQLを用いたバックエンド設計",
+                "日本語・ドイツ語・英語での業務",
+            ],
+            qualifications: [
+                QualificationEntry {
+                    title: "Class B Driving Licence",
+                    issuer: Some(
+                        "Example Licensing Office",
+                    ),
+                    date: "2013年6月",
+                },
+                QualificationEntry {
+                    title: "日本語試験B2（185/200）",
+                    issuer: Some(
+                        "Example Language Institute",
+                    ),
+                    date: "2022年12月",
+                },
+                QualificationEntry {
+                    title: "Example Cloud Associate",
+                    issuer: None,
+                    date: "2024年2月",
+                },
+            ],
+            languages: [
+                SpokenLanguage {
+                    name: "ドイツ語",
+                    level: Some(
+                        "ネイティブ",
+                    ),
+                },
+                SpokenLanguage {
+                    name: "日本語",
+                    level: Some(
+                        "ビジネスレベル",
+                    ),
+                },
+            ],
+            skills_note: "直近5年以内に使用したスキル。期間は案件での使用期間の合計。",
+            skills: [
+                SkillGroup {
+                    category: "プログラミング言語",
+                    skills: [
+                        SkillEntry {
+                            name: "タイプスクリプト",
+                            months: 50,
+                            experience: "4年2ヶ月",
+                            last_use: "2026年11月",
+                        },
+                        SkillEntry {
+                            name: "Go",
+                            months: 18,
+                            experience: "1年6ヶ月",
+                            last_use: "2022年9月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "フレームワーク",
+                    skills: [
+                        SkillEntry {
+                            name: "React",
+                            months: 38,
+                            experience: "3年2ヶ月",
+                            last_use: "2026年11月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "ライブラリ",
+                    skills: [
+                        SkillEntry {
+                            name: "エグザンプルチャート",
+                            months: 23,
+                            experience: "1年11ヶ月",
+                            last_use: "2026年11月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "データベース",
+                    skills: [
+                        SkillEntry {
+                            name: "PostgreSQL",
+                            months: 30,
+                            experience: "2年6ヶ月",
+                            last_use: "2023年9月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "クラウド",
+                    skills: [
+                        SkillEntry {
+                            name: "Google Cloud",
+                            months: 38,
+                            experience: "3年2ヶ月",
+                            last_use: "2026年11月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "プラットフォーム",
+                    skills: [
+                        SkillEntry {
+                            name: "Node.js",
+                            months: 38,
+                            experience: "3年2ヶ月",
+                            last_use: "2026年11月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "ツール",
+                    skills: [
+                        SkillEntry {
+                            name: "Docker",
+                            months: 18,
+                            experience: "1年6ヶ月",
+                            last_use: "2025年8月",
+                        },
+                    ],
+                },
+                SkillGroup {
+                    category: "AIツール",
+                    skills: [
+                        SkillEntry {
+                            name: "Claude Code",
+                            months: 38,
+                            experience: "3年2ヶ月",
+                            last_use: "2026年11月",
+                        },
+                    ],
+                },
+            ],
+            history_note: "直近2年以内の案件は詳細を、それ以前の案件は概要を記載。",
+            engagements: [
+                EngagementHistory {
+                    organization: "Globex",
+                    period: "2023年10月～現在",
+                    engagement_type: "フリーランス",
+                    role: Some(
+                        "フルスタック開発者",
+                    ),
+                    business: [],
+                    cards: [
+                        ProjectCard {
+                            period: "2025年1月～現在",
+                            title: "Web shop admin area",
+                            industry: "Retail",
+                            role: "Full-stack developer",
+                            focus: None,
+                            team: None,
+                            end_client: None,
+                            phases: [
+                                PhaseMark {
+                                    label: "要件定義",
+                                    done: false,
+                                },
+                                PhaseMark {
+                                    label: "基本設計",
+                                    done: false,
+                                },
+                                PhaseMark {
+                                    label: "詳細設計",
+                                    done: false,
+                                },
+                                PhaseMark {
+                                    label: "製造",
+                                    done: false,
+                                },
+                                PhaseMark {
+                                    label: "テスト",
+                                    done: false,
+                                },
+                                PhaseMark {
+                                    label: "運用・保守",
+                                    done: false,
+                                },
+                            ],
+                            skills: [
+                                "タイプスクリプト",
+                                "React",
+                                "エグザンプルチャート",
+                            ],
+                            description: [
+                                "Builds the admin area for product and staff management.",
+                            ],
+                            achievements: [],
+                        },
+                        ProjectCard {
+                            period: "2023年10月～現在",
+                            title: "ウェブショップの商品検索",
+                            industry: "小売",
+                            role: "フルスタック開発者",
+                            focus: Some(
+                                "Search",
+                            ),
+                            team: Some(
+                                "8名",
+                            ),
+                            end_client: None,
+                            phases: [
+                                PhaseMark {
+                                    label: "要件定義",
+                                    done: true,
+                                },
+                                PhaseMark {
+                                    label: "基本設計",
+                                    done: true,
+                                },
+                                PhaseMark {
+                                    label: "詳細設計",
+                                    done: false,
+                                },
+                                PhaseMark {
+                                    label: "製造",
+                                    done: true,
+                                },
+                                PhaseMark {
+                                    label: "テスト",
+                                    done: false,
+                                },
+                                PhaseMark {
+                                    label: "運用・保守",
+                                    done: true,
+                                },
+                            ],
+                            skills: [
+                                "タイプスクリプト",
+                                "React",
+                                "Node.js",
+                                "Google Cloud",
+                                "Claude Code",
+                            ],
+                            description: [
+                                "Develops the product search of the web shop, from the ranking service on Google Cloud to the React front end.",
+                            ],
+                            achievements: [
+                                "Introduces typo-tolerant search",
+                            ],
+                        },
+                    ],
+                    older: [],
+                },
+                EngagementHistory {
+                    organization: "株式会社アクメ",
+                    period: "2021年4月～2023年9月",
+                    engagement_type: "フリーランス",
+                    role: Some(
+                        "バックエンド開発者",
+                    ),
+                    business: [],
+                    cards: [],
+                    older: [
+                        ProjectLine {
+                            period: "2022年10月～2023年9月",
+                            title: "物流会社向け会計プラットフォーム",
+                            industry: "物流",
+                            skills: [
+                                "タイプスクリプト",
+                                "PostgreSQL",
+                            ],
+                            role: "Backend developer",
+                        },
+                        ProjectLine {
+                            period: "2021年4月～2022年9月",
+                            title: "Contoso玩具ECサイトのバックエンド",
+                            industry: "EC",
+                            skills: [
+                                "Go",
+                                "PostgreSQL",
+                                "Docker",
+                            ],
+                            role: "バックエンド開発者",
+                        },
+                    ],
+                },
+                EngagementHistory {
+                    organization: "Müller Logistik",
+                    period: "2019年4月～2021年3月",
+                    engagement_type: "直接雇用",
+                    role: Some(
+                        "ソフトウェア開発者",
+                    ),
+                    business: [],
+                    cards: [],
+                    older: [
+                        ProjectLine {
+                            period: "2019年4月～2021年3月",
+                            title: "配送追跡システム",
+                            industry: "物流",
+                            skills: [
+                                "C#",
+                                "Scrum",
+                            ],
+                            role: "ソフトウェア開発者",
+                        },
+                    ],
+                },
+                EngagementHistory {
+                    organization: "Initech",
+                    period: "2018年7月～2018年9月",
+                    engagement_type: "インターンシップ",
+                    role: None,
+                    business: [],
+                    cards: [],
+                    older: [],
+                },
+            ],
+            self_pr: [
+                "機能の要望からリリースまで一貫して担当する。",
+            ],
+            portfolio_url: Some(
+                "https://example.com",
+            ),
+            github_url: Some(
+                "https://github.com/example",
+            ),
+        },
+    ),
+    missing_translations: [
+        MissingTranslation {
+            note: "Acme - Ledger",
+            language: Japanese,
+        },
+        MissingTranslation {
+            note: "Globex - Admin",
+            language: Japanese,
+        },
+        MissingTranslation {
+            note: "Globex - Search",
+            language: Japanese,
+        },
+    ],
+}

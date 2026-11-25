@@ -21,6 +21,14 @@ fn the_fixture_file_reads_with_its_photo() {
         Some("robin@example.com")
     );
     assert_eq!(
+        personal
+            .public
+            .location
+            .map(|location| location.to_string())
+            .as_deref(),
+        Some("Japan")
+    );
+    assert_eq!(
         personal.photo.map(|photo| photo.0),
         Some(std::fs::read(fixture("photo.png")).unwrap())
     );

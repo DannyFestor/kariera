@@ -3,7 +3,7 @@
 
 use std::path::Path;
 
-use kariera_documents::{Edition, Inputs, build};
+use kariera_documents::{Audience, Edition, Inputs, build};
 use kariera_domain::Date;
 use kariera_vault::{Vault, load_personal};
 
@@ -25,9 +25,14 @@ fn every_document_of_the_fixture_vault() {
     for edition in Edition::all() {
         let built = build(edition, &inputs).expect("the fixture vault has a Profile");
 
-        insta::assert_debug_snapshot!(
-            format!("{}-{}", edition.kind.slug(), edition.language.code()),
-            built
-        );
+        insta::assert_debug_snapshot!(snapshot_name(edition), built);
+    }
+}
+
+fn snapshot_name(edition: Edition) -> String {
+    let name = format!("{}-{}", edition.kind.slug(), edition.language.code());
+    match edition.audience {
+        Audience::Private => name,
+        Audience::Public => format!("public-{name}"),
     }
 }

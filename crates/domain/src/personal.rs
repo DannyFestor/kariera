@@ -26,6 +26,27 @@ pub struct Personal {
     pub residence_expiry: Option<Date>,
     /// Anything else about the residence, such as an application in progress.
     pub residence_note: Option<Text>,
+    pub public: PublicDetails,
+}
+
+/// The `public:` map of `personal.yaml`: the only details a public document prints.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct PublicDetails {
+    pub email: Option<Text>,
+    /// Country-level only, such as `Japan`: the document is on the open web.
+    pub location: Option<Text>,
+}
+
+impl PublicDetails {
+    /// An allow-list: every detail not named here stays empty, including one added to `Personal` later.
+    #[must_use]
+    pub fn to_personal(&self) -> Personal {
+        Personal {
+            email: self.email.clone(),
+            location: self.location.clone(),
+            ..Personal::default()
+        }
+    }
 }
 
 /// The bytes of an image file, in a format the renderer reads (PNG, JPEG, GIF, SVG or WebP for PDF).

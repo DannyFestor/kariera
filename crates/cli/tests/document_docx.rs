@@ -4,7 +4,7 @@
 
 use std::path::Path;
 
-use kariera_documents::{Document, DocumentKind, Edition, Inputs, build};
+use kariera_documents::{Audience, Document, DocumentKind, Edition, Inputs, build};
 use kariera_domain::{Date, Language, Photo};
 use kariera_render_docx::{render, renders};
 use kariera_vault::{Vault, load_personal};
@@ -25,7 +25,15 @@ fn fixture_document(kind: DocumentKind, language: Language) -> TestResult<Docume
         personal: &personal,
         today: "2026-11-18".parse::<Date>()?,
     };
-    Ok(build(Edition { kind, language }, &inputs)?.document)
+    Ok(build(
+        Edition {
+            kind,
+            language,
+            audience: Audience::Private,
+        },
+        &inputs,
+    )?
+    .document)
 }
 
 fn docx_of(kind: DocumentKind, language: Language) -> TestResult<DocxPackage> {

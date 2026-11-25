@@ -96,10 +96,14 @@ impl Vault {
         Ok(Inspection { vault, errors })
     }
 
-    /// Writes a built document into `Generated/`, replacing the one of the same name: every file there can be
-    /// deleted and rebuilt (schema §1.1). Returns the path written.
-    pub fn write_generated(&self, file_name: &str, bytes: &[u8]) -> Result<PathBuf, WriteError> {
-        let path = self.root.join(GENERATED_FOLDER).join(file_name);
+    /// Writes a built document to `relative_path` inside `Generated/`, replacing the one of the same name: every
+    /// file there can be deleted and rebuilt (schema §1.1). Returns the path written.
+    pub fn write_generated(
+        &self,
+        relative_path: &Path,
+        bytes: &[u8],
+    ) -> Result<PathBuf, WriteError> {
+        let path = self.root.join(GENERATED_FOLDER).join(relative_path);
         overwrite_file(&path, bytes).map_err(|source| WriteError {
             path: path.clone(),
             source,
